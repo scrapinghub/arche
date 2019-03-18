@@ -37,6 +37,7 @@ black = {git = "https://github.com/ambv/black"}
 sphinx = "*"
 recommonmark = "*"
 jupyter-console = "*"
+codecov = "*"
 
 [requires]
 python_version = "3.7"
