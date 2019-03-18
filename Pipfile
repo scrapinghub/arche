@@ -1,0 +1,45 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+pandas = "*"
+scrapinghub = {extras = ["msgpack"],version = "*"}
+plotly = "*"
+genson = "*"
+boto3 = "*"
+jsonschema = ">=3.0.0"
+fastjsonschema = "*"
+perfect-jsonschema = "*"
+colorama = "*"
+tqdm = "*"
+cufflinks = "*"
+# have to repeat here otherwise dev version will be overriden
+tornado = "==5.1.1"
+
+[dev-packages]
+# tornado 6 breaks jupyter https://github.com/jupyter/jupyter/issues/401
+tornado = "==5.1.1"
+jupyterlab = "*"
+jupyter-nbextensions-configurator = "*"
+bumpversion = "*"
+tox = "*"
+pytest = "*"
+pytest-pythonpath = "*"
+pytest-mock = "*"
+pytest-cov = "*"
+pytest-pudb = "*"
+flake8 = "*"
+flake8-bugbear = "*"
+flake8-import-order = "*"
+black = {git = "https://github.com/ambv/black"}
+sphinx = "*"
+recommonmark = "*"
+jupyter-console = "*"
+
+[requires]
+python_version = "3.7"
+
+[pipenv]
+allow_prereleases = false
