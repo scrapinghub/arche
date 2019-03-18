@@ -212,7 +212,7 @@ def get_items(
     p_bar = tqdm if child else tqdm_notebook
     for item in p_bar(
         items_iter,
-        desc=f"Downloading {start_index}:{start_index+count}",
+        desc=f"Downloading {start_index}:{start_index+count} from {key}",
         total=count,
         unit_scale=1,
     ):
