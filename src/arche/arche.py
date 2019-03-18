@@ -5,7 +5,7 @@ from typing import List, Optional, Union
 
 from arche.data_quality_report import DataQualityReport
 from arche.readers.items import CollectionItems, JobItems
-from arche.readers.schema import get_schema, SchemaSource
+import arche.readers.schema as sr
 from arche.report import Report
 import arche.rules.category_coverage as category_coverage
 import arche.rules.coverage as coverage_rules
@@ -26,7 +26,7 @@ class Arche:
     def __init__(
         self,
         source: str,
-        schema: Optional[SchemaSource] = None,
+        schema: Optional[sr.SchemaSource] = None,
         target: Optional[str] = None,
         start: int = 0,
         count: Optional[int] = None,
@@ -55,7 +55,7 @@ class Arche:
         self.expand = expand
         self.schema_source = schema
         if schema:
-            self._schema = get_schema(schema)
+            self._schema = sr.get_schema(schema)
         else:
             self._schema = None
         self._source_items = None
@@ -84,13 +84,13 @@ class Arche:
     @property
     def schema(self):
         if not self._schema and self.schema_source:
-            self._schema = get_schema(self.schema_source)
+            self._schema = sr.get_schema(self.schema_source)
         return self._schema
 
     @schema.setter
     def schema(self, schema_source):
         self.schema_source = schema_source
-        self._schema = get_schema(schema_source)
+        self._schema = sr.get_schema(schema_source)
 
     @staticmethod
     def get_items(
@@ -180,7 +180,7 @@ class Arche:
 
         self.save_result(schema_rules.validate(self.schema, self.source_items.dicts))
 
-        json_fields = schema_tools.JsonFields(self.schema)
+        json_fields = sr.JsonFields(self.schema)
         target_columns = (
             self.target_items.df.columns.values if self.target_items else np.array([])
         )

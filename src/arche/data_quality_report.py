@@ -7,14 +7,13 @@ from arche.figures import graphs
 from arche.figures import tables
 from arche.quality_estimation_algorithm import generate_quality_estimation
 from arche.readers.items import Items
-from arche.readers.schema import Schema
+from arche.readers.schema import JsonFields, Schema
 from arche.report import Report
 import arche.rules.duplicates as duplicate_rules
 from arche.rules.garbage_symbols import garbage_symbols
 import arche.rules.price as price_rules
 from arche.tools import api
 from arche.tools.s3 import upload_str_stream
-from arche.tools.schema import JsonFields
 import plotly
 
 

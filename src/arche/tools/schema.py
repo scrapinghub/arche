@@ -1,80 +1,13 @@
-from collections import defaultdict
-from enum import Enum
 import logging
 import random
 from typing import List
 
 from arche.schema_definitions import extension
-from arche.tools import api, helpers, maintenance
+from arche.tools import api, helpers
 from genson import SchemaBuilder
 from scrapinghub import ScrapinghubClient
 
 logger = logging.getLogger(__name__)
-
-
-EXTENDED_KEYWORDS = {"tag", "unique", "coverage_percentage"}
-
-
-class Tag(Enum):
-    unique = (0,)
-    category = (1,)
-    category_field = (1,)
-    name_field = (2,)
-    product_url_field = (3,)
-    product_price_field = (4,)
-    product_price_was_field = (5,)
-
-
-class JsonFields:
-    tags = set([name for name, member in Tag.__members__.items()])
-
-    def __init__(self, schema):
-        self.schema = schema
-        self.tagged = defaultdict(list)
-        self.get_tags()
-
-    def get_tags(self):
-        if "properties" not in self.schema:
-            logger.error("The schema does not have 'properties'")
-            return
-
-        for key, value in self.schema["properties"].items():
-            property_tags = value.get("tag", [])
-            if property_tags:
-                self.get_field_tags(property_tags, key)
-
-    def get_field_tags(self, tags, field):
-        tags = self.parse_tag(tags)
-        if not tags:
-            logger.warning(f"'{tags}' tag value is invalid, should be str or list[str]")
-            return
-
-        invalid_tags = tags - self.tags
-        if invalid_tags:
-            logger.warning(
-                f"{invalid_tags} tag(s) are unsupported, valid tags are:\n"
-                f"{', '.join(sorted(list(self.tags)))}"
-            )
-            tags = tags - invalid_tags
-
-        for tag in tags:
-            if tag == "category_field":
-                tag = "category"
-                maintenance.deprecate(
-                    "'category_field' tag was deprecated in 2019.03.11 and "
-                    "will be removed in 2019.04.01.",
-                    replacement="Use 'category' instead",
-                    gone_in="2019.04.01",
-                )
-            self.tagged[tag].append(field)
-
-    @staticmethod
-    def parse_tag(value):
-        if isinstance(value, str):
-            return set([value])
-        if isinstance(value, list):
-            return set(value)
-        return None
 
 
 def create_json_schema(source_key: str, item_numbers: List[int] = None) -> dict:
