@@ -13,6 +13,7 @@ EXTENDED_KEYWORDS = {"tag", "unique", "coverage_percentage"}
 SchemaObject = Dict[str, Union[str, bool, int, float, None, List]]
 Schema = Dict[str, SchemaObject]
 SchemaSource = Union[str, Schema]
+TaggedFields = Dict[str, List[str]]
 
 
 def get_schema(schema_source: Optional[SchemaSource]):
@@ -57,7 +58,7 @@ class Tag(Enum):
 
 
 class JsonFields:
-    tags = set([name for name, member in Tag.__members__.items()])
+    tags = set([name for name, _ in Tag.__members__.items()])
 
     def __init__(self, schema):
         self.schema = schema
@@ -67,7 +68,6 @@ class JsonFields:
     def get_tags(self):
         if "properties" not in self.schema:
             raise ValueError("The schema does not have 'properties'")
-            return
 
         for key, value in self.schema["properties"].items():
             property_tags = value.get("tag", [])
@@ -80,7 +80,6 @@ class JsonFields:
             raise ValueError(
                 f"'{tags}' tag value is invalid, should be str or list[str]"
             )
-            return
 
         invalid_tags = tags - self.tags
         if invalid_tags:

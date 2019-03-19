@@ -1,10 +1,9 @@
-from typing import Dict, List
-
+from arche.readers.schema import TaggedFields
 from arche.rules.result import Result
 import pandas as pd
 
 
-def check_items(df: pd.DataFrame, tagged_fields: Dict[str, List[str]]) -> Result:
+def check_items(df: pd.DataFrame, tagged_fields: TaggedFields) -> Result:
     """Check for items with the same name and url"""
 
     name_fields = tagged_fields.get("name_field")
@@ -36,7 +35,7 @@ def check_items(df: pd.DataFrame, tagged_fields: Dict[str, List[str]]) -> Result
     return result
 
 
-def check_uniqueness(df: pd.DataFrame, tagged_fields: Dict[str, List[str]]) -> Result:
+def check_uniqueness(df: pd.DataFrame, tagged_fields: TaggedFields) -> Result:
     """Verify if each item field tagged with `unique` is unique.
 
     Returns:
