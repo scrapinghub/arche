@@ -42,7 +42,7 @@ class DataQualityReport:
             )
 
     def create_figures(self, items, items_dicts):
-        tagged_fields = Tags.get(self.schema)
+        tagged_fields = Tags().get(self.schema)
         no_of_validated_items = len(items.df.index)
 
         dup_items_result = duplicate_rules.check_items(items.df, tagged_fields)

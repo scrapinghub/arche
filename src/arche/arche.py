@@ -179,7 +179,7 @@ class Arche:
 
         self.save_result(schema_rules.validate(self.schema, self.source_items.dicts))
 
-        tagged_fields = sr.Tags.get(self.schema)
+        tagged_fields = sr.Tags().get(self.schema)
         target_columns = (
             self.target_items.df.columns.values if self.target_items else None
         )
@@ -196,7 +196,6 @@ class Arche:
             self.source_items, self.target_items, tagged_fields
         )
 
-    @lru_cache(maxsize=32)
     def run_customized_rules(self, items, tagged_fields):
         self.save_result(price_rules.compare_was_now(items.df, tagged_fields))
         self.save_result(duplicate_rules.check_uniqueness(items.df, tagged_fields))
