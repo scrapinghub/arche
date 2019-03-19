@@ -10,7 +10,7 @@ python:
 install:
   - pip install tox-travis pip -U --no-cache-dir
 script:
-  - tox -p all
+  - tox
 after_success:
   - tox -e codecov
 deploy:
