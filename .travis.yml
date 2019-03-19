@@ -12,6 +12,8 @@ install:
 script:
   - tox
 after_success:
+  - tox -e pep8
+  - tox -e docs
   - tox -e codecov
 deploy:
   provider: pypi
