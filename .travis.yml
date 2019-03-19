@@ -10,13 +10,15 @@ python:
 install:
   - pip install tox-travis pip -U --no-cache-dir
 script:
-  - tox -p all
+  - tox
 after_success:
+  - tox -e pep8
+  - tox -e docs
   - tox -e codecov
-# deploy:
-#   provider: pypi
-#   on:
-#     tags: true
-#   user: manycoding
-#   password:
-#     secure: "W+oR14EJaRpm+cVHqe9cjpUW5Z6dIzb3vWluK9RtpDykYHfWBImTgMI9kc4Vs4Ih337Xc6sjAg+hARmPjbuu8jA99Cn2ZmbYlCJvgnUpHBqTmEXrLV2AIBbpUtFAQ9EEeYHttVycz9gn/B7hJaOyEFGxFl43Kv5zVMetbu6eC8bF9BUUf3ZVCTIw1ecQZ1b+oK21m0md9LO9VOhxbtMwQiGcuUUXdaWtzpPla2mKFYkcQ9pOQYEqhVg2tdzoS7zckWuJ0zzjCl2wB8XI32Mok2rEO2Cd0pajh1JkYhtFG5sDIRftDBlS3bsRLkgXRQbRpxbv4zXPUHAPK81RzmvGXfAI5XNP8JYwBJOx+8vOHSpuoVINRWx1K+7yI8JbJOIoJo7/pwawkdq+Hix0ElZUwdn+TV1HjFdpaBjxkBfMpPxnhZCcbIwyHN9CYnIIfIdK5RsBJ75oYcy711y+WOfo/jUa4o/qwotA/fNLEDWo1gebx391ls1ce2g1ou3qBdz2KeR9JJgWZ/2EMq4tlsYxdIS8jQPOVbU6UIV6Fb816ryfpxOXbAWQ6kmfiom8xtOrq6wQRQJJLxBAHzXBlYO9LIFg/jIlyW7I4ZOSQKOxrDsaP3qTzUSgjpmKgD6r8rzwmWCa2QU8QEySTVI7VmZ+qPFUhVTgM6VM3Vb3oPW4Q+E="
+deploy:
+  provider: pypi
+  on:
+    tags: true
+  user: manycoding
+  password:
+    secure: "W+oR14EJaRpm+cVHqe9cjpUW5Z6dIzb3vWluK9RtpDykYHfWBImTgMI9kc4Vs4Ih337Xc6sjAg+hARmPjbuu8jA99Cn2ZmbYlCJvgnUpHBqTmEXrLV2AIBbpUtFAQ9EEeYHttVycz9gn/B7hJaOyEFGxFl43Kv5zVMetbu6eC8bF9BUUf3ZVCTIw1ecQZ1b+oK21m0md9LO9VOhxbtMwQiGcuUUXdaWtzpPla2mKFYkcQ9pOQYEqhVg2tdzoS7zckWuJ0zzjCl2wB8XI32Mok2rEO2Cd0pajh1JkYhtFG5sDIRftDBlS3bsRLkgXRQbRpxbv4zXPUHAPK81RzmvGXfAI5XNP8JYwBJOx+8vOHSpuoVINRWx1K+7yI8JbJOIoJo7/pwawkdq+Hix0ElZUwdn+TV1HjFdpaBjxkBfMpPxnhZCcbIwyHN9CYnIIfIdK5RsBJ75oYcy711y+WOfo/jUa4o/qwotA/fNLEDWo1gebx391ls1ce2g1ou3qBdz2KeR9JJgWZ/2EMq4tlsYxdIS8jQPOVbU6UIV6Fb816ryfpxOXbAWQ6kmfiom8xtOrq6wQRQJJLxBAHzXBlYO9LIFg/jIlyW7I4ZOSQKOxrDsaP3qTzUSgjpmKgD6r8rzwmWCa2QU8QEySTVI7VmZ+qPFUhVTgM6VM3Vb3oPW4Q+E="

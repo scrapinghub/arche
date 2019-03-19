@@ -1,6 +1,6 @@
 # Arche
 
-[![Build Status](https://drone.scrapinghub.com/api/badge/github.com/scrapinghub/arche/status.svg?branch=master)](https://drone.scrapinghub.com/github.com/scrapinghub/arche)
+[![Build Status](https://travis-ci.org/scrapinghub/arche.svg?branch=master)](https://travis-ci.org/scrapinghub/arche)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
 
 The library helps to verify data using set of defined rules, for example:
