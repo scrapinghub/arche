@@ -1,20 +1,19 @@
 from arche.rules.json_schema import check_tags
 from arche.rules.result import Level
 from conftest import create_result
-import numpy as np
 import pytest
 
 
 tags_inputs = [
     (
         ["id"],
-        [],
+        None,
         {"category": ["id"]},
         {
             Level.INFO: [
                 ("Used - category",),
                 (
-                    "Not used - category_field, name_field, product_price_field, "
+                    "Not used - name_field, product_price_field, "
                     "product_price_was_field, product_url_field, unique",
                 ),
             ]
@@ -28,7 +27,7 @@ tags_inputs = [
             Level.INFO: [
                 ("Used - unique",),
                 (
-                    "Not used - category, category_field, name_field, product_price_field, "
+                    "Not used - category, name_field, product_price_field, "
                     "product_price_was_field, product_url_field",
                 ),
             ],
@@ -47,7 +46,7 @@ tags_inputs = [
             Level.INFO: [
                 ("Used - unique",),
                 (
-                    "Not used - category, category_field, name_field, product_price_field, "
+                    "Not used - category, name_field, product_price_field, "
                     "product_price_was_field, product_url_field",
                 ),
             ],
@@ -59,13 +58,13 @@ tags_inputs = [
     ),
     (
         ["key"],
-        np.array([]),
+        None,
         {"unique": ["id"]},
         {
             Level.INFO: [
                 ("Used - unique",),
                 (
-                    "Not used - category, category_field, name_field, product_price_field, "
+                    "Not used - category, name_field, product_price_field, "
                     "product_price_was_field, product_url_field",
                 ),
             ],
@@ -75,6 +74,39 @@ tags_inputs = [
             ],
         },
     ),
+    (
+        ["_key"],
+        None,
+        {},
+        {
+            Level.INFO: [
+                (
+                    "Not used - category, name_field, product_price_field, "
+                    "product_price_was_field, product_url_field, unique",
+                )
+            ]
+        },
+    ),
+    (
+        ["_key"],
+        None,
+        {
+            "category": ["_key"],
+            "name_field": ["_key"],
+            "product_price_field": ["_key"],
+            "product_price_was_field": ["_key"],
+            "product_url_field": ["_key"],
+            "unique": ["_key"],
+        },
+        {
+            Level.INFO: [
+                (
+                    "Used - category, name_field, product_price_field, "
+                    "product_price_was_field, product_url_field, unique",
+                )
+            ]
+        },
+    ),
 ]
 
 
@@ -82,5 +114,5 @@ tags_inputs = [
     "source_columns, target_columns, tags, expected_messages", tags_inputs
 )
 def test_check_tags(source_columns, target_columns, tags, expected_messages):
-    result = check_tags(np.array(source_columns), np.array(target_columns), tags)
+    result = check_tags(source_columns, target_columns, tags)
     assert result == create_result("Tags", expected_messages)

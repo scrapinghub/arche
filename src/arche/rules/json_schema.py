@@ -1,7 +1,8 @@
-from arche.readers.schema import JsonFields, Schema
+from arche.readers.schema import JsonFields, Schema, TaggedFields
 from arche.rules.result import Result
 from arche.tools.api import Items
 from arche.tools.json_schema_validator import JsonSchemaValidator
+import numpy as np
 
 
 def validate(schema: Schema, items_dicts: Items, fast: bool = False) -> Result:
@@ -26,14 +27,16 @@ def validate(schema: Schema, items_dicts: Items, fast: bool = False) -> Result:
     return result
 
 
-def check_tags(source_columns, target_columns, tags):
+def check_tags(
+    source_columns: np.ndarray, target_columns: np.ndarray, tags: TaggedFields
+) -> Result:
     result = Result("Tags")
 
-    found_tags = list(tags)
+    found_tags = sorted(list(tags))
     if found_tags:
         result.add_info(f"Used - {', '.join(found_tags)}")
 
-    not_used_tags = sorted(JsonFields.tags.difference(set(tags)))
+    not_used_tags = sorted(JsonFields.tags - set(["category_field"]) - set(tags))
     if not_used_tags:
         result.add_info(f"Not used - {', '.join(not_used_tags)}")
 
@@ -48,7 +51,7 @@ def check_tags(source_columns, target_columns, tags):
             "source, but specified in schema"
         )
 
-    if target_columns.size > 0:
+    if target_columns is not None:
         missing_in_target = sorted(set(tagged_fields) - set(target_columns))
         if missing_in_target:
             result.add_error(

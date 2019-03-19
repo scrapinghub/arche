@@ -17,7 +17,6 @@ from arche.rules.other_rules import compare_boolean_fields
 import arche.rules.price as price_rules
 from arche.tools import api, helpers
 import arche.tools.schema as schema_tools
-import numpy as np
 
 logger = logging.getLogger(__name__)
 
@@ -182,7 +181,7 @@ class Arche:
 
         json_fields = sr.JsonFields(self.schema)
         target_columns = (
-            self.target_items.df.columns.values if self.target_items else np.array([])
+            self.target_items.df.columns.values if self.target_items else None
         )
 
         check_tags_result = schema_rules.check_tags(
