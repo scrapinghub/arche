@@ -57,22 +57,21 @@ class Tag(Enum):
     product_price_was_field = (5,)
 
 
-class JsonFields:
-    tags = set([name for name, _ in Tag.__members__.items()])
+class Tags:
+    values = set([name for name, _ in Tag.__members__.items()])
 
-    def __init__(self, schema):
-        self.schema = schema
-        self.tagged = defaultdict(list)
-        self.get_tags()
+    def __init__(self):
+        self.tagged_fields = defaultdict(list)
 
-    def get_tags(self):
-        if "properties" not in self.schema:
+    def get(self, schema: Schema) -> TaggedFields:
+        if "properties" not in schema:
             raise ValueError("The schema does not have 'properties'")
 
-        for key, value in self.schema["properties"].items():
+        for key, value in schema["properties"].items():
             property_tags = value.get("tag", [])
             if property_tags:
                 self.get_field_tags(property_tags, key)
+        return self.tagged_fields
 
     def get_field_tags(self, tags, field):
         tags = self.parse_tag(tags)
@@ -81,13 +80,12 @@ class JsonFields:
                 f"'{tags}' tag value is invalid, should be str or list[str]"
             )
 
-        invalid_tags = tags - self.tags
+        invalid_tags = tags - self.values
         if invalid_tags:
             raise ValueError(
                 f"{invalid_tags} tag(s) are unsupported, valid tags are:\n"
-                f"{', '.join(sorted(list(self.tags)))}"
+                f"{', '.join(sorted(list(self.values)))}"
             )
-            tags = tags - invalid_tags
 
         for tag in tags:
             if tag == "category_field":
@@ -98,7 +96,7 @@ class JsonFields:
                     replacement="Use 'category' instead",
                     gone_in="2019.04.01",
                 )
-            self.tagged[tag].append(field)
+            self.tagged_fields[tag].append(field)
 
     @staticmethod
     def parse_tag(value):

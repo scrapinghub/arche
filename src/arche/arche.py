@@ -179,30 +179,30 @@ class Arche:
 
         self.save_result(schema_rules.validate(self.schema, self.source_items.dicts))
 
-        json_fields = sr.JsonFields(self.schema)
+        tagged_fields = sr.Tags.get(self.schema)
         target_columns = (
             self.target_items.df.columns.values if self.target_items else None
         )
 
         check_tags_result = schema_rules.check_tags(
-            self.source_items.df.columns.values, target_columns, json_fields.tagged
+            self.source_items.df.columns.values, target_columns, tagged_fields
         )
         self.save_result(check_tags_result)
         if check_tags_result.errors:
             return
 
-        self.run_customized_rules(self.source_items, json_fields)
+        self.run_customized_rules(self.source_items, tagged_fields)
         self.compare_with_customized_rules(
-            self.source_items, self.target_items, json_fields.tagged
+            self.source_items, self.target_items, tagged_fields
         )
 
     @lru_cache(maxsize=32)
-    def run_customized_rules(self, items, fields):
-        self.save_result(price_rules.compare_was_now(items.df, fields.tagged))
-        self.save_result(duplicate_rules.check_uniqueness(items.df, fields.tagged))
-        self.save_result(duplicate_rules.check_items(items.df, fields.tagged))
+    def run_customized_rules(self, items, tagged_fields):
+        self.save_result(price_rules.compare_was_now(items.df, tagged_fields))
+        self.save_result(duplicate_rules.check_uniqueness(items.df, tagged_fields))
+        self.save_result(duplicate_rules.check_items(items.df, tagged_fields))
         self.save_result(
-            category_coverage.get_coverage_per_category(items.df, fields.tagged)
+            category_coverage.get_coverage_per_category(items.df, tagged_fields)
         )
 
     @lru_cache(maxsize=32)

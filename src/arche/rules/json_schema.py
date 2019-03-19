@@ -1,4 +1,4 @@
-from arche.readers.schema import JsonFields, Schema, TaggedFields
+from arche.readers.schema import Schema, Tag, TaggedFields
 from arche.rules.result import Result
 from arche.tools.api import Items
 from arche.tools.json_schema_validator import JsonSchemaValidator
@@ -36,7 +36,8 @@ def check_tags(
     if found_tags:
         result.add_info(f"Used - {', '.join(found_tags)}")
 
-    not_used_tags = sorted(JsonFields.tags - set(["category_field"]) - set(tags))
+    all_tags = set([name for name, _ in Tag.__members__.items()])
+    not_used_tags = sorted(all_tags - set(["category_field"]) - set(tags))
     if not_used_tags:
         result.add_info(f"Not used - {', '.join(not_used_tags)}")
 

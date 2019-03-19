@@ -92,21 +92,10 @@ def test_get_schema_from_url_fails(path, expected_message):
     assert str(excinfo.value) == expected_message
 
 
-@pytest.mark.parametrize(
-    "schema, expected_tags",
-    [
-        (
-            {"properties": {"id": {"tag": "unique"}, "url": {"tag": "unique"}}},
-            {"unique": ["id", "url"]},
-        ),
-        ({"properties": {"id": {"tag": "unique"}, "url": {}}}, {"unique": ["id"]}),
-    ],
-)
-def test_json_fields(schema, expected_tags):
-    jf = reader.JsonFields(schema)
-    assert jf.schema == schema
-    assert jf.tagged == expected_tags
-    assert jf.tags == {
+def test_tags():
+    jf = reader.Tags()
+    assert not jf.tagged_fields
+    assert jf.values == {
         "unique",
         "category",
         "category_field",
@@ -117,28 +106,24 @@ def test_json_fields(schema, expected_tags):
     }
 
 
-def test_no_properties():
+def test_get_tags_fails():
     with pytest.raises(ValueError) as excinfo:
-        reader.JsonFields({})
+        reader.Tags().get({})
     assert str(excinfo.value) == "The schema does not have 'properties'"
 
 
 @pytest.mark.parametrize(
-    "tags, field, expected_tags,",
+    "schema, expected_tags",
     [
-        ("name_field", "name", {"name_field": ["name"]}),
         (
-            ["name_field", "unique"],
-            "name",
-            {"name_field": ["name"], "unique": ["name"]},
+            {"properties": {"id": {"tag": "unique"}, "url": {"tag": "unique"}}},
+            {"unique": ["id", "url"]},
         ),
-        ("category", "state", {"category": ["state"]}),
+        ({"properties": {"id": {"tag": "unique"}, "url": {}}}, {"unique": ["id"]}),
     ],
 )
-def test_get_field_tags(tags, field, expected_tags):
-    jf = reader.JsonFields({"properties": {}})
-    jf.get_field_tags(tags, field)
-    assert jf.tagged == expected_tags
+def test_get_tags(schema, expected_tags):
+    assert reader.Tags().get(schema) == expected_tags
 
 
 @pytest.mark.parametrize(
@@ -157,8 +142,26 @@ def test_get_field_tags(tags, field, expected_tags):
 )
 def test_get_field_tags_fails(tags, exception):
     with pytest.raises(ValueError) as excinfo:
-        reader.JsonFields({"properties": {}}).get_field_tags(tags, None)
+        reader.Tags().get_field_tags(tags, None)
     assert str(excinfo.value) == exception
+
+
+@pytest.mark.parametrize(
+    "tags, field, expected_tags",
+    [
+        ("name_field", "name", {"name_field": ["name"]}),
+        (
+            ["name_field", "unique"],
+            "name",
+            {"name_field": ["name"], "unique": ["name"]},
+        ),
+        ("category", "state", {"category": ["state"]}),
+    ],
+)
+def test_get_field_tags(tags, field, expected_tags):
+    t = reader.Tags()
+    t.get_field_tags(tags, field)
+    assert t.tagged_fields == expected_tags
 
 
 @pytest.mark.parametrize(
@@ -170,4 +173,4 @@ def test_get_field_tags_fails(tags, exception):
     ],
 )
 def test_parse_tag(value, expected):
-    assert reader.JsonFields({"properties": {}}).parse_tag(value) == expected
+    assert reader.Tags.parse_tag(value) == expected
