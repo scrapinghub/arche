@@ -27,12 +27,11 @@ project = "Arche"
 copyright = f"2018-{datetime.now().year}, Arche developers"
 author = "Arche developers"
 
-import arche
-
+version = "2019.03.18"
 # The short X.Y version
-version = arche.__version__
+version = version
 # The full version, including alpha/beta/rc tags
-release = arche.__version__
+release = version
 
 
 # -- General configuration ---------------------------------------------------
@@ -54,8 +53,13 @@ extensions = [
     "sphinx.ext.ifconfig",
     "sphinx.ext.githubpages",
     "sphinx.ext.napoleon",
+    "sphinxcontrib.apidoc",
 ]
-
+apidoc_module_dir = "../../src"
+apidoc_output_dir = "api"
+apidoc_separate_modules = True
+apidoc_toc_file = "source"
+apidoc_module_first = True
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
 

@@ -40,7 +40,6 @@ setup(
     extras_require={
         "tests": tests_require,
         "pep8tests": ["flake8", "flake8-import-order", "flake8-bugbear", "black"],
-        "docs": ["sphinx", "recommonmark"],
     },
     tests_require=tests_require,
 )
