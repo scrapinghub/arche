@@ -1,0 +1,18 @@
+arche.readers package
+=====================
+
+Submodules
+----------
+
+.. toctree::
+
+   arche.readers.items
+   arche.readers.schema
+
+Module contents
+---------------
+
+.. automodule:: arche.readers
+    :members:
+    :undoc-members:
+    :show-inheritance:

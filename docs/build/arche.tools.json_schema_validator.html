@@ -1,0 +1,170 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>arche.tools.json_schema_validator module &#8212; Arche 2019.03.18 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="arche.tools.maintenance module" href="arche.tools.maintenance.html" />
+    <link rel="prev" title="arche.tools.helpers module" href="arche.tools.helpers.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-arche.tools.json_schema_validator">
+<span id="arche-tools-json-schema-validator-module"></span><h1>arche.tools.json_schema_validator module<a class="headerlink" href="#module-arche.tools.json_schema_validator" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="arche.tools.json_schema_validator.JsonSchemaValidator">
+<em class="property">class </em><code class="descclassname">arche.tools.json_schema_validator.</code><code class="descname">JsonSchemaValidator</code><span class="sig-paren">(</span><em>schema: Dict[str, Dict[str, Union[str, bool, int, float, None, List[T]]]]</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.tools.json_schema_validator.JsonSchemaValidator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="method">
+<dt id="arche.tools.json_schema_validator.JsonSchemaValidator.fast_validate">
+<code class="descname">fast_validate</code><span class="sig-paren">(</span><em>items: List[Dict[str, Any]]</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.tools.json_schema_validator.JsonSchemaValidator.fast_validate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Verify items one by one. It stops after the first error in an item in most cases.
+Faster than jsonschema validation</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="arche.tools.json_schema_validator.JsonSchemaValidator.format_validation_message">
+<em class="property">static </em><code class="descname">format_validation_message</code><span class="sig-paren">(</span><em>error_msg: str, path: Deque[T], schema_path: Deque[T], validator: str</em><span class="sig-paren">)</span> &#x2192; str<a class="headerlink" href="#arche.tools.json_schema_validator.JsonSchemaValidator.format_validation_message" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="arche.tools.json_schema_validator.JsonSchemaValidator.run">
+<code class="descname">run</code><span class="sig-paren">(</span><em>items: List[Dict[str, Any]], fast: bool</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.tools.json_schema_validator.JsonSchemaValidator.run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="arche.tools.json_schema_validator.JsonSchemaValidator.validate">
+<code class="descname">validate</code><span class="sig-paren">(</span><em>items: List[Dict[str, Any]]</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.tools.json_schema_validator.JsonSchemaValidator.validate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="arche.tools.json_schema_validator.JsonSchemaValidator.validate_item">
+<code class="descname">validate_item</code><span class="sig-paren">(</span><em>item: Dict[str, Any], validator</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.tools.json_schema_validator.JsonSchemaValidator.validate_item" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check a single item against jsonschema</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>item</strong> – a dict with item data</li>
+<li><strong>validator</strong> – a validator instance</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Arche</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Handling-items-of-different-types.html">Handling items of different types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Strategy.html">Strategy</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">src</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="arche.html">arche package</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="modules.html">src</a><ul>
+  <li><a href="arche.html">arche package</a><ul>
+  <li><a href="arche.tools.html">arche.tools package</a><ul>
+      <li>Previous: <a href="arche.tools.helpers.html" title="previous chapter">arche.tools.helpers module</a></li>
+      <li>Next: <a href="arche.tools.maintenance.html" title="next chapter">arche.tools.maintenance module</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018-2019, Arche developers.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/arche.tools.json_schema_validator.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
