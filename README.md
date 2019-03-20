@@ -1,7 +1,7 @@
 # Arche
 
 [![Build Status](https://travis-ci.org/scrapinghub/arche.svg?branch=master)](https://travis-ci.org/scrapinghub/arche)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black) [![Join the chat at https://gitter.im/scrapinghub/arche](https://badges.gitter.im/scrapinghub/arche.svg)](https://gitter.im/scrapinghub/arche?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 The library helps to verify data using set of defined rules, for example:
   * Validation with JSON schema
