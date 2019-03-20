@@ -27,12 +27,11 @@ project = "Arche"
 copyright = f"2018-{datetime.now().year}, Arche developers"
 author = "Arche developers"
 
-import arche
-
+version = "2019.03.18"
 # The short X.Y version
-version = arche.__version__
+version = version
 # The full version, including alpha/beta/rc tags
-release = arche.__version__
+release = version
 
 
 # -- General configuration ---------------------------------------------------
