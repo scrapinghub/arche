@@ -53,8 +53,13 @@ extensions = [
     "sphinx.ext.ifconfig",
     "sphinx.ext.githubpages",
     "sphinx.ext.napoleon",
+    "sphinxcontrib.apidoc",
 ]
-
+apidoc_module_dir = "../../src"
+apidoc_output_dir = "api"
+apidoc_separate_modules = True
+apidoc_toc_file = "source"
+apidoc_module_first = True
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
 

@@ -11,7 +11,7 @@ Welcome to Arche's documentation!
    Quickstart
    Handling-items-of-different-types
    Strategy
-   modules
+   api/source
 
 
 Indices and tables
