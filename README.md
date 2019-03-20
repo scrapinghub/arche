@@ -9,6 +9,8 @@
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/scrapinghub/arche.svg)
 [![Join the chat at https://gitter.im/scrapinghub/arche](https://badges.gitter.im/scrapinghub/arche.svg)](https://gitter.im/scrapinghub/arche?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
+https://arche.readthedocs.io/en/latest/
+
 The library helps to verify data using set of defined rules, for example:
   * Validation with JSON schema
   * Coverage
