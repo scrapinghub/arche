@@ -5,7 +5,7 @@ from typing import List, Optional, Union
 
 from arche.data_quality_report import DataQualityReport
 from arche.readers.items import CollectionItems, JobItems
-from arche.readers.schema import get_schema, SchemaSource
+import arche.readers.schema as sr
 from arche.report import Report
 import arche.rules.category_coverage as category_coverage
 import arche.rules.coverage as coverage_rules
@@ -17,7 +17,6 @@ from arche.rules.other_rules import compare_boolean_fields
 import arche.rules.price as price_rules
 from arche.tools import api, helpers
 import arche.tools.schema as schema_tools
-import numpy as np
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +25,7 @@ class Arche:
     def __init__(
         self,
         source: str,
-        schema: Optional[SchemaSource] = None,
+        schema: Optional[sr.SchemaSource] = None,
         target: Optional[str] = None,
         start: int = 0,
         count: Optional[int] = None,
@@ -55,7 +54,7 @@ class Arche:
         self.expand = expand
         self.schema_source = schema
         if schema:
-            self._schema = get_schema(schema)
+            self._schema = sr.get_schema(schema)
         else:
             self._schema = None
         self._source_items = None
@@ -84,13 +83,13 @@ class Arche:
     @property
     def schema(self):
         if not self._schema and self.schema_source:
-            self._schema = get_schema(self.schema_source)
+            self._schema = sr.get_schema(self.schema_source)
         return self._schema
 
     @schema.setter
     def schema(self, schema_source):
         self.schema_source = schema_source
-        self._schema = get_schema(schema_source)
+        self._schema = sr.get_schema(schema_source)
 
     @staticmethod
     def get_items(
@@ -180,30 +179,29 @@ class Arche:
 
         self.save_result(schema_rules.validate(self.schema, self.source_items.dicts))
 
-        json_fields = schema_tools.JsonFields(self.schema)
+        tagged_fields = sr.Tags().get(self.schema)
         target_columns = (
-            self.target_items.df.columns.values if self.target_items else np.array([])
+            self.target_items.df.columns.values if self.target_items else None
         )
 
         check_tags_result = schema_rules.check_tags(
-            self.source_items.df.columns.values, target_columns, json_fields.tagged
+            self.source_items.df.columns.values, target_columns, tagged_fields
         )
         self.save_result(check_tags_result)
         if check_tags_result.errors:
             return
 
-        self.run_customized_rules(self.source_items, json_fields)
+        self.run_customized_rules(self.source_items, tagged_fields)
         self.compare_with_customized_rules(
-            self.source_items, self.target_items, json_fields.tagged
+            self.source_items, self.target_items, tagged_fields
         )
 
-    @lru_cache(maxsize=32)
-    def run_customized_rules(self, items, fields):
-        self.save_result(price_rules.compare_was_now(items.df, fields.tagged))
-        self.save_result(duplicate_rules.check_uniqueness(items.df, fields.tagged))
-        self.save_result(duplicate_rules.check_items(items.df, fields.tagged))
+    def run_customized_rules(self, items, tagged_fields):
+        self.save_result(price_rules.compare_was_now(items.df, tagged_fields))
+        self.save_result(duplicate_rules.check_uniqueness(items.df, tagged_fields))
+        self.save_result(duplicate_rules.check_items(items.df, tagged_fields))
         self.save_result(
-            category_coverage.get_coverage_per_category(items.df, fields.tagged)
+            category_coverage.get_coverage_per_category(items.df, tagged_fields)
         )
 
     @lru_cache(maxsize=32)
