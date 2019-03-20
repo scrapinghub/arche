@@ -1,0 +1,282 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>arche.tools.api module &#8212; Arche 2019.03.18 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="arche.tools.helpers module" href="arche.tools.helpers.html" />
+    <link rel="prev" title="arche.tools package" href="arche.tools.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-arche.tools.api">
+<span id="arche-tools-api-module"></span><h1>arche.tools.api module<a class="headerlink" href="#module-arche.tools.api" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="arche.tools.api.get_batch_id">
+<code class="descclassname">arche.tools.api.</code><code class="descname">get_batch_id</code><span class="sig-paren">(</span><em>job</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.tools.api.get_batch_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="arche.tools.api.get_collection">
+<code class="descclassname">arche.tools.api.</code><code class="descname">get_collection</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.tools.api.get_collection" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="arche.tools.api.get_crawlera_user">
+<code class="descclassname">arche.tools.api.</code><code class="descname">get_crawlera_user</code><span class="sig-paren">(</span><em>job</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.tools.api.get_crawlera_user" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="arche.tools.api.get_errors_count">
+<code class="descclassname">arche.tools.api.</code><code class="descname">get_errors_count</code><span class="sig-paren">(</span><em>job</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.tools.api.get_errors_count" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="arche.tools.api.get_finish_time_difference_in_days">
+<code class="descclassname">arche.tools.api.</code><code class="descname">get_finish_time_difference_in_days</code><span class="sig-paren">(</span><em>job1</em>, <em>job2</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.tools.api.get_finish_time_difference_in_days" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="arche.tools.api.get_items">
+<code class="descclassname">arche.tools.api.</code><code class="descname">get_items</code><span class="sig-paren">(</span><em>key: str</em>, <em>count: int</em>, <em>start_index: int</em>, <em>filters: Optional[List[Tuple[str</em>, <em>str</em>, <em>str]]] = None</em>, <em>child: bool = False</em><span class="sig-paren">)</span> &#x2192; List[Dict[str, Any]]<a class="headerlink" href="#arche.tools.api.get_items" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="arche.tools.api.get_items_count">
+<code class="descclassname">arche.tools.api.</code><code class="descname">get_items_count</code><span class="sig-paren">(</span><em>job</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.tools.api.get_items_count" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="arche.tools.api.get_items_with_pool">
+<code class="descclassname">arche.tools.api.</code><code class="descname">get_items_with_pool</code><span class="sig-paren">(</span><em>source_key: str</em>, <em>count: int</em>, <em>start_index: int = 0</em>, <em>workers: int = 4</em><span class="sig-paren">)</span> &#x2192; List[Dict[str, Any]]<a class="headerlink" href="#arche.tools.api.get_items_with_pool" title="Permalink to this definition">¶</a></dt>
+<dd><p>Concurrently reads items from API using Pool</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>source_key</strong> – a job or collection key, e.g. ‘112358/13/21’</li>
+<li><strong>count</strong> – a number of items to retrieve</li>
+<li><strong>start_index</strong> – an index to read from</li>
+<li><strong>workers</strong> – the number of separate processors to get data in</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A list of items</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="arche.tools.api.get_job_arguments">
+<code class="descclassname">arche.tools.api.</code><code class="descname">get_job_arguments</code><span class="sig-paren">(</span><em>job</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.tools.api.get_job_arguments" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="arche.tools.api.get_job_close_reason">
+<code class="descclassname">arche.tools.api.</code><code class="descname">get_job_close_reason</code><span class="sig-paren">(</span><em>job</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.tools.api.get_job_close_reason" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="arche.tools.api.get_job_state">
+<code class="descclassname">arche.tools.api.</code><code class="descname">get_job_state</code><span class="sig-paren">(</span><em>job</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.tools.api.get_job_state" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="arche.tools.api.get_keywords">
+<code class="descclassname">arche.tools.api.</code><code class="descname">get_keywords</code><span class="sig-paren">(</span><em>job</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.tools.api.get_keywords" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="arche.tools.api.get_max_memusage">
+<code class="descclassname">arche.tools.api.</code><code class="descname">get_max_memusage</code><span class="sig-paren">(</span><em>job</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.tools.api.get_max_memusage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="arche.tools.api.get_requests_count">
+<code class="descclassname">arche.tools.api.</code><code class="descname">get_requests_count</code><span class="sig-paren">(</span><em>job</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.tools.api.get_requests_count" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="arche.tools.api.get_response_status_count">
+<code class="descclassname">arche.tools.api.</code><code class="descname">get_response_status_count</code><span class="sig-paren">(</span><em>job</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.tools.api.get_response_status_count" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="arche.tools.api.get_runtime">
+<code class="descclassname">arche.tools.api.</code><code class="descname">get_runtime</code><span class="sig-paren">(</span><em>job</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.tools.api.get_runtime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the runtime in milliseconds or None if job is still running</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="arche.tools.api.get_runtime_s">
+<code class="descclassname">arche.tools.api.</code><code class="descname">get_runtime_s</code><span class="sig-paren">(</span><em>job</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.tools.api.get_runtime_s" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns job runtime in milliseconds.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="arche.tools.api.get_scraped_fields">
+<code class="descclassname">arche.tools.api.</code><code class="descname">get_scraped_fields</code><span class="sig-paren">(</span><em>job</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.tools.api.get_scraped_fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="arche.tools.api.get_source">
+<code class="descclassname">arche.tools.api.</code><code class="descname">get_source</code><span class="sig-paren">(</span><em>source_key</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.tools.api.get_source" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="arche.tools.api.get_spider_name">
+<code class="descclassname">arche.tools.api.</code><code class="descname">get_spider_name</code><span class="sig-paren">(</span><em>job_key</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.tools.api.get_spider_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="arche.tools.api.get_store_details">
+<code class="descclassname">arche.tools.api.</code><code class="descname">get_store_details</code><span class="sig-paren">(</span><em>job</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.tools.api.get_store_details" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="arche.tools.api.get_store_id">
+<code class="descclassname">arche.tools.api.</code><code class="descname">get_store_id</code><span class="sig-paren">(</span><em>job</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.tools.api.get_store_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="arche.tools.api.get_warnings">
+<code class="descclassname">arche.tools.api.</code><code class="descname">get_warnings</code><span class="sig-paren">(</span><em>job</em>, <em>level</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.tools.api.get_warnings" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="arche.tools.api.key_to_url">
+<code class="descclassname">arche.tools.api.</code><code class="descname">key_to_url</code><span class="sig-paren">(</span><em>key: str</em>, <em>source_key: str</em><span class="sig-paren">)</span> &#x2192; str<a class="headerlink" href="#arche.tools.api.key_to_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get full Scrapy Cloud url from <cite>_key</cite>
+E.g. 112358/13/21/0 to <a class="reference external" href="https://app.scrapinghub.com/">https://app.scrapinghub.com/</a>
+p/112358/13/21/item/0</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>key</strong> – a meta <cite>_key</cite></li>
+<li><strong>source_key</strong> – a job or collection key</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A full url to an item in a Scrapy Cloud</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Arche</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Handling-items-of-different-types.html">Handling items of different types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Strategy.html">Strategy</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">src</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="arche.html">arche package</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="modules.html">src</a><ul>
+  <li><a href="arche.html">arche package</a><ul>
+  <li><a href="arche.tools.html">arche.tools package</a><ul>
+      <li>Previous: <a href="arche.tools.html" title="previous chapter">arche.tools package</a></li>
+      <li>Next: <a href="arche.tools.helpers.html" title="next chapter">arche.tools.helpers module</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018-2019, Arche developers.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/arche.tools.api.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
