@@ -184,10 +184,7 @@ def test_validate_with_json_schema(mocker):
     mocked_validate = mocker.patch(
         "arche.rules.json_schema.validate", autospec=True, return_value=res
     )
-    # autospec and classmethod bug https://github.com/python/cpython/pull/11613
-    mocked_write_result = mocker.patch(
-        "arche.report.Report.write_result", autospec=False
-    )
+    mocked_show = mocker.patch("arche.rules.result.Result.show", autospec=True)
 
     arche = Arche(
         "source", schema={"$schema": "http://json-schema.org/draft-07/schema"}
@@ -199,7 +196,7 @@ def test_validate_with_json_schema(mocker):
         arche.schema, arche.source_items.dicts, False
     )
     mocked_save_result.assert_called_once_with(arche, res)
-    mocked_write_result.assert_called_once_with(res, short=False)
+    mocked_show.assert_called_once_with(res)
 
 
 @pytest.mark.parametrize(
