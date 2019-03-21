@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "08233c5e3e0bf7721fcd7cc4323a57ee1824977aeda9222cb69284d64d678c9c"
+            "sha256": "5ee96584132f9569a47d69267a19f0c6bab4f1c7170ba49b341eb842ff716c5c"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -47,18 +47,18 @@
         },
         "boto3": {
             "hashes": [
-                "sha256:1b4a86e1167ba7cbb9dbf2a0a0b86447b35a2b901ae5aace75b8196631680957",
-                "sha256:f5b12367c530dac45782251b672f1e911da5c74285f89850b0f4f5694b8c388c"
+                "sha256:74a7cdbe0404498f7bf6a59968cabb3f9a30e349a58201301cdd82bbdb66c5bd",
+                "sha256:dcd56fffca3a22a06c7bbba820cc2643f039e8b60dbae9a59b8fb804745e2c04"
             ],
             "index": "pypi",
-            "version": "==1.9.115"
+            "version": "==1.9.118"
         },
         "botocore": {
             "hashes": [
-                "sha256:7c8ec120bc5bcc4076aebd7dac3a679777ff3a3ce3263c64d7342ea7982b578c",
-                "sha256:f4607f8800f87fd8eacd450699666f92d7fbc48fbb757903ad56825ce08e072a"
+                "sha256:6f89ccad473451959337d52b3d6b98c6ba5da1059fb61156b427ddcea704e8b7",
+                "sha256:8364e8956e0b6e7394eda1fbfc321db02dfd6c84f878dff717b918dd0cf7a73e"
             ],
-            "version": "==1.12.115"
+            "version": "==1.12.118"
         },
         "certifi": {
             "hashes": [
@@ -395,11 +395,11 @@
         },
         "plotly": {
             "hashes": [
-                "sha256:0d85289494a6da90b16a5c4be87a38b58491a823a19d40b7e5ab28f68d71f860",
-                "sha256:a891661fdc343819abcbd1660ba67d5a8741616274569c34d2e36c003ba1b9f6"
+                "sha256:3688585fbde025ebbc820c9c5bc9eaf8cc64f47f3071f62c686bc470bf8db7b9",
+                "sha256:ac353e6b01892b016f77edb599f03198b9e1401dc07f2f66dddf940b18004dbd"
             ],
             "index": "pypi",
-            "version": "==3.7.0"
+            "version": "==3.7.1"
         },
         "prometheus-client": {
             "hashes": [
@@ -664,7 +664,7 @@
         },
         "black": {
             "git": "https://github.com/ambv/black",
-            "ref": "a2f6706a1ea026cbe0e7d83caffa6c13c463bfe1"
+            "ref": "0b7913f904a0be6c0e48df1c5a6de29e4ea38d81"
         },
         "bleach": {
             "hashes": [
@@ -1012,6 +1012,13 @@
             ],
             "version": "==0.3.4"
         },
+        "pbr": {
+            "hashes": [
+                "sha256:8257baf496c8522437e8a6cfe0f15e00aedc6c0e0e7c9d55eeeeab31e0853843",
+                "sha256:8c361cc353d988e4f5b998555c88098b9d5964c2e11acf7b0d21925a66bb5824"
+            ],
+            "version": "==5.1.3"
+        },
         "pexpect": {
             "hashes": [
                 "sha256:2a8e88259839571d1251d278476f3eec5db26deb73a70be5ed5dc5435e418aba",
@@ -1246,6 +1253,14 @@
             ],
             "index": "pypi",
             "version": "==1.8.5"
+        },
+        "sphinxcontrib-apidoc": {
+            "hashes": [
+                "sha256:6671a46b2c6c5b0dca3d8a147849d159065e50443df79614f921b42fbd15cb09",
+                "sha256:729bf592cf7b7dd57c4c05794f732dc026127275d785c2a5494521fdde773fb9"
+            ],
+            "index": "pypi",
+            "version": "==0.3.0"
         },
         "sphinxcontrib-websupport": {
             "hashes": [
