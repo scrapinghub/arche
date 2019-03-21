@@ -2,7 +2,7 @@
 
 ## Basic Usage
 
-* make sure required [environment variables](https://github.com/scrapinghub/arche/wiki/Quickstart#environment-variables) are set
+* make sure required [environment variables](#environment-variables) are set
 
 * create a schema with `arche.basic_json_schema(job_key)`
 

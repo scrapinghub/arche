@@ -125,4 +125,4 @@ class Result:
         from arche.report import Report
 
         Report.write_summary(self)
-        Report.write_result(self, short=short, keys_limit=keys_limit)
+        Report.write_rule_details(self, short=short, keys_limit=keys_limit)

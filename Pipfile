@@ -36,6 +36,7 @@ flake8-import-order = "*"
 black = {git = "https://github.com/ambv/black"}
 sphinx = "*"
 recommonmark = "*"
+sphinxcontrib-apidoc = "*"
 jupyter-console = "*"
 
 [requires]
