@@ -120,3 +120,8 @@ class Result:
                 if message.stats is not None
             ]
         )
+
+    def show(self, short: bool = False, keys_limit: int = 10):
+        from arche.report import Report
+
+        Report.write_result(self, short=short, keys_limit=keys_limit)

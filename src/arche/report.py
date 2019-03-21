@@ -25,7 +25,8 @@ class Report:
     def write_rule_name(self, rule_name):
         print(f"\n{rule_name}:")
 
-    def write(self, text):
+    @classmethod
+    def write(cls, text):
         print(text)
 
     def write_summary(self):
@@ -50,20 +51,22 @@ class Report:
         for result in self.results.values():
             self.write_result(result)
 
-    def write_result(self, result: Result, short: bool = False, keys_limit: int = 10):
+    @classmethod
+    def write_result(cls, result: Result, short: bool = False, keys_limit: int = 10):
         if result.detailed_messages_count:
-            self.write(
+            cls.write(
                 f"\nRULE: {result.name}\n({result.detailed_messages_count} message(s))\n"
             )
         for rule_msgs in result.messages.values():
             for rule_msg in rule_msgs:
                 if rule_msg.errors:
-                    self.write_detailed_errors(rule_msg.errors, short, keys_limit)
+                    cls.write_detailed_errors(rule_msg.errors, short, keys_limit)
                 elif rule_msg.detailed:
-                    self.write(rule_msg.detailed)
-                self.plot(rule_msg.stats)
+                    cls.write(rule_msg.detailed)
+                cls.plot(rule_msg.stats)
 
-    def plot(self, stats):
+    @staticmethod
+    def plot(stats):
         if stats is not None:
             stats.iplot(
                 kind="barh",
@@ -72,7 +75,8 @@ class Report:
                 layout=dict(yaxis=dict(automargin=True, side="right")),
             )
 
-    def write_detailed_errors(self, errors: dict, short: bool, keys_limit: int):
+    @classmethod
+    def write_detailed_errors(cls, errors: dict, short: bool, keys_limit: int):
         if short:
             keys_limit = 5
             error_messages = list(errors.items())[:5]
@@ -84,13 +88,14 @@ class Report:
             if isinstance(keys, set):
                 keys = pd.Series(list(keys))
 
-            sample = self.sample_keys(keys, keys_limit)
+            sample = cls.sample_keys(keys, keys_limit)
             msg = f"{len(keys)} items affected - {attribute}: {sample}"
             display(HTML(msg))
 
         display(HTML(f"<br>"))
 
-    def sample_keys(self, keys: pd.Series, limit: int) -> str:
+    @classmethod
+    def sample_keys(cls, keys: pd.Series, limit: int) -> str:
         if len(keys) > limit:
             sample = keys.sample(limit)
         else:
