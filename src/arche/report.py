@@ -56,14 +56,14 @@ class Report:
 
     def write_details(self, short: bool = False, keys_limit: int = 10):
         for result in self.results.values():
-            self.write_result(result)
+            if result.detailed_messages_count:
+                self.write_rule_name(
+                    f"{result.name} ({result.detailed_messages_count} message(s))"
+                )
+                self.write_result(result, short, keys_limit)
 
     @classmethod
     def write_result(cls, result: Result, short: bool = False, keys_limit: int = 10):
-        if result.detailed_messages_count:
-            cls.write(
-                f"\nRULE: {result.name}\n({result.detailed_messages_count} message(s))\n"
-            )
         for rule_msgs in result.messages.values():
             for rule_msg in rule_msgs:
                 if rule_msg.errors:
