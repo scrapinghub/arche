@@ -21,8 +21,8 @@ import pytest
                 ),
             ],
             (
-                "\nRULE: rule name here\n(1 message(s))\n\nvery detailed message\n"
-                "\nRULE: other result there\n(1 message(s))\n\nother detailed message\n"
+                "\nrule name here (1 message(s)):\nvery detailed message\n"
+                "\nother result there (1 message(s)):\nother detailed message\n"
             ),
         ),
         ([("everything fine", {Level.INFO: [("summary",)]})], ""),
@@ -41,14 +41,14 @@ def test_write_details(capsys, messages, expected_details):
     [
         (
             {Level.INFO: [("summary", "very detailed message")]},
-            "\nRULE: rule name here\n(1 message(s))\n\nvery detailed message\n",
+            "very detailed message\n",
         ),
         ({Level.INFO: [("summary",)]}, ""),
     ],
 )
-def test_write_result(capsys, message, expected_details):
+def test_write_rule_details(capsys, message, expected_details):
     outcome = create_result("rule name here", message)
-    Report.write_result(outcome)
+    Report.write_rule_details(outcome)
     assert capsys.readouterr().out == expected_details
 
 

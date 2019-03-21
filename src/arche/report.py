@@ -60,10 +60,12 @@ class Report:
                 self.write_rule_name(
                     f"{result.name} ({result.detailed_messages_count} message(s))"
                 )
-                self.write_result(result, short, keys_limit)
+                self.write_rule_details(result, short, keys_limit)
 
     @classmethod
-    def write_result(cls, result: Result, short: bool = False, keys_limit: int = 10):
+    def write_rule_details(
+        cls, result: Result, short: bool = False, keys_limit: int = 10
+    ):
         for rule_msgs in result.messages.values():
             for rule_msg in rule_msgs:
                 if rule_msg.errors:
