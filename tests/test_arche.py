@@ -104,7 +104,7 @@ def test_get_items_from_bad_source():
 def test_report_all(mocker):
     mocked_run_all = mocker.patch("arche.Arche.run_all_rules", autospec=True)
     mocked_write_summary = mocker.patch(
-        "arche.report.Report.write_summary", autospec=True
+        "arche.report.Report.write_summaries", autospec=True
     )
     # autospec and classmethod bug https://github.com/python/cpython/pull/11613
     mocked_write = mocker.patch("arche.report.Report.write", autospec=False)

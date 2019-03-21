@@ -124,4 +124,5 @@ class Result:
     def show(self, short: bool = False, keys_limit: int = 10):
         from arche.report import Report
 
+        Report.write_summary(self)
         Report.write_result(self, short=short, keys_limit=keys_limit)

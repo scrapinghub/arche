@@ -120,7 +120,7 @@ class Arche:
 
     def report_all(self):
         self.run_all_rules()
-        self.report.write_summary()
+        self.report.write_summaries()
         self.report.write("\n" * 2)
         self.report.write_details(short=True)
 

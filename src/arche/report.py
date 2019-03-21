@@ -19,33 +19,40 @@ class Report:
     def save(self, result):
         self.results[result.name] = result
 
-    def write_color_text(self, text, color=Fore.RED, style=""):
+    @staticmethod
+    def write_color_text(text, color=Fore.RED, style=""):
         print(color + style + text + Style.RESET_ALL)
 
-    def write_rule_name(self, rule_name):
+    @staticmethod
+    def write_rule_name(rule_name):
         print(f"\n{rule_name}:")
 
     @classmethod
     def write(cls, text):
         print(text)
 
-    def write_summary(self):
+    def write_summaries(self):
         for result in self.results.values():
-            if not result.messages:
-                continue
-            self.write_rule_name(result.name)
-            for level, rule_msgs in result.messages.items():
-                for rule_msg in rule_msgs:
-                    self.write_rule_outcome(rule_msg.summary, level)
+            self.write_summary(result)
 
-    def write_rule_outcome(self, result, level=Level.INFO):
+    @classmethod
+    def write_summary(cls, result: Result):
+        if not result.messages:
+            return
+        cls.write_rule_name(result.name)
+        for level, rule_msgs in result.messages.items():
+            for rule_msg in rule_msgs:
+                cls.write_rule_outcome(rule_msg.summary, level)
+
+    @classmethod
+    def write_rule_outcome(cls, result, level=Level.INFO):
         msg = f"\t{result}"
         if level == Level.ERROR:
-            self.write_color_text(msg)
+            cls.write_color_text(msg)
         elif level == Level.WARNING:
-            self.write_color_text(msg, color=Fore.YELLOW)
+            cls.write_color_text(msg, color=Fore.YELLOW)
         else:
-            self.write(msg)
+            cls.write(msg)
 
     def write_details(self, short: bool = False, keys_limit: int = 10):
         for result in self.results.values():
