@@ -1,0 +1,23 @@
+arche.rules package
+===================
+
+.. automodule:: arche.rules
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+Submodules
+----------
+
+.. toctree::
+
+   arche.rules.category_coverage
+   arche.rules.coverage
+   arche.rules.duplicates
+   arche.rules.garbage_symbols
+   arche.rules.json_schema
+   arche.rules.metadata
+   arche.rules.other_rules
+   arche.rules.price
+   arche.rules.result
+

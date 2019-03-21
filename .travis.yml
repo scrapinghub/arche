@@ -1,0 +1,23 @@
+sudo: false
+language: python
+git:
+  depth: false
+  quiet: true
+dist: xenial
+python:
+  - 3.7
+
+install:
+  - pip install tox-travis pip -U --no-cache-dir
+script:
+  - tox
+after_success:
+  - tox -e pep8
+  - tox -e codecov
+deploy:
+  provider: pypi
+  on:
+    tags: true
+  user: scrapinghub
+  password:
+    secure: HO3/ee/BcWo9jp3FcXLPcXdeSwFA5gPwmT7lj8WBq/hlqUvaCeX8Au/SXryEmKHJg4KcUUwAZ159qc3z1M7lSL/0pcqFvLR3yiEA97tAXgx6xD7yhRRe78eKCbKGwrllBRFILEZCGIIvKTPzhANcM2MEa5vPTpBmvDiJ0P8wq5u3ulLMquhVtQMgSAjw74c28JCZK1VGGAEmqwMeG1ndVIq7FqdYFoAkmaDe3gLX0w2OrXbtH8BuTvZcG/GH898N3lm6DUOEF5P53LtVGZ5YD7B4lEw9XfyqCj25f0lGOQBDv2pmMLA/qpEHVXDNOMuKnKtV0a63otrkrp3nDuTQJ8f+NrSdpny+nf3XQ7vfMnNt3z73pvgbc3wtSd0gSpl+I8Lt44JsVQIBVWxNBRabPnq8SmbDM0JAslj2sUZjF1ukOBiaOO+DvNvCoSaLvEw4Opjcv5K6k6B7PRXvHSpoYltfLV2+BhiuKEVPUYOr/U6Dp9WMDEoId/TWBp/Sgno93pmiYuR9zKwIgogAN6kAktVNsaKm2MY5A+F/Fu0f2a//P+SJqywx4pYrqB3cXswD4ra5TXlW9Wi0K+MazM3c3V9kn38WiSSN8mI4lip5b4SeL/goTAd4hehVWlJMpk6V17J6lFjUNX2hpqSgMA0+lipMvLwk2/jWwQBBhgrulEs=
