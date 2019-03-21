@@ -70,7 +70,7 @@ def check_uniqueness(df: pd.DataFrame, tagged_fields: TaggedFields) -> Result:
     return result
 
 
-def check_uniqueness_by(df: pd.DataFrame, columns: List[str]) -> Result:
+def find_by(df: pd.DataFrame, columns: List[str]) -> Result:
     """Compare items rows in `df` by `columns`
 
     Returns:

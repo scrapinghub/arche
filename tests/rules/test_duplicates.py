@@ -1,6 +1,7 @@
-from arche.rules.duplicates import check_items, check_uniqueness
+import arche.rules.duplicates as duplicates
 from arche.rules.result import Level
 from conftest import create_result
+import numpy as np
 import pandas as pd
 import pytest
 
@@ -49,7 +50,7 @@ check_items_inputs = [
 )
 def test_check_items(data, tagged_fields, expected_messages, expected_err_items_count):
     df = pd.DataFrame(data)
-    result = check_items(df, tagged_fields)
+    result = duplicates.check_items(df, tagged_fields)
     assert result == create_result(
         "Duplicated Items",
         expected_messages,
@@ -112,8 +113,54 @@ def test_check_uniqueness(
     data, tagged_fields, expected_messages, expected_err_items_count
 ):
     df = pd.DataFrame(data)
-    assert check_uniqueness(df, tagged_fields) == create_result(
+    assert duplicates.check_uniqueness(df, tagged_fields) == create_result(
         "Uniqueness",
+        expected_messages,
+        items_count=len(df),
+        err_items_count=expected_err_items_count,
+    )
+
+
+find_by_inputs = [
+    (
+        {"_key": ["0", "1", "2"], "id": ["0", "0", "1"]},
+        ["id"],
+        {
+            Level.ERROR: [
+                ("2 duplicate(s) with same id", None, {"same '0' id": ["0", "1"]})
+            ]
+        },
+        2,
+    ),
+    ({"_key": ["0", "1", "2"], "id": ["0", "1", "2"]}, ["id"], {}, 0),
+    (
+        {
+            "_key": ["0", "1", "2"],
+            "id": [np.nan, "9", "9"],
+            "city": [np.nan, "Talca", "Talca"],
+        },
+        ["id", "city"],
+        {
+            Level.ERROR: [
+                (
+                    "2 duplicate(s) with same id, city",
+                    None,
+                    {"same '9' id 'Talca' city": ["1", "2"]},
+                )
+            ]
+        },
+        2,
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    "data, columns, expected_messages, expected_err_items_count", find_by_inputs
+)
+def test_find_by(data, columns, expected_messages, expected_err_items_count):
+    df = pd.DataFrame(data)
+    assert duplicates.find_by(df, columns) == create_result(
+        "Items Uniqueness By Columns",
         expected_messages,
         items_count=len(df),
         err_items_count=expected_err_items_count,
