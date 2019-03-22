@@ -19,9 +19,10 @@ Keep a Changelog](https://keepachangelog.com/en/1.0.0/), [Semantic Versioning](h
 - Tags rule returns unused tags, #2 
 
 ### Deprecated
+- `Arche().basic_json_schema()` deprecated in favor of `arche.basic_json_schema()`
 ### Removed
 ### Fixed
-
+- `Arche().basic_json_schema()` not using `items_numbers` argument
 
 
 ## 2019.03.18

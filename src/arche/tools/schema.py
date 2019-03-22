@@ -1,3 +1,4 @@
+import json
 import logging
 import random
 from typing import List
@@ -62,3 +63,14 @@ def set_item_no(items_count):
     if items_count <= 4:
         return [i for i in range(items_count)]
     return random.sample(range(0, items_count), 4)
+
+
+def basic_json_schema(data_source: str, items_numbers: List[int] = None):
+    """Prints a json schema based on the provided job_key and item numbers
+
+    Args:
+        data_source: a collection or job key
+        items_numbers: array of item numbers to create schema from
+    """
+    schema = create_json_schema(data_source, items_numbers)
+    print(json.dumps(schema, indent=4))
