@@ -3,7 +3,7 @@ from functools import partial
 import math
 from multiprocessing import Pool
 import time
-from typing import Any, Dict, List, Tuple, Optional
+from typing import Any, Dict, List, Tuple, Optional, Union
 
 from arche import SH_URL
 from arche.tools import helpers
@@ -189,7 +189,7 @@ def get_items_with_pool(
     items = []
     with Pool(processes_count) as p:
         results = p.starmap(
-            partial(get_items, source_key, batch_size, child=True),
+            partial(get_items, source_key, batch_size, p_bar=tqdm),
             zip([i for i in range(start_index, start_index + count, batch_size)]),
         )
         for items_batch in results:
@@ -202,20 +202,21 @@ def get_items(
     count: int,
     start_index: int,
     filters: Optional[Filters] = None,
-    child: bool = False,
+    p_bar: Union[tqdm, tqdm_notebook] = tqdm_notebook,
 ) -> Items:
     items = []
     source = get_source(key)
     items_iter = source.iter(
         start=f"{key}/{start_index}", count=count, filter=filters, meta="_key"
     )
-    p_bar = tqdm if child else tqdm_notebook
-    for item in p_bar(
-        items_iter,
-        desc=f"Downloading {start_index}:{start_index+count} from {key}",
-        total=count,
-        unit_scale=1,
-    ):
+    if p_bar:
+        items_iter = p_bar(
+            items_iter,
+            desc=f"Fetching {start_index}:{start_index+count} from {key}",
+            total=count,
+            unit_scale=1,
+        )
+    for item in items_iter:
         item.update({"_key": key_to_url(item["_key"], key)})
         items.append(item)
     return items

@@ -39,7 +39,7 @@ def create_json_schema(source_key: str, item_numbers: List[int] = None) -> dict:
 
     samples = []
     for n in item_numbers:
-        items = api.get_items(source_key, start_index=n, count=1)
+        items = api.get_items(source_key, start_index=n, count=1, p_bar=None)
         samples.append(items[0])
 
     return infer_schema(samples)
