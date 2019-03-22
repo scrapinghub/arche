@@ -37,5 +37,5 @@ def test_basic_json_schema(mocker):
     mocked_create_js = mocker.patch(
         "arche.tools.schema.create_json_schema", return_value=schema, autospec=True
     )
-    schema_tools.basic_json_schema("235801/1/15", [0, 5])
+    assert schema_tools.basic_json_schema("235801/1/15", [0, 5]).schema == schema
     mocked_create_js.assert_called_once_with("235801/1/15", [0, 5])

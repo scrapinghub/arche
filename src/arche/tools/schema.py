@@ -1,8 +1,11 @@
+from dataclasses import dataclass
 import json
 import logging
+import pprint
 import random
 from typing import List
 
+from arche.readers.schema import Schema
 from arche.schema_definitions import extension
 from arche.tools import api, helpers
 from genson import SchemaBuilder
@@ -73,4 +76,15 @@ def basic_json_schema(data_source: str, items_numbers: List[int] = None):
         items_numbers: array of item numbers to create schema from
     """
     schema = create_json_schema(data_source, items_numbers)
-    print(json.dumps(schema, indent=4))
+    return BasicSchema(schema)
+
+
+@dataclass
+class BasicSchema:
+    schema: Schema
+
+    def json(self):
+        print(json.dumps(self.schema, indent=4))
+
+    def __repr__(self):
+        return pprint.pformat(self.schema)
