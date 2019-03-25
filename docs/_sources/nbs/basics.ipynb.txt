@@ -1,9 +1,21 @@
 {
  "cells": [
   {
-   "cell_type": "code",
-   "execution_count": 25,
+   "cell_type": "markdown",
    "metadata": {},
+   "source": [
+    "# Basics"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "metadata": {
+    "ExecuteTime": {
+     "end_time": "2019-03-22T21:01:59.316035Z",
+     "start_time": "2019-03-22T21:01:45.087Z"
+    }
+   },
    "outputs": [],
    "source": [
     "from arche import *"
@@ -18,8 +30,13 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 19,
-   "metadata": {},
+   "execution_count": 5,
+   "metadata": {
+    "ExecuteTime": {
+     "end_time": "2019-03-22T21:01:39.943889Z",
+     "start_time": "2019-03-22T21:01:39.940823Z"
+    }
+   },
    "outputs": [],
    "source": [
     "a = Arche(\"235801/1/15\")"
@@ -27,13 +44,18 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 20,
-   "metadata": {},
+   "execution_count": 6,
+   "metadata": {
+    "ExecuteTime": {
+     "end_time": "2019-03-22T21:01:50.955877Z",
+     "start_time": "2019-03-22T21:01:39.951101Z"
+    }
+   },
    "outputs": [
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "0038af8376814ce197b62ede0b70a2ce",
+       "model_id": "e25e963ad4a9431cbafe8d0d5d0984eb",
        "version_major": 2,
        "version_minor": 0
       },
@@ -54,7 +76,7 @@
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "33e0c690d2f24a49b2012c0d4461e523",
+       "model_id": "7e90b08f008c41dfb8c23e38a0c3a163",
        "version_major": 2,
        "version_minor": 0
       },
@@ -112,19 +134,31 @@
    ]
   },
   {
-   "cell_type": "code",
-   "execution_count": 21,
+   "cell_type": "markdown",
    "metadata": {},
+   "source": [
+    "## JSON schema"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "metadata": {
+    "ExecuteTime": {
+     "end_time": "2019-03-22T21:01:59.279211Z",
+     "start_time": "2019-03-22T21:01:50.965889Z"
+    }
+   },
    "outputs": [
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "b65f7b1f98a74fc0837a42ede51d0b12",
+       "model_id": "f8deafecac8a4b6b8eef19ceab8902e9",
        "version_major": 2,
        "version_minor": 0
       },
       "text/plain": [
-       "HBox(children=(IntProgress(value=0, description='Downloading 324:325', max=1, style=ProgressStyle(description_…"
+       "HBox(children=(IntProgress(value=0, description='Downloading 162:163', max=1, style=ProgressStyle(description_…"
       ]
      },
      "metadata": {},
@@ -140,12 +174,12 @@
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "4a8ec401ea98435c80ac05dc54bebee0",
+       "model_id": "c2a0851fcbed48eaa0944df1381091d3",
        "version_major": 2,
        "version_minor": 0
       },
       "text/plain": [
-       "HBox(children=(IntProgress(value=0, description='Downloading 29:30', max=1, style=ProgressStyle(description_wi…"
+       "HBox(children=(IntProgress(value=0, description='Downloading 194:195', max=1, style=ProgressStyle(description_…"
       ]
      },
      "metadata": {},
@@ -161,12 +195,12 @@
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "3cee5c97e81a414ca71e5676f7ad0002",
+       "model_id": "0aa5601e2ac14613bb59caaf8d7a1d8f",
        "version_major": 2,
        "version_minor": 0
       },
       "text/plain": [
-       "HBox(children=(IntProgress(value=0, description='Downloading 991:992', max=1, style=ProgressStyle(description_…"
+       "HBox(children=(IntProgress(value=0, description='Downloading 168:169', max=1, style=ProgressStyle(description_…"
       ]
      },
      "metadata": {},
@@ -182,12 +216,12 @@
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "f2d5c7ab3885441d801157286d61cfae",
+       "model_id": "1bff201a70a2431bbb72a2543c050047",
        "version_major": 2,
        "version_minor": 0
       },
       "text/plain": [
-       "HBox(children=(IntProgress(value=0, description='Downloading 547:548', max=1, style=ProgressStyle(description_…"
+       "HBox(children=(IntProgress(value=0, description='Downloading 228:229', max=1, style=ProgressStyle(description_…"
       ]
      },
      "metadata": {},
@@ -221,7 +255,10 @@
       "            \"type\": \"string\"\n",
       "        },\n",
       "        \"description\": {\n",
-      "            \"type\": \"string\"\n",
+      "            \"type\": [\n",
+      "                \"null\",\n",
+      "                \"string\"\n",
+      "            ]\n",
       "        },\n",
       "        \"title\": {\n",
       "            \"type\": \"string\"\n",
@@ -247,10 +284,13 @@
    ]
   },
   {
-   "cell_type": "code",
-   "execution_count": null,
-   "metadata": {},
-   "outputs": [],
+   "cell_type": "markdown",
+   "metadata": {
+    "ExecuteTime": {
+     "end_time": "2019-03-22T21:01:59.295022Z",
+     "start_time": "2019-03-22T21:01:59.285607Z"
+    }
+   },
    "source": [
     "By itself a basic schema is pretty useless, but you can update it."
    ]
@@ -258,7 +298,12 @@
   {
    "cell_type": "code",
    "execution_count": 8,
-   "metadata": {},
+   "metadata": {
+    "ExecuteTime": {
+     "end_time": "2019-03-22T21:02:14.500232Z",
+     "start_time": "2019-03-22T21:02:14.452833Z"
+    }
+   },
    "outputs": [
     {
      "data": {
@@ -375,13 +420,18 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "Looks like `price` can be checked with regex. Also there is `category` tag which helps to see the distribution in categoric data."
+    "Looks like `price` can be checked with regex. Let's also add `category` tag which helps to see the distribution in categoric data and `unique` tag to title to ensure there are no duplicates."
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 22,
-   "metadata": {},
+   "execution_count": 14,
+   "metadata": {
+    "ExecuteTime": {
+     "end_time": "2019-03-22T21:02:15.116277Z",
+     "start_time": "2019-03-22T21:02:15.097663Z"
+    }
+   },
    "outputs": [],
    "source": [
     "a.schema = {\n",
@@ -397,26 +447,12 @@
     "    \"additionalProperties\": False,\n",
     "    \"type\": \"object\",\n",
     "    \"properties\": {\n",
-    "        \"category\": {\n",
-    "            \"type\": \"string\",\n",
-    "            \"tag\": [\"category\"]\n",
-    "        },\n",
-    "        \"price\": {\n",
-    "            \"type\": \"string\",\n",
-    "            \"pattern\": \"^£\\d{2}.\\d{2}$\"\n",
-    "        },\n",
-    "        \"_type\": {\n",
-    "            \"type\": \"string\"\n",
-    "        },\n",
-    "        \"description\": {\n",
-    "            \"type\": \"string\"\n",
-    "        },\n",
-    "        \"title\": {\n",
-    "            \"type\": \"string\"\n",
-    "        },\n",
-    "        \"_key\": {\n",
-    "            \"type\": \"string\"\n",
-    "        }\n",
+    "        \"category\": {\"type\": \"string\", \"tag\": [\"category\"]},\n",
+    "        \"price\": {\"type\": \"string\", \"pattern\": \"^£\\d{2}.\\d{2}$\"},\n",
+    "        \"_type\": {\"type\": \"string\"},\n",
+    "        \"description\": {\"type\": \"string\"},\n",
+    "        \"title\": {\"type\": \"string\", \"tag\": [\"unique\"]},\n",
+    "        \"_key\": {\"type\": \"string\"}\n",
     "    },\n",
     "    \"required\": [\n",
     "        \"_key\",\n",
@@ -431,13 +467,18 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 23,
-   "metadata": {},
+   "execution_count": 10,
+   "metadata": {
+    "ExecuteTime": {
+     "end_time": "2019-03-22T21:02:15.808566Z",
+     "start_time": "2019-03-22T21:02:15.625333Z"
+    }
+   },
    "outputs": [
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "ff51b0f20acb4f8199ce4fd4a0463668",
+       "model_id": "d7e0e4b798eb48299f838e89b5038c99",
        "version_major": 2,
        "version_minor": 0
       },
@@ -492,25 +533,90 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "We already got something!"
+    "Or if your job is really big you can use almost 100x faster [backend](https://github.com/horejsek/python-fastjsonschema)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "edc1279a218c47c9903fcbeedb9ac528",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": [
+       "HBox(children=(IntProgress(value=0, description='JSON Schema Validation', max=1000, style=ProgressStyle(descri…"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "\n",
+      "\n",
+      "RULE: JSON Schema Validation\n",
+      "(1 message(s))\n",
+      "\n"
+     ]
+    },
+    {
+     "data": {
+      "text/html": [
+       "2 items affected - data.description must be string: <a href='https://app.scrapinghub.com/p/235801/1/15/item/980'>980</a> <a href='https://app.scrapinghub.com/p/235801/1/15/item/162'>162</a>"
+      ],
+      "text/plain": [
+       "<IPython.core.display.HTML object>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "data": {
+      "text/html": [
+       "<br>"
+      ],
+      "text/plain": [
+       "<IPython.core.display.HTML object>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "a.glance()"
    ]
   },
   {
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "Let's execute the whole thing again to see how `category` tag works."
+    "We already got something! Let's execute the whole thing again to see how `category` tag works."
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 24,
-   "metadata": {},
+   "execution_count": 15,
+   "metadata": {
+    "ExecuteTime": {
+     "end_time": "2019-03-22T21:02:20.766381Z",
+     "start_time": "2019-03-22T21:02:18.838290Z"
+    },
+    "scrolled": true
+   },
    "outputs": [
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "2579d180af9f4b8caeabfca762c00069",
+       "model_id": "926d1172179146bbb7970c2edc426e3c",
        "version_major": 2,
        "version_minor": 0
       },
@@ -543,13 +649,13 @@
       "\u001b[31m\t1000 items were checked, 1 error(s)\u001b[0m\n",
       "\n",
       "Tags:\n",
-      "\tcategory\n",
+      "\tcategory, unique\n",
       "\n",
       "Compare Price Was And Now:\n",
       "\tproduct_price_field or product_price_was_field tags were not found in schema\n",
       "\n",
       "Uniqueness:\n",
-      "\t'unique' tag was not found in schema\n",
+      "\u001b[31m\t'title' contains 1 duplicated value(s)\u001b[0m\n",
       "\n",
       "Duplicated Items:\n",
       "\t'name_field' and 'product_url_field' tags were not found in schema\n",
@@ -606,6 +712,40 @@
      "output_type": "stream",
      "text": [
       "\n",
+      "RULE: Uniqueness\n",
+      "(1 message(s))\n",
+      "\n"
+     ]
+    },
+    {
+     "data": {
+      "text/html": [
+       "2 items affected - same 'The Star-Touched Queen' title: <a href='https://app.scrapinghub.com/p/235801/1/15/item/220'>220</a> <a href='https://app.scrapinghub.com/p/235801/1/15/item/396'>396</a>"
+      ],
+      "text/plain": [
+       "<IPython.core.display.HTML object>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "data": {
+      "text/html": [
+       "<br>"
+      ],
+      "text/plain": [
+       "<IPython.core.display.HTML object>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "\n",
       "RULE: Coverage For Scraped Categories\n",
       "(1 message(s))\n",
       "\n"
@@ -632,7 +772,7 @@
          "orientation": "h",
          "text": "",
          "type": "bar",
-         "uid": "faad6559-cc3f-4347-9896-66bb73fd4538",
+         "uid": "a76b89c2-48de-4a0f-8341-bb8fc2685175",
          "x": [
           152,
           110,
@@ -707,35 +847,35 @@
           "Science",
           "Music",
           "Business",
+          "Thriller",
           "Travel",
           "Philosophy",
-          "Thriller",
           "Humor",
           "Autobiography",
           "Art",
           "Religion",
           "Psychology",
-          "Spirituality",
           "New Adult",
+          "Spirituality",
           "Christian Fiction",
-          "Biography",
           "Self Help",
+          "Biography",
           "Sports and Games",
           "Health",
           "Politics",
-          "Contemporary",
           "Christian",
+          "Contemporary",
           "Historical",
-          "Crime",
-          "Academic",
-          "Cultural",
-          "Short Stories",
-          "Suspense",
-          "Erotica",
           "Adult Fiction",
+          "Crime",
+          "Short Stories",
           "Novels",
           "Parenting",
-          "Paranormal"
+          "Paranormal",
+          "Suspense",
+          "Academic",
+          "Erotica",
+          "Cultural"
          ]
         }
        ],
@@ -747,18 +887,18 @@
        }
       },
       "text/html": [
-       "<div id=\"e985e0ac-cc7e-4e74-8f40-35011077abe5\" style=\"height: 525px; width: 100%;\" class=\"plotly-graph-div\"></div><script type=\"text/javascript\">require([\"plotly\"], function(Plotly) { window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL=\"https://plot.ly\";\n",
-       "if (document.getElementById(\"e985e0ac-cc7e-4e74-8f40-35011077abe5\")) {\n",
-       "    Plotly.newPlot(\"e985e0ac-cc7e-4e74-8f40-35011077abe5\", [{\"marker\": {\"color\": \"rgba(226, 74, 51, 0.6)\", \"line\": {\"color\": \"rgba(226, 74, 51, 1.0)\", \"width\": 1}}, \"name\": \"category\", \"orientation\": \"h\", \"text\": \"\", \"x\": [152, 110, 75, 67, 65, 54, 48, 35, 32, 30, 29, 26, 19, 19, 18, 17, 17, 16, 14, 13, 12, 11, 11, 11, 10, 9, 8, 7, 7, 6, 6, 6, 5, 5, 5, 4, 3, 3, 3, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], \"y\": [\"Default\", \"Nonfiction\", \"Sequential Art\", \"Add a comment\", \"Fiction\", \"Young Adult\", \"Fantasy\", \"Romance\", \"Mystery\", \"Food and Drink\", \"Childrens\", \"Historical Fiction\", \"Poetry\", \"Classics\", \"History\", \"Horror\", \"Womens Fiction\", \"Science Fiction\", \"Science\", \"Music\", \"Business\", \"Travel\", \"Philosophy\", \"Thriller\", \"Humor\", \"Autobiography\", \"Art\", \"Religion\", \"Psychology\", \"Spirituality\", \"New Adult\", \"Christian Fiction\", \"Biography\", \"Self Help\", \"Sports and Games\", \"Health\", \"Politics\", \"Contemporary\", \"Christian\", \"Historical\", \"Crime\", \"Academic\", \"Cultural\", \"Short Stories\", \"Suspense\", \"Erotica\", \"Adult Fiction\", \"Novels\", \"Parenting\", \"Paranormal\"], \"type\": \"bar\", \"uid\": \"d3d416dd-fe1c-41fb-bc66-f3541b9a915d\"}], {\"yaxis\": {\"automargin\": true, \"side\": \"right\"}}, {\"showLink\": true, \"linkText\": \"Export to plot.ly\", \"plotlyServerURL\": \"https://plot.ly\"}); \n",
+       "<div id=\"25cdd146-6803-46b9-aa23-210c93b5cf37\" style=\"height: 525px; width: 100%;\" class=\"plotly-graph-div\"></div><script type=\"text/javascript\">require([\"plotly\"], function(Plotly) { window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL=\"https://plot.ly\";\n",
+       "if (document.getElementById(\"25cdd146-6803-46b9-aa23-210c93b5cf37\")) {\n",
+       "    Plotly.newPlot(\"25cdd146-6803-46b9-aa23-210c93b5cf37\", [{\"marker\": {\"color\": \"rgba(226, 74, 51, 0.6)\", \"line\": {\"color\": \"rgba(226, 74, 51, 1.0)\", \"width\": 1}}, \"name\": \"category\", \"orientation\": \"h\", \"text\": \"\", \"x\": [152, 110, 75, 67, 65, 54, 48, 35, 32, 30, 29, 26, 19, 19, 18, 17, 17, 16, 14, 13, 12, 11, 11, 11, 10, 9, 8, 7, 7, 6, 6, 6, 5, 5, 5, 4, 3, 3, 3, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], \"y\": [\"Default\", \"Nonfiction\", \"Sequential Art\", \"Add a comment\", \"Fiction\", \"Young Adult\", \"Fantasy\", \"Romance\", \"Mystery\", \"Food and Drink\", \"Childrens\", \"Historical Fiction\", \"Poetry\", \"Classics\", \"History\", \"Horror\", \"Womens Fiction\", \"Science Fiction\", \"Science\", \"Music\", \"Business\", \"Thriller\", \"Travel\", \"Philosophy\", \"Humor\", \"Autobiography\", \"Art\", \"Religion\", \"Psychology\", \"New Adult\", \"Spirituality\", \"Christian Fiction\", \"Self Help\", \"Biography\", \"Sports and Games\", \"Health\", \"Politics\", \"Christian\", \"Contemporary\", \"Historical\", \"Adult Fiction\", \"Crime\", \"Short Stories\", \"Novels\", \"Parenting\", \"Paranormal\", \"Suspense\", \"Academic\", \"Erotica\", \"Cultural\"], \"type\": \"bar\", \"uid\": \"429254cb-bedf-4786-8cdc-34675e4f24b6\"}], {\"yaxis\": {\"automargin\": true, \"side\": \"right\"}}, {\"showLink\": true, \"linkText\": \"Export to plot.ly\", \"plotlyServerURL\": \"https://plot.ly\"}); \n",
        "}\n",
-       "});</script><script type=\"text/javascript\">window.addEventListener(\"resize\", function(){if (document.getElementById(\"e985e0ac-cc7e-4e74-8f40-35011077abe5\")) {window._Plotly.Plots.resize(document.getElementById(\"e985e0ac-cc7e-4e74-8f40-35011077abe5\"));};})</script>"
+       "});</script><script type=\"text/javascript\">window.addEventListener(\"resize\", function(){if (document.getElementById(\"25cdd146-6803-46b9-aa23-210c93b5cf37\")) {window._Plotly.Plots.resize(document.getElementById(\"25cdd146-6803-46b9-aa23-210c93b5cf37\"));};})</script>"
       ],
       "text/vnd.plotly.v1+html": [
-       "<div id=\"e985e0ac-cc7e-4e74-8f40-35011077abe5\" style=\"height: 525px; width: 100%;\" class=\"plotly-graph-div\"></div><script type=\"text/javascript\">require([\"plotly\"], function(Plotly) { window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL=\"https://plot.ly\";\n",
-       "if (document.getElementById(\"e985e0ac-cc7e-4e74-8f40-35011077abe5\")) {\n",
-       "    Plotly.newPlot(\"e985e0ac-cc7e-4e74-8f40-35011077abe5\", [{\"marker\": {\"color\": \"rgba(226, 74, 51, 0.6)\", \"line\": {\"color\": \"rgba(226, 74, 51, 1.0)\", \"width\": 1}}, \"name\": \"category\", \"orientation\": \"h\", \"text\": \"\", \"x\": [152, 110, 75, 67, 65, 54, 48, 35, 32, 30, 29, 26, 19, 19, 18, 17, 17, 16, 14, 13, 12, 11, 11, 11, 10, 9, 8, 7, 7, 6, 6, 6, 5, 5, 5, 4, 3, 3, 3, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], \"y\": [\"Default\", \"Nonfiction\", \"Sequential Art\", \"Add a comment\", \"Fiction\", \"Young Adult\", \"Fantasy\", \"Romance\", \"Mystery\", \"Food and Drink\", \"Childrens\", \"Historical Fiction\", \"Poetry\", \"Classics\", \"History\", \"Horror\", \"Womens Fiction\", \"Science Fiction\", \"Science\", \"Music\", \"Business\", \"Travel\", \"Philosophy\", \"Thriller\", \"Humor\", \"Autobiography\", \"Art\", \"Religion\", \"Psychology\", \"Spirituality\", \"New Adult\", \"Christian Fiction\", \"Biography\", \"Self Help\", \"Sports and Games\", \"Health\", \"Politics\", \"Contemporary\", \"Christian\", \"Historical\", \"Crime\", \"Academic\", \"Cultural\", \"Short Stories\", \"Suspense\", \"Erotica\", \"Adult Fiction\", \"Novels\", \"Parenting\", \"Paranormal\"], \"type\": \"bar\", \"uid\": \"d3d416dd-fe1c-41fb-bc66-f3541b9a915d\"}], {\"yaxis\": {\"automargin\": true, \"side\": \"right\"}}, {\"showLink\": true, \"linkText\": \"Export to plot.ly\", \"plotlyServerURL\": \"https://plot.ly\"}); \n",
+       "<div id=\"25cdd146-6803-46b9-aa23-210c93b5cf37\" style=\"height: 525px; width: 100%;\" class=\"plotly-graph-div\"></div><script type=\"text/javascript\">require([\"plotly\"], function(Plotly) { window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL=\"https://plot.ly\";\n",
+       "if (document.getElementById(\"25cdd146-6803-46b9-aa23-210c93b5cf37\")) {\n",
+       "    Plotly.newPlot(\"25cdd146-6803-46b9-aa23-210c93b5cf37\", [{\"marker\": {\"color\": \"rgba(226, 74, 51, 0.6)\", \"line\": {\"color\": \"rgba(226, 74, 51, 1.0)\", \"width\": 1}}, \"name\": \"category\", \"orientation\": \"h\", \"text\": \"\", \"x\": [152, 110, 75, 67, 65, 54, 48, 35, 32, 30, 29, 26, 19, 19, 18, 17, 17, 16, 14, 13, 12, 11, 11, 11, 10, 9, 8, 7, 7, 6, 6, 6, 5, 5, 5, 4, 3, 3, 3, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], \"y\": [\"Default\", \"Nonfiction\", \"Sequential Art\", \"Add a comment\", \"Fiction\", \"Young Adult\", \"Fantasy\", \"Romance\", \"Mystery\", \"Food and Drink\", \"Childrens\", \"Historical Fiction\", \"Poetry\", \"Classics\", \"History\", \"Horror\", \"Womens Fiction\", \"Science Fiction\", \"Science\", \"Music\", \"Business\", \"Thriller\", \"Travel\", \"Philosophy\", \"Humor\", \"Autobiography\", \"Art\", \"Religion\", \"Psychology\", \"New Adult\", \"Spirituality\", \"Christian Fiction\", \"Self Help\", \"Biography\", \"Sports and Games\", \"Health\", \"Politics\", \"Christian\", \"Contemporary\", \"Historical\", \"Adult Fiction\", \"Crime\", \"Short Stories\", \"Novels\", \"Parenting\", \"Paranormal\", \"Suspense\", \"Academic\", \"Erotica\", \"Cultural\"], \"type\": \"bar\", \"uid\": \"429254cb-bedf-4786-8cdc-34675e4f24b6\"}], {\"yaxis\": {\"automargin\": true, \"side\": \"right\"}}, {\"showLink\": true, \"linkText\": \"Export to plot.ly\", \"plotlyServerURL\": \"https://plot.ly\"}); \n",
        "}\n",
-       "});</script><script type=\"text/javascript\">window.addEventListener(\"resize\", function(){if (document.getElementById(\"e985e0ac-cc7e-4e74-8f40-35011077abe5\")) {window._Plotly.Plots.resize(document.getElementById(\"e985e0ac-cc7e-4e74-8f40-35011077abe5\"));};})</script>"
+       "});</script><script type=\"text/javascript\">window.addEventListener(\"resize\", function(){if (document.getElementById(\"25cdd146-6803-46b9-aa23-210c93b5cf37\")) {window._Plotly.Plots.resize(document.getElementById(\"25cdd146-6803-46b9-aa23-210c93b5cf37\"));};})</script>"
       ]
      },
      "metadata": {},
@@ -768,13 +908,6 @@
    "source": [
     "a.report_all()"
    ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": null,
-   "metadata": {},
-   "outputs": [],
-   "source": []
   }
  ],
  "metadata": {
