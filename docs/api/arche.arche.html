@@ -43,7 +43,16 @@
 <dl class="method">
 <dt id="arche.arche.Arche.basic_json_schema">
 <code class="descname">basic_json_schema</code><span class="sig-paren">(</span><em>items_numbers: List[int] = None</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.arche.Arche.basic_json_schema" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Prints a json schema based on data from <cite>self.source</cite></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>items_numbers</strong> – array of item numbers to create a schema from</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="arche.arche.Arche.check_metadata">
@@ -93,9 +102,9 @@ the first error per item. Usable for big jobs as it’s about 100x faster than
 <code class="descname">run_comparison_rules</code><a class="headerlink" href="#arche.arche.Arche.run_comparison_rules" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="method">
 <dt id="arche.arche.Arche.run_customized_rules">
-<code class="descname">run_customized_rules</code><a class="headerlink" href="#arche.arche.Arche.run_customized_rules" title="Permalink to this definition">¶</a></dt>
+<code class="descname">run_customized_rules</code><span class="sig-paren">(</span><em>items</em>, <em>tagged_fields</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.arche.Arche.run_customized_rules" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -137,24 +146,6 @@ there are no guarantees. Slower than <cite>check_with_json_schema()</cite></p>
 
 </dd></dl>
 
-<dl class="function">
-<dt id="arche.arche.basic_json_schema">
-<code class="descclassname">arche.arche.</code><code class="descname">basic_json_schema</code><span class="sig-paren">(</span><em>data_source: str</em>, <em>items_numbers: List[int] = None</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.arche.basic_json_schema" title="Permalink to this definition">¶</a></dt>
-<dd><p>Prints a json schema based on the provided job_key and item numbers</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>data_source</strong> – a collection or job key</li>
-<li><strong>items_numbers</strong> – array of item numbers to create schema from</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
 </div>
 
 
@@ -183,6 +174,8 @@ there are no guarantees. Slower than <cite>check_with_json_schema()</cite></p>
 <li class="toctree-l2 current"><a class="reference internal" href="arche.html">arche package</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../nbs/notebooks.html">Notebooks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../nbs/notebooks.html#indices-and-tables">Indices and tables</a></li>
 </ul>
 
 <div class="relations">

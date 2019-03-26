@@ -40,14 +40,14 @@
 <dt id="arche.report.Report">
 <em class="property">class </em><code class="descclassname">arche.report.</code><code class="descname">Report</code><a class="headerlink" href="#arche.report.Report" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
-<dl class="method">
+<dl class="staticmethod">
 <dt id="arche.report.Report.plot">
-<code class="descname">plot</code><span class="sig-paren">(</span><em>stats</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.report.Report.plot" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="descname">plot</code><span class="sig-paren">(</span><em>stats</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.report.Report.plot" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="classmethod">
 <dt id="arche.report.Report.sample_keys">
-<code class="descname">sample_keys</code><span class="sig-paren">(</span><em>keys: pandas.core.series.Series</em>, <em>limit: int</em><span class="sig-paren">)</span> &#x2192; str<a class="headerlink" href="#arche.report.Report.sample_keys" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="descname">sample_keys</code><span class="sig-paren">(</span><em>keys: pandas.core.series.Series</em>, <em>limit: int</em><span class="sig-paren">)</span> &#x2192; str<a class="headerlink" href="#arche.report.Report.sample_keys" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -60,19 +60,19 @@
 <code class="descname">wipe</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arche.report.Report.wipe" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="classmethod">
 <dt id="arche.report.Report.write">
-<code class="descname">write</code><span class="sig-paren">(</span><em>text</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.report.Report.write" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="descname">write</code><span class="sig-paren">(</span><em>text</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.report.Report.write" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="staticmethod">
 <dt id="arche.report.Report.write_color_text">
-<code class="descname">write_color_text</code><span class="sig-paren">(</span><em>text</em>, <em>color='\x1b[31m'</em>, <em>style=''</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.report.Report.write_color_text" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="descname">write_color_text</code><span class="sig-paren">(</span><em>text</em>, <em>color='\x1b[31m'</em>, <em>style=''</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.report.Report.write_color_text" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="classmethod">
 <dt id="arche.report.Report.write_detailed_errors">
-<code class="descname">write_detailed_errors</code><span class="sig-paren">(</span><em>errors: dict</em>, <em>short: bool</em>, <em>keys_limit: int</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.report.Report.write_detailed_errors" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="descname">write_detailed_errors</code><span class="sig-paren">(</span><em>errors: dict</em>, <em>short: bool</em>, <em>keys_limit: int</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.report.Report.write_detailed_errors" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -80,24 +80,29 @@
 <code class="descname">write_details</code><span class="sig-paren">(</span><em>short: bool = False</em>, <em>keys_limit: int = 10</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.report.Report.write_details" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
-<dt id="arche.report.Report.write_result">
-<code class="descname">write_result</code><span class="sig-paren">(</span><em>result: arche.rules.result.Result</em>, <em>short: bool = False</em>, <em>keys_limit: int = 10</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.report.Report.write_result" title="Permalink to this definition">¶</a></dt>
+<dl class="classmethod">
+<dt id="arche.report.Report.write_rule_details">
+<em class="property">classmethod </em><code class="descname">write_rule_details</code><span class="sig-paren">(</span><em>result: arche.rules.result.Result</em>, <em>short: bool = False</em>, <em>keys_limit: int = 10</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.report.Report.write_rule_details" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="staticmethod">
 <dt id="arche.report.Report.write_rule_name">
-<code class="descname">write_rule_name</code><span class="sig-paren">(</span><em>rule_name</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.report.Report.write_rule_name" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="descname">write_rule_name</code><span class="sig-paren">(</span><em>rule_name</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.report.Report.write_rule_name" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="classmethod">
 <dt id="arche.report.Report.write_rule_outcome">
-<code class="descname">write_rule_outcome</code><span class="sig-paren">(</span><em>result</em>, <em>level=&lt;Level.INFO: 0&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.report.Report.write_rule_outcome" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="descname">write_rule_outcome</code><span class="sig-paren">(</span><em>result</em>, <em>level=&lt;Level.INFO: 0&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.report.Report.write_rule_outcome" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
+<dt id="arche.report.Report.write_summaries">
+<code class="descname">write_summaries</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arche.report.Report.write_summaries" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
 <dt id="arche.report.Report.write_summary">
-<code class="descname">write_summary</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arche.report.Report.write_summary" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="descname">write_summary</code><span class="sig-paren">(</span><em>result: arche.rules.result.Result</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.report.Report.write_summary" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -130,6 +135,8 @@
 <li class="toctree-l2 current"><a class="reference internal" href="arche.html">arche package</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../nbs/notebooks.html">Notebooks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../nbs/notebooks.html#indices-and-tables">Indices and tables</a></li>
 </ul>
 
 <div class="relations">

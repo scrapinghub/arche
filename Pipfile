@@ -38,6 +38,7 @@ sphinx = "*"
 recommonmark = "*"
 sphinxcontrib-apidoc = "*"
 jupyter-console = "*"
+nbsphinx = "*"
 
 [requires]
 python_version = "3.7"

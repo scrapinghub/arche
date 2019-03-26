@@ -12,7 +12,7 @@ Welcome to Arche's documentation!
    Handling-items-of-different-types
    Strategy
    api/source
-
+   nbs/notebooks
 
 Indices and tables
 ==================
