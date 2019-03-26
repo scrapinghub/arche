@@ -104,9 +104,10 @@ def test_get_items_from_bad_source():
 def test_report_all(mocker):
     mocked_run_all = mocker.patch("arche.Arche.run_all_rules", autospec=True)
     mocked_write_summary = mocker.patch(
-        "arche.report.Report.write_summary", autospec=True
+        "arche.report.Report.write_summaries", autospec=True
     )
-    mocked_write = mocker.patch("arche.report.Report.write", autospec=True)
+    # autospec and classmethod bug https://github.com/python/cpython/pull/11613
+    mocked_write = mocker.patch("arche.report.Report.write", autospec=False)
     mocked_write_details = mocker.patch(
         "arche.report.Report.write_details", autospec=True
     )
@@ -116,7 +117,7 @@ def test_report_all(mocker):
 
     mocked_run_all.assert_called_once_with(arche)
     mocked_write_summary.assert_called_once_with(arche.report)
-    mocked_write.assert_called_once_with(arche.report, "\n" * 2)
+    mocked_write.assert_called_once_with("\n" * 2)
     mocked_write_details.assert_called_once_with(arche.report, short=True)
 
 
@@ -183,9 +184,7 @@ def test_validate_with_json_schema(mocker):
     mocked_validate = mocker.patch(
         "arche.rules.json_schema.validate", autospec=True, return_value=res
     )
-    mocked_write_result = mocker.patch(
-        "arche.report.Report.write_result", autospec=True
-    )
+    mocked_show = mocker.patch("arche.rules.result.Result.show", autospec=True)
 
     arche = Arche(
         "source", schema={"$schema": "http://json-schema.org/draft-07/schema"}
@@ -197,7 +196,7 @@ def test_validate_with_json_schema(mocker):
         arche.schema, arche.source_items.dicts, False
     )
     mocked_save_result.assert_called_once_with(arche, res)
-    mocked_write_result.assert_called_once_with(arche.report, res, short=False)
+    mocked_show.assert_called_once_with(res)
 
 
 @pytest.mark.parametrize(

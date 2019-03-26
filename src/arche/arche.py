@@ -129,7 +129,7 @@ class Arche:
 
     def report_all(self):
         self.run_all_rules()
-        self.report.write_summary()
+        self.report.write_summaries()
         self.report.write("\n" * 2)
         self.report.write_details(short=True)
 
@@ -169,7 +169,7 @@ class Arche:
             self.schema, items_dicts=self.source_items.dicts, fast=False
         )
         self.save_result(res)
-        self.report.write_result(res, short=False)
+        res.show()
 
     def glance(self):
         """Run JSON schema check and output results. In most cases it will stop after
@@ -180,7 +180,7 @@ class Arche:
             self.schema, items_dicts=self.source_items.dicts, fast=True
         )
         self.save_result(res)
-        self.report.write_result(res, short=False)
+        res.show()
 
     def run_schema_rules(self):
         if not self.schema:
