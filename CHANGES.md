@@ -15,6 +15,12 @@ Keep a Changelog](https://keepachangelog.com/en/1.0.0/), [Semantic Versioning](h
 ### Added
 - CHANGES.md
 - `basic_json_schema().json()` prints a schema in JSON format
+- `Result.show()` to print a rule result, e.g.
+
+    from arche.rules.garbage_symbols import garbage_symbols
+    from arche.readers.items import JobItems
+    items = JobItems(0, "235801/1/15")
+    garbage_symbols(items).show()
 
 ### Changed
 - Tags rule returns unused tags, #2
