@@ -1,5 +1,4 @@
 from functools import lru_cache
-import json
 import logging
 from typing import List, Optional, Union
 
@@ -15,8 +14,7 @@ import arche.rules.json_schema as schema_rules
 import arche.rules.metadata as metadata_rules
 from arche.rules.other_rules import compare_boolean_fields
 import arche.rules.price as price_rules
-from arche.tools import api, helpers
-import arche.tools.schema as schema_tools
+from arche.tools import api, helpers, maintenance, schema
 
 logger = logging.getLogger(__name__)
 
@@ -116,7 +114,18 @@ class Arche:
         self.report.save(rule_result)
 
     def basic_json_schema(self, items_numbers: List[int] = None):
-        basic_json_schema(self.source)
+        """Prints a json schema based on data from `self.source`
+
+        Args:
+            items_numbers: array of item numbers to create a schema from
+        """
+        maintenance.deprecate(
+            "'Arche.basic_json_schema()' was deprecated in 2019.03.25 and "
+            "will be removed in 2019.04.22.",
+            replacement="Use 'basic_json_schema()' instead",
+            gone_in="2019.04.22",
+        )
+        schema.basic_json_schema(self.source, items_numbers)
 
     def report_all(self):
         self.run_all_rules()
@@ -262,14 +271,3 @@ class Arche:
                 source_items.df, target_items.df, tagged_fields
             )
         )
-
-
-def basic_json_schema(data_source: str, items_numbers: List[int] = None):
-    """Prints a json schema based on the provided job_key and item numbers
-
-    Args:
-        data_source: a collection or job key
-        items_numbers: array of item numbers to create schema from
-    """
-    schema = schema_tools.create_json_schema(data_source, items_numbers)
-    print(json.dumps(schema, indent=4))
