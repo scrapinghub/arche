@@ -1,39 +1,36 @@
+from dataclasses import dataclass
 import json
-import logging
+import pprint
 import random
-from typing import List
+from typing import List, Optional
 
+from arche.readers.schema import Schema
 from arche.schema_definitions import extension
 from arche.tools import api, helpers
 from genson import SchemaBuilder
 from scrapinghub import ScrapinghubClient
 
-logger = logging.getLogger(__name__)
 
-
-def create_json_schema(source_key: str, item_numbers: List[int] = None) -> dict:
-    client = ScrapinghubClient()
+def create_json_schema(
+    source_key: str, item_numbers: Optional[List[int]] = None
+) -> dict:
     if helpers.is_collection_key(source_key):
         store = api.get_collection(source_key)
         items_count = store.count()
     elif helpers.is_job_key(source_key):
-        job = client.get_job(source_key)
+        job = ScrapinghubClient().get_job(source_key)
         items_count = api.get_items_count(job)
-        store = job.items
     else:
-        logger.error(f"{source_key} is not a job or collection key")
-        return
+        raise ValueError(f"'{source_key}' is not a valid job or collection key")
 
     if items_count == 0:
-        logger.error(f"{source_key} does not have any items")
-        return
+        raise ValueError(f"'{source_key}' does not have any items")
 
     item_n_err = "{} is a bad item number, choose numbers between 0 and {}"
     if item_numbers:
         item_numbers.sort()
         if item_numbers[-1] >= items_count or item_numbers[0] < 0:
-            logger.error(item_n_err.format(item_numbers[-1], items_count - 1))
-            return
+            raise ValueError(item_n_err.format(item_numbers[-1], items_count - 1))
     else:
         item_numbers = set_item_no(items_count)
 
@@ -73,4 +70,15 @@ def basic_json_schema(data_source: str, items_numbers: List[int] = None):
         items_numbers: array of item numbers to create schema from
     """
     schema = create_json_schema(data_source, items_numbers)
-    print(json.dumps(schema, indent=4))
+    return BasicSchema(schema)
+
+
+@dataclass
+class BasicSchema:
+    d: Schema
+
+    def json(self):
+        print(json.dumps(self.d, indent=4))
+
+    def __repr__(self):
+        return pprint.pformat(self.d)

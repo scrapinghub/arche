@@ -1,5 +1,6 @@
 import arche.tools.schema as schema_tools
 
+
 schema = {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "definitions": {
@@ -37,5 +38,38 @@ def test_basic_json_schema(mocker):
     mocked_create_js = mocker.patch(
         "arche.tools.schema.create_json_schema", return_value=schema, autospec=True
     )
-    schema_tools.basic_json_schema("235801/1/15", [0, 5])
+    assert schema_tools.basic_json_schema("235801/1/15", [0, 5]).d == schema
     mocked_create_js.assert_called_once_with("235801/1/15", [0, 5])
+
+
+def test_basic_schema_json(capsys):
+    bs = schema_tools.BasicSchema(
+        {
+            "definitions": {"float": {"pattern": r"^-?[0-9]+\.[0-9]{2}$"}},
+            "additionalProperties": False,
+        }
+    )
+    bs.json()
+    assert (
+        capsys.readouterr().out
+        == """{
+    "definitions": {
+        "float": {
+            "pattern": "^-?[0-9]+\\\\.[0-9]{2}$"
+        }
+    },
+    "additionalProperties": false
+}\n"""
+    )
+
+
+def test_basic_schema_repr():
+    assert schema_tools.BasicSchema(
+        {
+            "definitions": {"float": {"pattern": r"^-?[0-9]+\.[0-9]{2}$"}},
+            "additionalProperties": False,
+        }
+    ).__repr__() == (
+        "{'additionalProperties': False,\n "
+        "'definitions': {'float': {'pattern': '^-?[0-9]+\\\\.[0-9]{2}$'}}}"
+    )
