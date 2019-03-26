@@ -1,6 +1,6 @@
 import logging
 
-__version__ = "2019.03.18"
+__version__ = "2019.03.25"
 SH_URL = "https://app.scrapinghub.com/p"  # noqa
 
 from arche.arche import Arche
