@@ -49,7 +49,6 @@ class Items(ABC):
 
     @property
     def df(self):
-        # pandas dataframe cannot be checked on truth with `if df`
         if self._df is None:
             self._df = self.create_df_from_items()
         return self._df
