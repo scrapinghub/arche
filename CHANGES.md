@@ -29,6 +29,8 @@ Keep a Changelog](https://keepachangelog.com/en/1.0.0/), [Semantic Versioning](h
     items = JobItems(0, "235801/1/15")
     garbage_symbols(items).show()
 
+- notebooks to documentation
+
 ### Changed
 - Tags rule returns unused tags, #2
 - `basic_json_schema()` prints a schema as a python dict
