@@ -1,3 +1,5 @@
+from typing import List
+
 from arche.readers.schema import TaggedFields
 from arche.rules.result import Result
 import pandas as pd
@@ -65,4 +67,31 @@ def check_uniqueness(df: pd.DataFrame, tagged_fields: TaggedFields) -> Result:
             )
 
     result.err_items_count = len(err_keys)
+    return result
+
+
+def find_by(df: pd.DataFrame, columns: List[str]) -> Result:
+    """Compare items rows in `df` by `columns`
+
+    Returns:
+        Any duplicates
+    """
+    result = Result("Items Uniqueness By Columns")
+    result.items_count = len(df)
+    df = df.dropna(subset=columns, how="all")
+    duplicates = df[df[columns].duplicated(keep=False)][columns + ["_key"]]
+    if duplicates.empty:
+        return result
+
+    result.err_items_count = len(duplicates)
+    errors = {}
+    for _, d in duplicates.groupby(columns):
+        msg = "same"
+        for c in columns:
+            msg = f"{msg} '{d[c].iloc[0]}' {c}"
+        errors[msg] = list(d["_key"])
+
+    result.add_error(
+        f"{len(duplicates)} duplicate(s) with same {', '.join(columns)}", errors=errors
+    )
     return result

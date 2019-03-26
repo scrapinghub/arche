@@ -14,6 +14,13 @@ Keep a Changelog](https://keepachangelog.com/en/1.0.0/), [Semantic Versioning](h
 ## [2019.03.25]
 ### Added
 - CHANGES.md
+- new `arche.rules.duplicates.find_by()` to find duplicates by chosen columns
+
+    import arche
+    from arche.readers.items import JobItems
+    df = JobItems(0, "235801/1/15").df
+    arche.rules.duplicates.find_by(df, ["title", "category"]).show()
+
 - `basic_json_schema().json()` prints a schema in JSON format
 - `Result.show()` to print a rule result, e.g.
 
