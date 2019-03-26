@@ -1,6 +1,6 @@
 from collections import OrderedDict
-from typing import Dict, List
 
+from arche.readers.schema import TaggedFields
 from arche.rules.result import Result
 from arche.tools.helpers import ratio_diff
 import pandas as pd
@@ -102,7 +102,7 @@ def compare_coverage_per_category(
     return result
 
 
-def get_coverage_per_category(df: pd.DataFrame, tagged_fields: Dict[str, List[str]]):
+def get_coverage_per_category(df: pd.DataFrame, tagged_fields: TaggedFields):
     result = Result("Coverage For Scraped Categories")
 
     category_fields = tagged_fields.get("category", [])

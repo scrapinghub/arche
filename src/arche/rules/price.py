@@ -1,11 +1,10 @@
-from typing import Dict, List
-
+from arche.readers.schema import TaggedFields
 from arche.rules.result import Result
 from arche.tools.helpers import is_number, ratio_diff
 import pandas as pd
 
 
-def compare_was_now(df: pd.DataFrame, tagged_fields: Dict[str, List[str]]):
+def compare_was_now(df: pd.DataFrame, tagged_fields: TaggedFields):
     """Compare price_was and price_now tagged fields"""
 
     price_was_fields = tagged_fields.get("product_price_was_field")
@@ -71,9 +70,7 @@ def compare_was_now(df: pd.DataFrame, tagged_fields: Dict[str, List[str]]):
 
 
 def compare_prices_for_same_urls(
-    source_df: pd.DataFrame,
-    target_df: pd.DataFrame,
-    tagged_fields: Dict[str, List[str]],
+    source_df: pd.DataFrame, target_df: pd.DataFrame, tagged_fields: TaggedFields
 ):
     """For each pair of items that have the same `product_url_field` tagged field,
     compare `product_price_field` field
@@ -153,9 +150,7 @@ def compare_prices_for_same_urls(
 
 
 def compare_names_for_same_urls(
-    source_df: pd.DataFrame,
-    target_df: pd.DataFrame,
-    tagged_fields: Dict[str, List[str]],
+    source_df: pd.DataFrame, target_df: pd.DataFrame, tagged_fields: TaggedFields
 ):
     """For each pair of items that have the same `product_url_field` tagged field,
     compare `name_field` field"""
@@ -217,9 +212,7 @@ def compare_names_for_same_urls(
 
 
 def compare_prices_for_same_names(
-    source_df: pd.DataFrame,
-    target_df: pd.DataFrame,
-    tagged_fields: Dict[str, List[str]],
+    source_df: pd.DataFrame, target_df: pd.DataFrame, tagged_fields: TaggedFields
 ):
     result = Result("Compare Prices For Same Names")
     name_field = tagged_fields.get("name_field")

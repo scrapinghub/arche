@@ -7,14 +7,13 @@ from arche.figures import graphs
 from arche.figures import tables
 from arche.quality_estimation_algorithm import generate_quality_estimation
 from arche.readers.items import Items
-from arche.readers.schema import Schema
+from arche.readers.schema import Schema, Tags
 from arche.report import Report
 import arche.rules.duplicates as duplicate_rules
 from arche.rules.garbage_symbols import garbage_symbols
 import arche.rules.price as price_rules
 from arche.tools import api
 from arche.tools.s3 import upload_str_stream
-from arche.tools.schema import JsonFields
 import plotly
 
 
@@ -43,8 +42,7 @@ class DataQualityReport:
             )
 
     def create_figures(self, items, items_dicts):
-        jf = JsonFields(self.schema)
-        tagged_fields = jf.tagged
+        tagged_fields = Tags().get(self.schema)
         no_of_validated_items = len(items.df.index)
 
         dup_items_result = duplicate_rules.check_items(items.df, tagged_fields)

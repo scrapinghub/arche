@@ -90,3 +90,87 @@ def test_get_schema_from_url_fails(path, expected_message):
     with pytest.raises(ValueError) as excinfo:
         reader.get_schema_from_url(path)
     assert str(excinfo.value) == expected_message
+
+
+def test_tags():
+    jf = reader.Tags()
+    assert not jf.tagged_fields
+    assert jf.values == {
+        "unique",
+        "category",
+        "category_field",
+        "name_field",
+        "product_url_field",
+        "product_price_field",
+        "product_price_was_field",
+    }
+
+
+def test_get_tags_fails():
+    with pytest.raises(ValueError) as excinfo:
+        reader.Tags().get({})
+    assert str(excinfo.value) == "The schema does not have 'properties'"
+
+
+@pytest.mark.parametrize(
+    "schema, expected_tags",
+    [
+        (
+            {"properties": {"id": {"tag": "unique"}, "url": {"tag": "unique"}}},
+            {"unique": ["id", "url"]},
+        ),
+        ({"properties": {"id": {"tag": "unique"}, "url": {}}}, {"unique": ["id"]}),
+    ],
+)
+def test_get_tags(schema, expected_tags):
+    assert reader.Tags().get(schema) == expected_tags
+
+
+@pytest.mark.parametrize(
+    "tags, exception",
+    [
+        (None, "'None' tag value is invalid, should be str or list[str]"),
+        (
+            ["name_field", "t"],
+            (
+                "{'t'} tag(s) are unsupported, valid tags are:\ncategory, category_field, "
+                "name_field, product_price_field, product_price_was_field, "
+                "product_url_field, unique"
+            ),
+        ),
+    ],
+)
+def test_get_field_tags_fails(tags, exception):
+    with pytest.raises(ValueError) as excinfo:
+        reader.Tags().get_field_tags(tags, None)
+    assert str(excinfo.value) == exception
+
+
+@pytest.mark.parametrize(
+    "tags, field, expected_tags",
+    [
+        ("name_field", "name", {"name_field": ["name"]}),
+        (
+            ["name_field", "unique"],
+            "name",
+            {"name_field": ["name"], "unique": ["name"]},
+        ),
+        ("category", "state", {"category": ["state"]}),
+    ],
+)
+def test_get_field_tags(tags, field, expected_tags):
+    t = reader.Tags()
+    t.get_field_tags(tags, field)
+    assert t.tagged_fields == expected_tags
+
+
+@pytest.mark.parametrize(
+    "value, expected",
+    [
+        ("name_field", {"name_field"}),
+        (["name_field", "unique"], {"name_field", "unique"}),
+        (3, None),
+    ],
+)
+def test_parse_tag(value, expected):
+    assert reader.Tags.parse_tag(value) == expected

@@ -1,10 +1,11 @@
-from typing import Dict, List
+from typing import List
 
+from arche.readers.schema import TaggedFields
 from arche.rules.result import Result
 import pandas as pd
 
 
-def check_items(df: pd.DataFrame, tagged_fields: Dict[str, List[str]]) -> Result:
+def check_items(df: pd.DataFrame, tagged_fields: TaggedFields) -> Result:
     """Check for items with the same name and url"""
 
     name_fields = tagged_fields.get("name_field")
@@ -36,7 +37,7 @@ def check_items(df: pd.DataFrame, tagged_fields: Dict[str, List[str]]) -> Result
     return result
 
 
-def check_uniqueness(df: pd.DataFrame, tagged_fields: Dict[str, List[str]]) -> Result:
+def check_uniqueness(df: pd.DataFrame, tagged_fields: TaggedFields) -> Result:
     """Verify if each item field tagged with `unique` is unique.
 
     Returns:
@@ -66,4 +67,31 @@ def check_uniqueness(df: pd.DataFrame, tagged_fields: Dict[str, List[str]]) -> R
             )
 
     result.err_items_count = len(err_keys)
+    return result
+
+
+def find_by(df: pd.DataFrame, columns: List[str]) -> Result:
+    """Compare items rows in `df` by `columns`
+
+    Returns:
+        Any duplicates
+    """
+    result = Result("Items Uniqueness By Columns")
+    result.items_count = len(df)
+    df = df.dropna(subset=columns, how="all")
+    duplicates = df[df[columns].duplicated(keep=False)][columns + ["_key"]]
+    if duplicates.empty:
+        return result
+
+    result.err_items_count = len(duplicates)
+    errors = {}
+    for _, d in duplicates.groupby(columns):
+        msg = "same"
+        for c in columns:
+            msg = f"{msg} '{d[c].iloc[0]}' {c}"
+        errors[msg] = list(d["_key"])
+
+    result.add_error(
+        f"{len(duplicates)} duplicate(s) with same {', '.join(columns)}", errors=errors
+    )
     return result
