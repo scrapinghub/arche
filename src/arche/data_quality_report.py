@@ -10,7 +10,7 @@ from arche.readers.items import Items
 from arche.readers.schema import Schema, Tags
 from arche.report import Report
 import arche.rules.duplicates as duplicate_rules
-from arche.rules.garbage_symbols import garbage_symbols
+from arche.rules.others import garbage_symbols
 import arche.rules.price as price_rules
 from arche.tools import api
 from arche.tools.s3 import upload_str_stream

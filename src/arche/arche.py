@@ -9,10 +9,9 @@ from arche.report import Report
 import arche.rules.category_coverage as category_coverage
 import arche.rules.coverage as coverage_rules
 import arche.rules.duplicates as duplicate_rules
-from arche.rules.garbage_symbols import garbage_symbols
 import arche.rules.json_schema as schema_rules
 import arche.rules.metadata as metadata_rules
-from arche.rules.other_rules import compare_boolean_fields
+from arche.rules.others import compare_boolean_fields, garbage_symbols
 import arche.rules.price as price_rules
 from arche.tools import api, helpers, maintenance, schema
 
