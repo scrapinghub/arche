@@ -4,9 +4,17 @@ __version__ = "2019.03.25"
 SH_URL = "https://app.scrapinghub.com/p"  # noqa
 
 from arche.arche import Arche
+from arche.readers.items import CollectionItems, JobItems
+from arche.rules.duplicates import find_by as find_duplicates_by
 from arche.tools.schema import basic_json_schema
 
-__all__ = ["basic_json_schema", "Arche"]
+__all__ = [
+    "basic_json_schema",
+    "Arche",
+    "find_duplicates_by",
+    "CollectionItems",
+    "JobItems",
+]
 
 logging.getLogger("urllib3").setLevel(logging.CRITICAL)
 logging.getLogger("botocore").setLevel(logging.CRITICAL)
