@@ -14,13 +14,8 @@ fastjsonschema = "*"
 perfect-jsonschema = "*"
 colorama = "*"
 tqdm = "*"
-cufflinks = "*"
-# have to repeat here otherwise dev version will be overriden
-tornado = "==5.1.1"
 
 [dev-packages]
-# tornado 6 breaks jupyter https://github.com/jupyter/jupyter/issues/401
-tornado = "==5.1.1"
 jupyterlab = "*"
 jupyter-nbextensions-configurator = "*"
 bumpversion = "*"

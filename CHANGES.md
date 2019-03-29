@@ -13,6 +13,8 @@ Keep a Changelog](https://keepachangelog.com/en/1.0.0/), [Semantic Versioning](h
 ### Fixed
 - Big notebook size, replaced cufflinks with plotly, #39
 
+### Removed
+- `cufflinks` dependency
 
 
 ## [2019.03.25]

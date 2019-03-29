@@ -12,7 +12,6 @@ install_requires = (
     "perfect-jsonschema",
     "colorama",
     "tqdm",
-    "cufflinks",
 )
 dependency_links = ["https://github.com/ambv/black.git#egg=black"]
 
