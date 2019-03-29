@@ -2,11 +2,10 @@ from typing import Dict
 
 from arche.rules.result import Level, Result
 from colorama import Fore, Style
-import cufflinks as cf
 from IPython.display import display, HTML
 import pandas as pd
-
-cf.set_config_file(offline=True, theme="ggplot")
+import plotly.graph_objs as go
+from plotly.offline import iplot
 
 
 class Report:
@@ -77,12 +76,14 @@ class Report:
     @staticmethod
     def plot(stats):
         if stats is not None:
-            stats.iplot(
-                kind="barh",
-                bargap=0.1,
+            data = [go.Bar(x=stats.values, y=stats.index.values, orientation="h")]
+            layout = go.Layout(
                 title=stats.name,
-                layout=dict(yaxis=dict(automargin=True, side="right")),
+                bargap=0.1,
+                yaxis=go.layout.YAxis(automargin=True, side="right"),
+                template="ggplot2",
             )
+            iplot(go.Figure(data=data, layout=layout))
 
     @classmethod
     def write_detailed_errors(cls, errors: dict, short: bool, keys_limit: int):

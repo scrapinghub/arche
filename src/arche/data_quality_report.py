@@ -102,7 +102,7 @@ class DataQualityReport:
 
     def plot_to_notebook(self):
         for fig in self.figures:
-            plotly.offline.iplot(fig, show_link=False)
+            plotly.offline.iplot(fig)
 
     def plot_html_to_stream(self):
         output = StringIO()

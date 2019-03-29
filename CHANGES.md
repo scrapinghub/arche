@@ -10,25 +10,31 @@ Note that the top-most release is changes in the unreleased master branch on Git
 Keep a Changelog](https://keepachangelog.com/en/1.0.0/), [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Fixed
+- Big notebook size, replaced cufflinks with plotly, #39
+
+### Removed
+- `cufflinks` dependency
+
 
 ## [2019.03.25]
 ### Added
 - CHANGES.md
 - new `arche.rules.duplicates.find_by()` to find duplicates by chosen columns
-
-    import arche
-    from arche.readers.items import JobItems
-    df = JobItems(0, "235801/1/15").df
-    arche.rules.duplicates.find_by(df, ["title", "category"]).show()
-
+```
+import arche
+from arche.readers.items import JobItems
+df = JobItems(0, "235801/1/15").df
+arche.rules.duplicates.find_by(df, ["title", "category"]).show()
+```
 - `basic_json_schema().json()` prints a schema in JSON format
 - `Result.show()` to print a rule result, e.g.
-
-    from arche.rules.garbage_symbols import garbage_symbols
-    from arche.readers.items import JobItems
-    items = JobItems(0, "235801/1/15")
-    garbage_symbols(items).show()
-
+```
+from arche.rules.garbage_symbols import garbage_symbols
+from arche.readers.items import JobItems
+items = JobItems(0, "235801/1/15")
+garbage_symbols(items).show()
+```
 - notebooks to documentation
 
 ### Changed
