@@ -20,3 +20,7 @@ logging.getLogger("urllib3").setLevel(logging.CRITICAL)
 logging.getLogger("botocore").setLevel(logging.CRITICAL)
 logging.getLogger("HubstorageClient").setLevel(logging.CRITICAL)
 logging.getLogger().setLevel(logging.DEBUG)
+
+from plotly.offline import init_notebook_mode
+
+init_notebook_mode(connected=True)
