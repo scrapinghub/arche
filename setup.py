@@ -12,12 +12,17 @@ install_requires = (
     "perfect-jsonschema",
     "colorama",
     "tqdm",
-    "ipython",
 )
 dependency_links = ["https://github.com/ambv/black.git#egg=black"]
 
 
-tests_require = ["pytest", "pytest-mock", "pytest-cov", "pytest-pythonpath"]
+tests_require = [
+    "pytest",
+    "pytest-mock",
+    "pytest-cov",
+    "pytest-pythonpath",
+    "ipywidgets",
+]
 
 
 setup(
