@@ -13,53 +13,39 @@ import pytest
             {
                 Level.INFO: [
                     (
-                        "0 totally empty field(s)",
-                        (
-                            pd.DataFrame(
-                                [(1, 100)],
-                                columns=["Values Count", "Percent"],
-                                index=["_key"],
-                            )
-                            .rename_axis("Field")
-                            .to_string()
-                        ),
+                        "PASSED",
+                        None,
+                        None,
+                        pd.Series([1], index=["_key"], name="Fields Coverage"),
                     )
                 ]
             },
         ),
         (
-            pd.DataFrame([(0, None)], columns=["_key", "Field"]),
+            pd.DataFrame([("Jordan", None)], columns=["Name", "Field"]),
             {
                 Level.ERROR: [
                     (
-                        "1 totally empty field(s)",
-                        (
-                            pd.DataFrame(
-                                [(0, 0), (1, 100)],
-                                columns=["Values Count", "Percent"],
-                                index=["Field", "_key"],
-                            )
-                            .rename_axis("Field")
-                            .to_string()
+                        "1 empty field(s)",
+                        None,
+                        None,
+                        pd.Series(
+                            [1, 0], index=["Name", "Field"], name="Fields Coverage"
                         ),
                     )
                 ]
             },
         ),
         (
-            pd.DataFrame([(0, "")], columns=["_key", "Field"]),
+            pd.DataFrame([(0, "")], columns=["Name", "Field"]),
             {
                 Level.INFO: [
                     (
-                        "0 totally empty field(s)",
-                        (
-                            pd.DataFrame(
-                                [(1, 100), (1, 100)],
-                                columns=["Values Count", "Percent"],
-                                index=["Field", "_key"],
-                            )
-                            .rename_axis("Field")
-                            .to_string()
+                        "PASSED",
+                        None,
+                        None,
+                        pd.Series(
+                            [1, 1], index=["Field", "Name"], name="Fields Coverage"
                         ),
                     )
                 ]

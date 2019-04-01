@@ -5,22 +5,16 @@ import pandas as pd
 
 
 def check_fields_coverage(df):
-    fields_coverage = pd.DataFrame(df.count(), columns=["Values Count"])
-    fields_coverage.index.name = "Field"
-    fields_coverage["Percent"] = fields_coverage.apply(
-        lambda row: int(row["Values Count"] / len(df) * 100), axis=1
-    )
+    fields_coverage = df.count().sort_values(ascending=False)
+    fields_coverage.name = "Fields Coverage"
 
-    detailed_msg = fields_coverage.sort_values(by=["Percent", "Field"]).to_string()
-
-    empty_fields = fields_coverage[fields_coverage["Values Count"] == 0]
-    result_msg = f"{len(empty_fields)} totally empty field(s)"
+    empty_fields = fields_coverage[fields_coverage == 0]
 
     result = Result("Fields Coverage")
     if empty_fields.empty:
-        result.add_info(result_msg, detailed_msg)
+        result.add_info(f"PASSED", stats=fields_coverage)
     else:
-        result.add_error(result_msg, detailed_msg)
+        result.add_error(f"{len(empty_fields)} empty field(s)", stats=fields_coverage)
     return result
 
 

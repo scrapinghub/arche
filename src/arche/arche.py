@@ -158,7 +158,11 @@ class Arche:
     @lru_cache(maxsize=32)
     def run_general_rules(self):
         self.save_result(garbage_symbols(self.source_items))
-        self.save_result(coverage_rules.check_fields_coverage(self.source_items.df))
+        self.save_result(
+            coverage_rules.check_fields_coverage(
+                self.source_items.df.drop(columns=["_type", "_key"])
+            )
+        )
 
     def validate_with_json_schema(self):
         """Run JSON schema check and output results. It will try to find all errors, but
