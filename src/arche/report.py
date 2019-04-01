@@ -87,7 +87,7 @@ class Report:
             height=max(min(len(stats) * 20, 900), 450),
             hovermode="y",
         )
-        iplot(go.Figure(data=data, layout=layout))
+        display(go.FigureWidget(data, layout))
 
     @classmethod
     def write_detailed_errors(cls, errors: dict, short: bool, keys_limit: int):

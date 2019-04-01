@@ -13,8 +13,12 @@ Keep a Changelog](https://keepachangelog.com/en/1.0.0/), [Semantic Versioning](h
 ### Fixed
 - Big notebook size, replaced cufflinks with plotly, #39
 
+### Changed
+- *Fields Coverage* now is printed as bar plot, #9
+
 ### Removed
 - `cufflinks` dependency
+
 
 
 ## [2019.03.25]
