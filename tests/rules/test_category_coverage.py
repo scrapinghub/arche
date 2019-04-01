@@ -17,7 +17,7 @@ import pytest
                         "2 categories in 'sex'",
                         None,
                         None,
-                        pd.Series({"male": 2, "female": 1}, name="sex"),
+                        pd.Series({"female": 1, "male": 2}, name="sex"),
                     ),
                     (
                         "1 categories in 'country'",

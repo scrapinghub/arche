@@ -107,6 +107,6 @@ def get_coverage_per_category(df: pd.DataFrame, tagged_fields: TaggedFields):
 
     category_fields = tagged_fields.get("category", [])
     for f in category_fields:
-        value_counts = df[f].value_counts()
+        value_counts = df[f].value_counts(ascending=True)
         result.add_info(f"{len(value_counts)} categories in '{f}'", stats=value_counts)
     return result
