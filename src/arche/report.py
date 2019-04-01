@@ -3,9 +3,9 @@ from typing import Dict
 from arche.rules.result import Level, Result
 from colorama import Fore, Style
 from IPython.display import display, HTML
+import ipywidgets
 import pandas as pd
 import plotly.graph_objs as go
-from plotly.offline import iplot
 
 
 class Report:
@@ -78,6 +78,21 @@ class Report:
         if stats is None:
             return
 
+        annotations = []
+        for value, group in stats.groupby(stats):
+            annotations.append(
+                dict(
+                    align="right",
+                    xref="x",
+                    xshift=-40,
+                    yref="y",
+                    x=0,
+                    y=group.index.values[-1],
+                    text=f"{value/max(stats.values) * 100:.2f}%",
+                    showarrow=False,
+                )
+            )
+
         data = [go.Bar(x=stats.values, y=stats.index.values, orientation="h")]
         layout = go.Layout(
             title=stats.name,
@@ -86,8 +101,20 @@ class Report:
             template="ggplot2",
             height=max(min(len(stats) * 20, 900), 450),
             hovermode="y",
+            margin=dict(t=35),
         )
-        display(go.FigureWidget(data, layout))
+        f = go.FigureWidget(data, layout)
+
+        ants_enabled = ipywidgets.Checkbox(description="%", value=False)
+
+        def response(change):
+            if ants_enabled.value:
+                f.layout.annotations = annotations
+            else:
+                f.layout.annotations = []
+
+        ants_enabled.observe(response, names="value")
+        display(ipywidgets.VBox([ants_enabled, f]))
 
     @classmethod
     def write_detailed_errors(cls, errors: dict, short: bool, keys_limit: int):
