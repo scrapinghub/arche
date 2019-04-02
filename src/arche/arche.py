@@ -213,7 +213,9 @@ class Arche:
         self.save_result(duplicate_rules.check_uniqueness(items.df, tagged_fields))
         self.save_result(duplicate_rules.check_items(items.df, tagged_fields))
         self.save_result(
-            category_rules.get_coverage_per_category(items.df, tagged_fields)
+            category_rules.get_coverage_per_category(
+                items.df, tagged_fields.get("category", [])
+            )
         )
 
     @lru_cache(maxsize=32)
@@ -256,7 +258,7 @@ class Arche:
                 target_items.key,
                 source_items.df,
                 target_items.df,
-                tagged_fields,
+                tagged_fields.get("category", []),
             )
         )
         self.save_result(
