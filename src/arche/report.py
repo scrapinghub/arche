@@ -97,11 +97,10 @@ class Report:
         layout = go.Layout(
             title=stats.name,
             bargap=0.1,
-            yaxis=go.layout.YAxis(automargin=True, side="right"),
             template="ggplot2",
             height=max(min(len(stats) * 20, 900), 450),
             hovermode="y",
-            margin=dict(t=35),
+            margin=dict(l=200, t=35),
         )
         f = go.FigureWidget(data, layout)
 
