@@ -18,6 +18,7 @@ Keep a Changelog](https://keepachangelog.com/en/1.0.0/), [Semantic Versioning](h
 
 ### Changed
 - *Fields Coverage* now is printed as a bar plot, #9
+- Bar plots xaxis changed from numeric to logarithmic
 
 ### Removed
 - `cufflinks` dependency

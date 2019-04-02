@@ -97,6 +97,7 @@ class Report:
         layout = go.Layout(
             title=stats.name,
             bargap=0.1,
+            xaxis=go.layout.XAxis(type="log"),
             template="ggplot2",
             height=max(min(len(stats) * 20, 900), 450),
             hovermode="y",
