@@ -18,6 +18,8 @@ Keep a Changelog](https://keepachangelog.com/en/1.0.0/), [Semantic Versioning](h
 
 ### Changed
 - *Fields Coverage* now is printed as a bar plot, #9
+- *Fields Counts* renamed to *Coverage Difference* and is printed as a bar plot, #9
+- *Coverage Difference* finds the absolute difference in coverage in percentage (was difference in ratio before)
 - Bar plots xaxis changed from numeric to logarithmic
 
 ### Removed

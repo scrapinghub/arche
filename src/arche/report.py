@@ -82,9 +82,7 @@ class Report:
         for value, group in stats.groupby(stats):
             annotations.append(
                 dict(
-                    align="right",
-                    xref="x",
-                    xshift=-40,
+                    xref="paper",
                     yref="y",
                     x=0,
                     y=group.index.values[-1],

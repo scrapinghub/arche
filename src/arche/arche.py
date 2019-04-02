@@ -229,7 +229,7 @@ class Arche:
         self.save_result(
             metadata_rules.compare_number_of_scraped_items(source_job, target_job)
         )
-        self.save_result(coverage_rules.compare_fields_counts(source_job, target_job))
+        self.save_result(coverage_rules.get_difference(source_job, target_job))
         self.save_result(metadata_rules.compare_response_ratio(source_job, target_job))
         self.save_result(metadata_rules.compare_runtime(source_job, target_job))
         self.save_result(metadata_rules.compare_finish_time(source_job, target_job))

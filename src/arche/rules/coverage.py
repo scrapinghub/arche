@@ -1,6 +1,5 @@
 from arche.rules.result import Result
 from arche.tools.api import get_items_count
-from arche.tools.helpers import ratio_diff
 import pandas as pd
 
 
@@ -18,53 +17,55 @@ def check_fields_coverage(df):
     return result
 
 
-def compare_fields_counts(source_job, target_job):
-    """Compare the relative difference between field counts to items count
+def get_difference(source_job, target_job):
+    """Get the percentage difference between job fields counts to items number ratio
 
     Args:
         source_job: a base job, the difference is calculated from it
         target_job: a job to compare
 
     Returns:
-        A Result instance
+        A Result instance with messages if any and stats with differences more than 0
     """
-    source_items_count = get_items_count(source_job)
-    target_items_count = get_items_count(target_job)
-    result = Result("Fields Counts")
+    result = Result("Coverage Difference")
 
-    source_fields = pd.DataFrame(
-        {"Count1": source_job.items.stats().get("counts", None)}
-    )
-    target_fields = pd.DataFrame(
-        {"Count2": target_job.items.stats().get("counts", None)}
-    )
-    fields = pd.concat([source_fields, target_fields], axis=1, sort=True).fillna(0)
-    fields["Difference, %"] = fields.apply(
-        lambda row: ratio_diff(
-            row["Count1"] / source_items_count, row["Count2"] / target_items_count
+    f_counts = pd.DataFrame(
+        {
+            "source": source_job.items.stats().get("counts", None),
+            "target": target_job.items.stats().get("counts", None),
+        }
+    ).fillna(0)
+
+    coverage_difs = (
+        (
+            (
+                f_counts["source"] / get_items_count(source_job)
+                - f_counts["target"] / get_items_count(target_job)
+            )
+            * 100
         )
-        * 100,
-        axis=1,
+        .abs()
+        .sort_values()
+        .round(decimals=2)
     )
-    fields["Difference, %"] = fields["Difference, %"].astype(int)
-    fields.sort_values(by=["Difference, %"], ascending=False)
+    coverage_difs = coverage_difs[coverage_difs > 0]
+    if coverage_difs.empty:
+        return result
 
-    err_diffs = fields[fields["Difference, %"] > 10]
-    if not err_diffs.empty:
-        result.add_error(
-            f"Coverage difference is greater than 10% for "
-            f"{len(err_diffs)} field(s)",
-            err_diffs.to_string(columns=["Difference, %"]),
+    coverage_difs.name = (
+        f"Coverage difference between {source_job.key} and {target_job.key}"
+    )
+
+    errs = coverage_difs[coverage_difs > 10]
+    if not errs.empty:
+        result.add_error(f"The difference is greater than 10% for {len(errs)} field(s)")
+    warns = coverage_difs[(coverage_difs > 5) & (coverage_difs <= 10)]
+    if not warns.empty:
+        result.add_warning(
+            f"The difference is between 5% and 10% for {len(warns)} field(s)"
         )
 
-    warn_diffs = fields[(fields["Difference, %"] > 5) & (fields["Difference, %"] <= 10)]
-    if not warn_diffs.empty:
-        outcome_msg = (
-            f"Coverage difference is between 5% and 10% for "
-            f"{len(warn_diffs)} field(s)"
-        )
-        result.add_warning(outcome_msg, warn_diffs.to_string(columns=["Difference, %"]))
-
+    result.add_info("", stats=coverage_difs)
     return result
 
 
