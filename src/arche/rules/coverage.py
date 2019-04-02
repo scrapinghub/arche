@@ -64,8 +64,10 @@ def get_difference(source_job, target_job):
         result.add_warning(
             f"The difference is between 5% and 10% for {len(warns)} field(s)"
         )
-
-    result.add_info("", stats=coverage_difs)
+    if errs.empty and warns.empty:
+        result.add_info("PASSED", stats=coverage_difs)
+    else:
+        result.add_info("", stats=coverage_difs)
     return result
 
 

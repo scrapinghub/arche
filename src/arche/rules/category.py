@@ -27,7 +27,7 @@ def get_difference(
         cat_difs = cat_difs[cat_difs > 0]
         if cat_difs.empty:
             continue
-        result.add_info("", stats=cat_difs)
+        result.add_info(f"'{c}' PASSED", stats=cat_difs)
         errs = cat_difs[cat_difs > 20]
         if not errs.empty:
             result.add_warning(

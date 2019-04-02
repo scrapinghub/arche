@@ -61,7 +61,7 @@ def test_get_coverage_per_category(data, cat_names, expected_messages):
                 ],
                 Level.INFO: [
                     (
-                        "",
+                        "'sex' PASSED",
                         None,
                         None,
                         pd.Series(
@@ -71,7 +71,7 @@ def test_get_coverage_per_category(data, cat_names, expected_messages):
                         ),
                     ),
                     (
-                        "",
+                        "'country' PASSED",
                         None,
                         None,
                         pd.Series(
@@ -81,13 +81,13 @@ def test_get_coverage_per_category(data, cat_names, expected_messages):
                         ),
                     ),
                     (
-                        "",
+                        "'race' PASSED",
                         None,
                         None,
                         pd.Series(
                             [8.33, 8.33, 16.67],
                             index=["black", "white", "indian"],
-                            name="Coverage difference between s's and t's country",
+                            name="Coverage difference between s's and t's race",
                         ),
                     ),
                 ],
