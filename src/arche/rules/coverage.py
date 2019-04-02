@@ -1,9 +1,11 @@
+from typing import List
+
 from arche.rules.result import Result
 from arche.tools.api import get_items_count
 import pandas as pd
 
 
-def check_fields_coverage(df):
+def check_fields_coverage(df: pd.DataFrame) -> Result:
     fields_coverage = df.count().sort_values(ascending=False)
     fields_coverage.name = "Fields Coverage"
 
@@ -17,7 +19,7 @@ def check_fields_coverage(df):
     return result
 
 
-def get_difference(source_job, target_job):
+def get_difference(source_job, target_job) -> Result:
     """Get the percentage difference between job fields counts to items number ratio
 
     Args:
@@ -69,35 +71,17 @@ def get_difference(source_job, target_job):
     return result
 
 
-def compare_scraped_fields(source_df, target_df):
-    source_field_coverage = dict(source_df.count().sort_values(ascending=False))
-    target_field_coverage = dict(target_df.count().sort_values(ascending=False))
-
+def compare_scraped_fields(
+    source_columns: List[str], target_columns: List[str]
+) -> Result:
+    """Find new or missing columns between source_df and target_df"""
     result = Result("Scraped Fields")
-    missing_fields = set(target_df.columns.values) - set(source_df.columns.values)
+    missing_fields = set(target_columns) - set(source_columns)
     if missing_fields:
-        detailed_messages = ["Missing Fields"]
-        for field in missing_fields:
-            target_coverage = target_field_coverage[field] / len(target_df) * 100
-            detailed_messages.append(
-                f"{field} - coverage - {int(target_coverage)}% - "
-                f"{target_field_coverage[field]} items"
-            )
-        result.add_error(
-            f"{len(missing_fields)} field(s) are missing", "\n".join(detailed_messages)
-        )
+        result.add_error(f"{len(missing_fields)} missing field(s)")
 
-    new_fields = set(source_df.columns.values) - set(target_df.columns.values)
+    new_fields = set(source_columns) - set(target_columns)
     if new_fields:
-        detailed_messages = ["New Fields"]
-        for field in new_fields:
-            source_coverage = source_field_coverage[field] / len(source_df) * 100
-            detailed_messages.append(
-                f"{field} - coverage - {int(source_coverage)}% - "
-                f"{source_field_coverage[field]} items"
-            )
-        result.add_info(
-            f"{len(new_fields)} field(s) are new", "\n".join(detailed_messages)
-        )
+        result.add_info(f"{len(new_fields)} new field(s)")
 
     return result

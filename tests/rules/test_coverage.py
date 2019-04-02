@@ -1,4 +1,4 @@
-from arche.rules.coverage import check_fields_coverage, get_difference
+import arche.rules.coverage as cov
 from arche.rules.result import Level
 from conftest import create_result, Job
 import pandas as pd
@@ -54,7 +54,7 @@ import pytest
     ],
 )
 def test_check_fields_coverage(df, expected_messages):
-    result = check_fields_coverage(df)
+    result = cov.check_fields_coverage(df)
     assert result == create_result("Fields Coverage", expected_messages)
 
 
@@ -131,7 +131,19 @@ def test_check_fields_coverage(df, expected_messages):
     ],
 )
 def test_get_difference(source_stats, target_stats, expected_messages):
-    result = get_difference(
+    result = cov.get_difference(
         Job(stats=source_stats, key="0"), Job(stats=target_stats, key="1")
     )
     assert result == create_result("Coverage Difference", expected_messages)
+
+
+@pytest.mark.parametrize(
+    "source_cols, target_cols, expected_messages",
+    [
+        (["range", "name"], ["name"], {Level.INFO: [("1 new field(s)",)]}),
+        (["name"], ["name", "sex"], {Level.ERROR: [("1 missing field(s)",)]}),
+    ],
+)
+def test_compare_scraped_fields(source_cols, target_cols, expected_messages):
+    result = cov.compare_scraped_fields(source_cols, target_cols)
+    assert result == create_result("Scraped Fields", expected_messages)
