@@ -140,8 +140,8 @@ def test_get_difference(source_stats, target_stats, expected_messages):
 @pytest.mark.parametrize(
     "source_cols, target_cols, expected_messages",
     [
-        (["range", "name"], ["name"], {Level.INFO: [("1 new field(s)",)]}),
-        (["name"], ["name", "sex"], {Level.ERROR: [("1 missing field(s)",)]}),
+        (["range", "name"], ["name"], {Level.INFO: [("New - range",)]}),
+        (["name"], ["name", "sex"], {Level.ERROR: [("Missing - sex",)]}),
     ],
 )
 def test_compare_scraped_fields(source_cols, target_cols, expected_messages):

@@ -78,10 +78,10 @@ def compare_scraped_fields(
     result = Result("Scraped Fields")
     missing_fields = set(target_columns) - set(source_columns)
     if missing_fields:
-        result.add_error(f"{len(missing_fields)} missing field(s)")
+        result.add_error(f"Missing - {', '.join(missing_fields)}")
 
     new_fields = set(source_columns) - set(target_columns)
     if new_fields:
-        result.add_info(f"{len(new_fields)} new field(s)")
+        result.add_info(f"New - {', '.join(new_fields)}")
 
     return result
