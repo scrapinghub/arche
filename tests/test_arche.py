@@ -249,7 +249,7 @@ def test_data_quality_report(mocker):
 def test_compare_with_customized_rules(mocker, get_job_items):
     mocked_save_result = mocker.patch("arche.Arche.save_result", autospec=True)
     mocked_coverage = mocker.patch(
-        "arche.rules.category_coverage.compare_coverage_per_category", autospec=True
+        "arche.rules.category_coverage.get_difference", autospec=True
     )
     mocked_price_url = mocker.patch(
         "arche.rules.price.compare_prices_for_same_urls", autospec=True
@@ -278,7 +278,7 @@ def test_compare_with_customized_rules(mocker, get_job_items):
 
 def test_compare_with_customized_rules_none_target(mocker, get_job_items):
     mocked_coverage = mocker.patch(
-        "arche.rules.category_coverage.compare_coverage_per_category", autospec=True
+        "arche.rules.category_coverage.get_difference", autospec=True
     )
     arche = Arche("key")
     assert not arche.compare_with_customized_rules(

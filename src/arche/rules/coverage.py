@@ -31,16 +31,16 @@ def get_difference(source_job, target_job):
 
     f_counts = pd.DataFrame(
         {
-            "source": source_job.items.stats().get("counts", None),
-            "target": target_job.items.stats().get("counts", None),
+            "s": source_job.items.stats().get("counts", None),
+            "t": target_job.items.stats().get("counts", None),
         }
     ).fillna(0)
 
     coverage_difs = (
         (
             (
-                f_counts["source"] / get_items_count(source_job)
-                - f_counts["target"] / get_items_count(target_job)
+                f_counts["s"] / get_items_count(source_job)
+                - f_counts["t"] / get_items_count(target_job)
             )
             * 100
         )

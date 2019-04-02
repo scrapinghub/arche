@@ -6,7 +6,7 @@ from arche.data_quality_report import DataQualityReport
 from arche.readers.items import CollectionItems, JobItems
 import arche.readers.schema as sr
 from arche.report import Report
-import arche.rules.category_coverage as category_coverage
+import arche.rules.category_coverage as category_rules
 import arche.rules.coverage as coverage_rules
 import arche.rules.duplicates as duplicate_rules
 import arche.rules.json_schema as schema_rules
@@ -213,7 +213,7 @@ class Arche:
         self.save_result(duplicate_rules.check_uniqueness(items.df, tagged_fields))
         self.save_result(duplicate_rules.check_items(items.df, tagged_fields))
         self.save_result(
-            category_coverage.get_coverage_per_category(items.df, tagged_fields)
+            category_rules.get_coverage_per_category(items.df, tagged_fields)
         )
 
     @lru_cache(maxsize=32)
@@ -251,7 +251,7 @@ class Arche:
         if not target_items:
             return
         self.save_result(
-            category_coverage.compare_coverage_per_category(
+            category_rules.get_difference(
                 source_items.key,
                 target_items.key,
                 source_items.df,
