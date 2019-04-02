@@ -78,19 +78,6 @@ class Report:
         if stats is None:
             return
 
-        annotations = []
-        for value, group in stats.groupby(stats):
-            annotations.append(
-                dict(
-                    xref="paper",
-                    yref="y",
-                    x=0,
-                    y=group.index.values[-1],
-                    text=f"{value/max(stats.values) * 100:.2f}%",
-                    showarrow=False,
-                )
-            )
-
         data = [go.Bar(x=stats.values, y=stats.index.values, orientation="h")]
         layout = go.Layout(
             title=stats.name,
@@ -103,16 +90,34 @@ class Report:
         )
         f = go.FigureWidget(data, layout)
 
+        if stats.name == "Fields Coverage":
+            Report.add_annotations_checkbox(stats, f)
+        display(f)
+
+    @staticmethod
+    def add_annotations_checkbox(stats: pd.Series, figure: go.FigureWidget):
+        annotations = []
+        for value, group in stats.groupby(stats):
+            annotations.append(
+                dict(
+                    xref="paper",
+                    yref="y",
+                    x=0,
+                    y=group.index.values[-1],
+                    text=f"{value/max(stats.values) * 100:.2f}%",
+                    showarrow=False,
+                )
+            )
         ants_enabled = ipywidgets.Checkbox(description="%", value=False)
 
         def response(change):
             if ants_enabled.value:
-                f.layout.annotations = annotations
+                figure.layout.annotations = annotations
             else:
-                f.layout.annotations = []
+                figure.layout.annotations = []
 
         ants_enabled.observe(response, names="value")
-        display(ipywidgets.VBox([ants_enabled, f]))
+        display(ants_enabled)
 
     @classmethod
     def write_detailed_errors(cls, errors: dict, short: bool, keys_limit: int):
