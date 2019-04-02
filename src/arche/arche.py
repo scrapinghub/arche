@@ -6,7 +6,7 @@ from arche.data_quality_report import DataQualityReport
 from arche.readers.items import CollectionItems, JobItems
 import arche.readers.schema as sr
 from arche.report import Report
-import arche.rules.category_coverage as category_rules
+import arche.rules.category as category_rules
 import arche.rules.coverage as coverage_rules
 import arche.rules.duplicates as duplicate_rules
 import arche.rules.json_schema as schema_rules

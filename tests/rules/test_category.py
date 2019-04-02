@@ -1,4 +1,4 @@
-from arche.rules.category_coverage import get_coverage_per_category
+from arche.rules.category import get_coverage_per_category
 from arche.rules.result import Level
 from conftest import create_result
 import pandas as pd
