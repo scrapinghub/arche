@@ -33,7 +33,10 @@ class Message:
             stats_equals = self.stats is None
         else:
             try:
-                pd.testing.assert_series_equal(self.stats, other.stats)
+                if isinstance(self.stats, pd.DataFrame):
+                    pd.testing.assert_frame_equal(self.stats, other.stats)
+                else:
+                    pd.testing.assert_series_equal(self.stats, other.stats)
                 stats_equals = True
             except AssertionError:
                 stats_equals = False

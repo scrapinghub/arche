@@ -78,7 +78,7 @@ class Report:
         if stats is None:
             return
 
-        if stats.ndim == 1:
+        if isinstance(stats, pd.Series):
             data = [go.Bar(x=stats.values, y=stats.index.values, orientation="h")]
         else:
             data = [
