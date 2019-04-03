@@ -1,5 +1,3 @@
-from typing import List
-
 from arche.rules.result import Result
 from arche.tools.api import get_items_count
 import pandas as pd
@@ -71,17 +69,16 @@ def get_difference(source_job, target_job) -> Result:
     return result
 
 
-def compare_scraped_fields(
-    source_columns: List[str], target_columns: List[str]
-) -> Result:
+def compare_scraped_fields(source_df: pd.DataFrame, target_df: pd.DataFrame) -> Result:
     """Find new or missing columns between source_df and target_df"""
     result = Result("Scraped Fields")
-    missing_fields = set(target_columns) - set(source_columns)
-    if missing_fields:
+    missing_fields = target_df.columns.difference(source_df.columns)
+
+    if missing_fields.array:
         result.add_error(f"Missing - {', '.join(missing_fields)}")
 
-    new_fields = set(source_columns) - set(target_columns)
-    if new_fields:
+    new_fields = source_df.columns.difference(target_df.columns)
+    if new_fields.array:
         result.add_info(f"New - {', '.join(new_fields)}")
 
     return result

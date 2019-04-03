@@ -242,7 +242,7 @@ class Arche:
             return
         self.save_result(
             coverage_rules.compare_scraped_fields(
-                self.source_items.df.columns.values, self.target_items.df.columns.values
+                self.source_items.df, self.target_items.df
             )
         )
         self.save_result(

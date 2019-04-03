@@ -145,5 +145,7 @@ def test_get_difference(source_stats, target_stats, expected_messages):
     ],
 )
 def test_compare_scraped_fields(source_cols, target_cols, expected_messages):
-    result = cov.compare_scraped_fields(source_cols, target_cols)
+    result = cov.compare_scraped_fields(
+        pd.DataFrame([], columns=source_cols), pd.DataFrame([], columns=target_cols)
+    )
     assert result == create_result("Scraped Fields", expected_messages)
