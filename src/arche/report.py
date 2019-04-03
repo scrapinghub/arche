@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, Union
 
 from arche.rules.result import Level, Result
 from colorama import Fore, Style
@@ -74,15 +74,21 @@ class Report:
                 cls.plot(rule_msg.stats)
 
     @staticmethod
-    def plot(stats):
+    def plot(stats: Union[pd.DataFrame, pd.Series]):
         if stats is None:
             return
 
-        data = [go.Bar(x=stats.values, y=stats.index.values, orientation="h")]
+        if stats.ndim == 1:
+            data = [go.Bar(x=stats.values, y=stats.index.values, orientation="h")]
+        else:
+            data = [
+                go.Bar(x=stats[c].values, y=stats.index.values, orientation="h", name=c)
+                for c in stats.columns
+            ]
         layout = go.Layout(
             title=stats.name,
             bargap=0.1,
-            xaxis=go.layout.XAxis(type="log"),
+            xaxis=go.layout.XAxis(type="log", title="log"),
             template="ggplot2",
             height=max(min(len(stats) * 20, 900), 450),
             hovermode="y",
