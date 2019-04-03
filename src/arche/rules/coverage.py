@@ -11,7 +11,7 @@ def check_fields_coverage(df: pd.DataFrame) -> Result:
 
     result = Result("Fields Coverage")
     if empty_fields.empty:
-        result.add_info(f"PASSED", stats=fields_coverage)
+        result.add_info("PASSED", stats=fields_coverage)
     else:
         result.add_error(f"{len(empty_fields)} empty field(s)", stats=fields_coverage)
     return result

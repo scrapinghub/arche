@@ -20,7 +20,13 @@ def get_difference(
                 "t": target_df[c].value_counts(normalize=True, dropna=False),
             }
         ).fillna(0)
-        cat_difs = ((cats["s"] - cats["t"]) * 100).abs().sort_values().round(decimals=2)
+        cat_difs = (
+            ((cats["s"] - cats["t"]) * 100)
+            .abs()
+            .sort_index(kind="mergesort")
+            .sort_values()
+            .round(decimals=2)
+        )
         cat_difs.name = (
             f"Coverage difference between {source_key}'s and {target_key}'s {c}"
         )
