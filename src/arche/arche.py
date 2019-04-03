@@ -6,7 +6,7 @@ from arche.data_quality_report import DataQualityReport
 from arche.readers.items import CollectionItems, JobItems
 import arche.readers.schema as sr
 from arche.report import Report
-import arche.rules.category_coverage as category_coverage
+import arche.rules.category as category_rules
 import arche.rules.coverage as coverage_rules
 import arche.rules.duplicates as duplicate_rules
 import arche.rules.json_schema as schema_rules
@@ -158,7 +158,11 @@ class Arche:
     @lru_cache(maxsize=32)
     def run_general_rules(self):
         self.save_result(garbage_symbols(self.source_items))
-        self.save_result(coverage_rules.check_fields_coverage(self.source_items.df))
+        self.save_result(
+            coverage_rules.check_fields_coverage(
+                self.source_items.df.drop(columns=["_type", "_key"])
+            )
+        )
 
     def validate_with_json_schema(self):
         """Run JSON schema check and output results. It will try to find all errors, but
@@ -209,7 +213,9 @@ class Arche:
         self.save_result(duplicate_rules.check_uniqueness(items.df, tagged_fields))
         self.save_result(duplicate_rules.check_items(items.df, tagged_fields))
         self.save_result(
-            category_coverage.get_coverage_per_category(items.df, tagged_fields)
+            category_rules.get_coverage_per_category(
+                items.df, tagged_fields.get("category", [])
+            )
         )
 
     @lru_cache(maxsize=32)
@@ -225,7 +231,7 @@ class Arche:
         self.save_result(
             metadata_rules.compare_number_of_scraped_items(source_job, target_job)
         )
-        self.save_result(coverage_rules.compare_fields_counts(source_job, target_job))
+        self.save_result(coverage_rules.get_difference(source_job, target_job))
         self.save_result(metadata_rules.compare_response_ratio(source_job, target_job))
         self.save_result(metadata_rules.compare_runtime(source_job, target_job))
         self.save_result(metadata_rules.compare_finish_time(source_job, target_job))
@@ -247,12 +253,12 @@ class Arche:
         if not target_items:
             return
         self.save_result(
-            category_coverage.compare_coverage_per_category(
+            category_rules.get_difference(
                 source_items.key,
                 target_items.key,
                 source_items.df,
                 target_items.df,
-                tagged_fields,
+                tagged_fields.get("category", []),
             )
         )
         self.save_result(

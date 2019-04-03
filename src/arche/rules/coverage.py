@@ -1,108 +1,86 @@
 from arche.rules.result import Result
 from arche.tools.api import get_items_count
-from arche.tools.helpers import ratio_diff
 import pandas as pd
 
 
-def check_fields_coverage(df):
-    fields_coverage = pd.DataFrame(df.count(), columns=["Values Count"])
-    fields_coverage.index.name = "Field"
-    fields_coverage["Percent"] = fields_coverage.apply(
-        lambda row: int(row["Values Count"] / len(df) * 100), axis=1
-    )
+def check_fields_coverage(df: pd.DataFrame) -> Result:
+    fields_coverage = df.count().sort_values(ascending=False)
+    fields_coverage.name = "Fields Coverage"
 
-    detailed_msg = fields_coverage.sort_values(by=["Percent", "Field"]).to_string()
-
-    empty_fields = fields_coverage[fields_coverage["Values Count"] == 0]
-    result_msg = f"{len(empty_fields)} totally empty field(s)"
+    empty_fields = fields_coverage[fields_coverage == 0]
 
     result = Result("Fields Coverage")
     if empty_fields.empty:
-        result.add_info(result_msg, detailed_msg)
+        result.add_info(f"PASSED", stats=fields_coverage)
     else:
-        result.add_error(result_msg, detailed_msg)
+        result.add_error(f"{len(empty_fields)} empty field(s)", stats=fields_coverage)
     return result
 
 
-def compare_fields_counts(source_job, target_job):
-    """Compare the relative difference between field counts to items count
+def get_difference(source_job, target_job) -> Result:
+    """Get the percentage difference between job fields counts to items number ratio
 
     Args:
         source_job: a base job, the difference is calculated from it
         target_job: a job to compare
 
     Returns:
-        A Result instance
+        A Result instance with messages if any and stats with differences more than 0
     """
-    source_items_count = get_items_count(source_job)
-    target_items_count = get_items_count(target_job)
-    result = Result("Fields Counts")
+    result = Result("Coverage Difference")
 
-    source_fields = pd.DataFrame(
-        {"Count1": source_job.items.stats().get("counts", None)}
-    )
-    target_fields = pd.DataFrame(
-        {"Count2": target_job.items.stats().get("counts", None)}
-    )
-    fields = pd.concat([source_fields, target_fields], axis=1, sort=True).fillna(0)
-    fields["Difference, %"] = fields.apply(
-        lambda row: ratio_diff(
-            row["Count1"] / source_items_count, row["Count2"] / target_items_count
+    f_counts = pd.DataFrame(
+        {
+            "s": source_job.items.stats().get("counts", None),
+            "t": target_job.items.stats().get("counts", None),
+        }
+    ).fillna(0)
+
+    coverage_difs = (
+        (
+            (
+                f_counts["s"] / get_items_count(source_job)
+                - f_counts["t"] / get_items_count(target_job)
+            )
+            * 100
         )
-        * 100,
-        axis=1,
+        .abs()
+        .sort_values()
+        .round(decimals=2)
     )
-    fields["Difference, %"] = fields["Difference, %"].astype(int)
-    fields.sort_values(by=["Difference, %"], ascending=False)
+    coverage_difs = coverage_difs[coverage_difs > 0]
+    if coverage_difs.empty:
+        return result
 
-    err_diffs = fields[fields["Difference, %"] > 10]
-    if not err_diffs.empty:
-        result.add_error(
-            f"Coverage difference is greater than 10% for "
-            f"{len(err_diffs)} field(s)",
-            err_diffs.to_string(columns=["Difference, %"]),
+    coverage_difs.name = (
+        f"Coverage difference between {source_job.key} and {target_job.key}"
+    )
+
+    errs = coverage_difs[coverage_difs > 10]
+    if not errs.empty:
+        result.add_error(f"The difference is greater than 10% for {len(errs)} field(s)")
+    warns = coverage_difs[(coverage_difs > 5) & (coverage_difs <= 10)]
+    if not warns.empty:
+        result.add_warning(
+            f"The difference is between 5% and 10% for {len(warns)} field(s)"
         )
-
-    warn_diffs = fields[(fields["Difference, %"] > 5) & (fields["Difference, %"] <= 10)]
-    if not warn_diffs.empty:
-        outcome_msg = (
-            f"Coverage difference is between 5% and 10% for "
-            f"{len(warn_diffs)} field(s)"
-        )
-        result.add_warning(outcome_msg, warn_diffs.to_string(columns=["Difference, %"]))
-
+    if errs.empty and warns.empty:
+        result.add_info("PASSED", stats=coverage_difs)
+    else:
+        result.add_info("", stats=coverage_difs)
     return result
 
 
-def compare_scraped_fields(source_df, target_df):
-    source_field_coverage = dict(source_df.count().sort_values(ascending=False))
-    target_field_coverage = dict(target_df.count().sort_values(ascending=False))
-
+def compare_scraped_fields(source_df: pd.DataFrame, target_df: pd.DataFrame) -> Result:
+    """Find new or missing columns between source_df and target_df"""
     result = Result("Scraped Fields")
-    missing_fields = set(target_df.columns.values) - set(source_df.columns.values)
-    if missing_fields:
-        detailed_messages = ["Missing Fields"]
-        for field in missing_fields:
-            target_coverage = target_field_coverage[field] / len(target_df) * 100
-            detailed_messages.append(
-                f"{field} - coverage - {int(target_coverage)}% - "
-                f"{target_field_coverage[field]} items"
-            )
-        result.add_error(
-            f"{len(missing_fields)} field(s) are missing", "\n".join(detailed_messages)
-        )
+    missing_fields = target_df.columns.difference(source_df.columns)
 
-    new_fields = set(source_df.columns.values) - set(target_df.columns.values)
-    if new_fields:
-        detailed_messages = ["New Fields"]
-        for field in new_fields:
-            source_coverage = source_field_coverage[field] / len(source_df) * 100
-            detailed_messages.append(
-                f"{field} - coverage - {int(source_coverage)}% - "
-                f"{source_field_coverage[field]} items"
-            )
-        result.add_info(
-            f"{len(new_fields)} field(s) are new", "\n".join(detailed_messages)
-        )
+    if missing_fields.array:
+        result.add_error(f"Missing - {', '.join(missing_fields)}")
+
+    new_fields = source_df.columns.difference(target_df.columns)
+    if new_fields.array:
+        result.add_info(f"New - {', '.join(new_fields)}")
 
     return result

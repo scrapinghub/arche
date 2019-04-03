@@ -29,8 +29,14 @@ class Message:
     def __eq__(self, other):
         if self.stats is None:
             stats_equals = other.stats is None
+        elif other.stats is None:
+            stats_equals = self.stats is None
         else:
-            stats_equals = self.stats.equals(other.stats)
+            try:
+                pd.testing.assert_series_equal(self.stats, other.stats)
+                stats_equals = True
+            except AssertionError:
+                stats_equals = False
 
         return (
             self.summary == other.summary

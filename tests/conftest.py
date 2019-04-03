@@ -14,8 +14,9 @@ default_items = [
 
 
 class Job:
-    def __init__(self, items=None, metadata=None, stats=None):
+    def __init__(self, items=None, metadata=None, stats=None, key="112358/13/21"):
         self.items = Source(items, stats)
+        self.key = key
         if metadata:
             self.metadata = metadata
         else:

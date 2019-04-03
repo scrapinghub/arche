@@ -33,6 +33,15 @@ def test_message_eq(source, target):
             ("summary", "details", {"err": ["1"]}),
         ),
         (("summary", "details"), ("summary", "other")),
+        (
+            (
+                "summary",
+                "details",
+                {"err": ["0"]},
+                pd.Series(["row1", "row2"], index=[1, 2]),
+            ),
+            ("summary", "details", {"err": ["0"]}, pd.Series(["row1", "row2"])),
+        ),
     ],
 )
 def test_message_not_eq(source, target):

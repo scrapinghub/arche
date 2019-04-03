@@ -1,4 +1,4 @@
-from arche.rules.coverage import check_fields_coverage, compare_fields_counts
+import arche.rules.coverage as cov
 from arche.rules.result import Level
 from conftest import create_result, Job
 import pandas as pd
@@ -13,53 +13,39 @@ import pytest
             {
                 Level.INFO: [
                     (
-                        "0 totally empty field(s)",
-                        (
-                            pd.DataFrame(
-                                [(1, 100)],
-                                columns=["Values Count", "Percent"],
-                                index=["_key"],
-                            )
-                            .rename_axis("Field")
-                            .to_string()
-                        ),
+                        "PASSED",
+                        None,
+                        None,
+                        pd.Series([1], index=["_key"], name="Fields Coverage"),
                     )
                 ]
             },
         ),
         (
-            pd.DataFrame([(0, None)], columns=["_key", "Field"]),
+            pd.DataFrame([("Jordan", None)], columns=["Name", "Field"]),
             {
                 Level.ERROR: [
                     (
-                        "1 totally empty field(s)",
-                        (
-                            pd.DataFrame(
-                                [(0, 0), (1, 100)],
-                                columns=["Values Count", "Percent"],
-                                index=["Field", "_key"],
-                            )
-                            .rename_axis("Field")
-                            .to_string()
+                        "1 empty field(s)",
+                        None,
+                        None,
+                        pd.Series(
+                            [1, 0], index=["Name", "Field"], name="Fields Coverage"
                         ),
                     )
                 ]
             },
         ),
         (
-            pd.DataFrame([(0, "")], columns=["_key", "Field"]),
+            pd.DataFrame([(0, "")], columns=["Name", "Field"]),
             {
                 Level.INFO: [
                     (
-                        "0 totally empty field(s)",
-                        (
-                            pd.DataFrame(
-                                [(1, 100), (1, 100)],
-                                columns=["Values Count", "Percent"],
-                                index=["Field", "_key"],
-                            )
-                            .rename_axis("Field")
-                            .to_string()
+                        "PASSED",
+                        None,
+                        None,
+                        pd.Series(
+                            [1, 1], index=["Field", "Name"], name="Fields Coverage"
                         ),
                     )
                 ]
@@ -68,7 +54,7 @@ import pytest
     ],
 )
 def test_check_fields_coverage(df, expected_messages):
-    result = check_fields_coverage(df)
+    result = cov.check_fields_coverage(df)
     assert result == create_result("Fields Coverage", expected_messages)
 
 
@@ -79,39 +65,59 @@ def test_check_fields_coverage(df, expected_messages):
             {"counts": {"f1": 100, "f2": 150}, "totals": {"input_values": 100}},
             {"counts": {"f2": 100, "f3": 150}, "totals": {"input_values": 100}},
             {
-                Level.ERROR: [
+                Level.ERROR: [("The difference is greater than 10% for 3 field(s)",)],
+                Level.INFO: [
                     (
-                        "Coverage difference is greater than 10% for 3 field(s)",
-                        (
-                            pd.DataFrame([100, 33, 100], columns=["Difference, %"])
-                            .rename(index={0: "f1", 1: "f2", 2: "f3"})
-                            .to_string()
+                        "",
+                        None,
+                        None,
+                        pd.Series(
+                            [50.0, 100.0, 150.0],
+                            index=["f2", "f1", "f3"],
+                            name="Coverage difference between 0 and 1",
                         ),
                     )
-                ]
+                ],
             },
         ),
         (
             {"counts": {"f1": 100, "f2": 150}, "totals": {"input_values": 100}},
-            {"counts": {"f1": 106, "f2": 200}, "totals": {"input_values": 100}},
+            {"counts": {"f1": 106, "f2": 289}, "totals": {"input_values": 200}},
             {
-                Level.ERROR: [
+                Level.ERROR: [("The difference is greater than 10% for 1 field(s)",)],
+                Level.WARNING: [
+                    ("The difference is between 5% and 10% for 1 field(s)",)
+                ],
+                Level.INFO: [
                     (
-                        ("Coverage difference is greater than 10% for 1 field(s)"),
-                        (
-                            pd.DataFrame([25], columns=["Difference, %"])
-                            .rename(index={0: "f2"})
-                            .to_string()
+                        "",
+                        None,
+                        None,
+                        pd.Series(
+                            [5.5, 47.0],
+                            index=["f2", "f1"],
+                            name="Coverage difference between 0 and 1",
                         ),
                     )
                 ],
+            },
+        ),
+        (
+            {"counts": {"f1": 100, "f2": 150}, "totals": {"input_values": 100}},
+            {"counts": {"f1": 94, "f2": 141}, "totals": {"input_values": 100}},
+            {
                 Level.WARNING: [
+                    ("The difference is between 5% and 10% for 2 field(s)",)
+                ],
+                Level.INFO: [
                     (
-                        ("Coverage difference is between 5% and 10% for 1 field(s)"),
-                        (
-                            pd.DataFrame([6], columns=["Difference, %"])
-                            .rename(index={0: "f1"})
-                            .to_string()
+                        "",
+                        None,
+                        None,
+                        pd.Series(
+                            [6.0, 9.0],
+                            index=["f1", "f2"],
+                            name="Coverage difference between 0 and 1",
                         ),
                     )
                 ],
@@ -124,6 +130,22 @@ def test_check_fields_coverage(df, expected_messages):
         ),
     ],
 )
-def test_compare_fields_counts(source_stats, target_stats, expected_messages):
-    result = compare_fields_counts(Job(stats=source_stats), Job(stats=target_stats))
-    assert result == create_result("Fields Counts", expected_messages)
+def test_get_difference(source_stats, target_stats, expected_messages):
+    result = cov.get_difference(
+        Job(stats=source_stats, key="0"), Job(stats=target_stats, key="1")
+    )
+    assert result == create_result("Coverage Difference", expected_messages)
+
+
+@pytest.mark.parametrize(
+    "source_cols, target_cols, expected_messages",
+    [
+        (["range", "name"], ["name"], {Level.INFO: [("New - range",)]}),
+        (["name"], ["name", "sex"], {Level.ERROR: [("Missing - sex",)]}),
+    ],
+)
+def test_compare_scraped_fields(source_cols, target_cols, expected_messages):
+    result = cov.compare_scraped_fields(
+        pd.DataFrame([], columns=source_cols), pd.DataFrame([], columns=target_cols)
+    )
+    assert result == create_result("Scraped Fields", expected_messages)

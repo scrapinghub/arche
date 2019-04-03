@@ -10,11 +10,21 @@ Note that the top-most release is changes in the unreleased master branch on Git
 Keep a Changelog](https://keepachangelog.com/en/1.0.0/), [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
 ### Fixed
 - Big notebook size, replaced cufflinks with plotly, #39
 
+### Changed
+- *Fields Coverage* now is printed as a bar plot, #9
+- *Fields Counts* renamed to *Coverage Difference* and is printed as a bar plot, #9
+- *Compare Scraped Categories* renamed to *Category Coverage Difference*
+- Refactored *Category Coverage Difference* to return difference in categories coverage in percentage, #9
+- *Coverage Difference* finds the absolute difference in coverage in percentage (was difference in ratio before)
+- Bar plots xaxis changed from numeric to logarithmic
+
 ### Removed
 - `cufflinks` dependency
+
 
 
 ## [2019.03.25]

@@ -3,9 +3,9 @@ from typing import Dict
 from arche.rules.result import Level, Result
 from colorama import Fore, Style
 from IPython.display import display, HTML
+import ipywidgets
 import pandas as pd
 import plotly.graph_objs as go
-from plotly.offline import iplot
 
 
 class Report:
@@ -75,15 +75,49 @@ class Report:
 
     @staticmethod
     def plot(stats):
-        if stats is not None:
-            data = [go.Bar(x=stats.values, y=stats.index.values, orientation="h")]
-            layout = go.Layout(
-                title=stats.name,
-                bargap=0.1,
-                yaxis=go.layout.YAxis(automargin=True, side="right"),
-                template="ggplot2",
+        if stats is None:
+            return
+
+        data = [go.Bar(x=stats.values, y=stats.index.values, orientation="h")]
+        layout = go.Layout(
+            title=stats.name,
+            bargap=0.1,
+            xaxis=go.layout.XAxis(type="log"),
+            template="ggplot2",
+            height=max(min(len(stats) * 20, 900), 450),
+            hovermode="y",
+            margin=dict(l=200, t=35),
+        )
+        f = go.FigureWidget(data, layout)
+
+        if stats.name == "Fields Coverage":
+            Report.add_annotations_checkbox(stats, f)
+        display(f)
+
+    @staticmethod
+    def add_annotations_checkbox(stats: pd.Series, figure: go.FigureWidget):
+        annotations = []
+        for value, group in stats.groupby(stats):
+            annotations.append(
+                dict(
+                    xref="paper",
+                    yref="y",
+                    x=0,
+                    y=group.index.values[-1],
+                    text=f"{value/max(stats.values) * 100:.2f}%",
+                    showarrow=False,
+                )
             )
-            iplot(go.Figure(data=data, layout=layout))
+        ants_enabled = ipywidgets.Checkbox(description="%", value=False)
+
+        def response(change):
+            if ants_enabled.value:
+                figure.layout.annotations = annotations
+            else:
+                figure.layout.annotations = []
+
+        ants_enabled.observe(response, names="value")
+        display(ants_enabled)
 
     @classmethod
     def write_detailed_errors(cls, errors: dict, short: bool, keys_limit: int):
