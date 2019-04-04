@@ -17,12 +17,14 @@ def get_difference(
         cats = (
             pd.DataFrame(
                 {
-                    source_key: (
-                        source_df[c].value_counts(dropna=False, normalize=True) * 100
-                    ).round(decimals=2),
-                    target_key: (
-                        target_df[c].value_counts(dropna=False, normalize=True) * 100
-                    ).round(decimals=2),
+                    source_key: source_df[c]
+                    .value_counts(dropna=False, normalize=True)
+                    .mul(100)
+                    .round(decimals=2),
+                    target_key: target_df[c]
+                    .value_counts(dropna=False, normalize=True)
+                    .mul(100)
+                    .round(decimals=2),
                 }
             )
             .fillna(0)
