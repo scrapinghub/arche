@@ -1,3 +1,5 @@
+from typing import Dict, List
+
 import arche.rules.category as c
 from arche.rules.result import Level
 from conftest import create_result
@@ -37,6 +39,12 @@ def test_get_coverage_per_category(data, cat_names, expected_messages):
     )
 
 
+def create_df(data: Dict, index: List[str], name: str) -> pd.DataFrame:
+    df = pd.DataFrame(data, index=index)
+    df.name = "Coverage difference in sex"
+    return df
+
+
 @pytest.mark.parametrize(
     "source, target, categories, expected_messages",
     [
@@ -45,15 +53,13 @@ def test_get_coverage_per_category(data, cat_names, expected_messages):
                 "sex": ["male", "female", "male", np.nan],
                 "country": ["uk", "uk", "uk", "us"],
                 "age": [25, 25, 25, 25],
-                "race": ["white", "black", "indian", "indian"],
             },
             {
                 "sex": ["male", "female", "male"],
                 "country": ["uk", "uk", "uk"],
                 "age": [25, 25, 25],
-                "race": ["white", "black", "indian"],
             },
-            ["sex", "country", "age", "race"],
+            ["sex", "country", "age"],
             {
                 Level.WARNING: [
                     ("The difference is greater than 20% for 1 value(s) of sex",),
@@ -64,30 +70,30 @@ def test_get_coverage_per_category(data, cat_names, expected_messages):
                         "'sex' PASSED",
                         None,
                         None,
-                        pd.Series(
-                            [8.33, 16.67, 25.00],
-                            index=["female", "male", np.nan],
-                            name="Coverage difference between s's and t's sex",
+                        create_df(
+                            {"s": [25.0, 25.0, 50.0], "t": [0.0, 33.33, 66.67]},
+                            index=[np.nan, "female", "male"],
+                            name="Coverage difference in sex",
                         ),
                     ),
                     (
                         "'country' PASSED",
                         None,
                         None,
-                        pd.Series(
-                            [25.0, 25.0],
-                            index=["uk", "us"],
-                            name="Coverage difference between s's and t's country",
+                        create_df(
+                            {"s": [25.0, 75.0], "t": [0.0, 100.0]},
+                            index=["us", "uk"],
+                            name="Coverage difference in country",
                         ),
                     ),
                     (
-                        "'race' PASSED",
+                        "'age' PASSED",
                         None,
                         None,
-                        pd.Series(
-                            [8.33, 8.33, 16.67],
-                            index=["black", "white", "indian"],
-                            name="Coverage difference between s's and t's race",
+                        create_df(
+                            {"s": [100.0], "t": [100.0]},
+                            index=[25],
+                            name="Coverage difference in age",
                         ),
                     ),
                 ],
