@@ -1,7 +1,9 @@
-from typing import Optional
+from typing import Dict, List, Optional
+
 
 from arche.readers.items import CollectionItems, JobItems
 from arche.rules.result import Result
+import pandas as pd
 import pytest
 
 
@@ -176,3 +178,9 @@ def create_result(
     if items_count:
         result.items_count = items_count
     return result
+
+
+def create_named_df(data: Dict, index: List[str], name: str) -> pd.DataFrame:
+    df = pd.DataFrame(data, index=index)
+    df.name = name
+    return df

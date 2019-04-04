@@ -1,8 +1,6 @@
-from typing import Dict, List
-
 import arche.rules.category as c
 from arche.rules.result import Level
-from conftest import create_result
+from conftest import create_result, create_named_df
 import numpy as np
 import pandas as pd
 import pytest
@@ -39,12 +37,6 @@ def test_get_coverage_per_category(data, cat_names, expected_messages):
     )
 
 
-def create_df(data: Dict, index: List[str], name: str) -> pd.DataFrame:
-    df = pd.DataFrame(data, index=index)
-    df.name = "Coverage difference in sex"
-    return df
-
-
 @pytest.mark.parametrize(
     "source, target, categories, expected_messages",
     [
@@ -70,7 +62,7 @@ def create_df(data: Dict, index: List[str], name: str) -> pd.DataFrame:
                         "'sex' PASSED",
                         None,
                         None,
-                        create_df(
+                        create_named_df(
                             {"s": [25.0, 25.0, 50.0], "t": [0.0, 33.33, 66.67]},
                             index=[np.nan, "female", "male"],
                             name="Coverage difference in sex",
@@ -80,7 +72,7 @@ def create_df(data: Dict, index: List[str], name: str) -> pd.DataFrame:
                         "'country' PASSED",
                         None,
                         None,
-                        create_df(
+                        create_named_df(
                             {"s": [25.0, 75.0], "t": [0.0, 100.0]},
                             index=["us", "uk"],
                             name="Coverage difference in country",
@@ -90,7 +82,7 @@ def create_df(data: Dict, index: List[str], name: str) -> pd.DataFrame:
                         "'age' PASSED",
                         None,
                         None,
-                        create_df(
+                        create_named_df(
                             {"s": [100.0], "t": [100.0]},
                             index=[25],
                             name="Coverage difference in age",

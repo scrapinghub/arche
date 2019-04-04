@@ -1,6 +1,6 @@
 import arche.rules.coverage as cov
 from arche.rules.result import Level
-from conftest import create_result, Job
+from conftest import create_result, create_named_df, Job
 import pandas as pd
 import pytest
 
@@ -16,7 +16,7 @@ import pytest
                         "PASSED",
                         None,
                         None,
-                        pd.Series([1], index=["_key"], name="Fields Coverage"),
+                        pd.Series([1], index=["_key"], name="Fields coverage"),
                     )
                 ]
             },
@@ -30,7 +30,7 @@ import pytest
                         None,
                         None,
                         pd.Series(
-                            [1, 0], index=["Name", "Field"], name="Fields Coverage"
+                            [1, 0], index=["Name", "Field"], name="Fields coverage"
                         ),
                     )
                 ]
@@ -45,7 +45,7 @@ import pytest
                         None,
                         None,
                         pd.Series(
-                            [1, 1], index=["Field", "Name"], name="Fields Coverage"
+                            [1, 1], index=["Field", "Name"], name="Fields coverage"
                         ),
                     )
                 ]
@@ -71,10 +71,10 @@ def test_check_fields_coverage(df, expected_messages):
                         "",
                         None,
                         None,
-                        pd.Series(
-                            [50.0, 100.0, 150.0],
-                            index=["f2", "f1", "f3"],
-                            name="Coverage difference between 0 and 1",
+                        create_named_df(
+                            {"s": [0.0, 100.0, 150.0], "t": [150.0, 0.0, 100.0]},
+                            index=["f3", "f1", "f2"],
+                            name="Coverage difference in fields counts",
                         ),
                     )
                 ],
@@ -93,10 +93,10 @@ def test_check_fields_coverage(df, expected_messages):
                         "",
                         None,
                         None,
-                        pd.Series(
-                            [5.5, 47.0],
-                            index=["f2", "f1"],
-                            name="Coverage difference between 0 and 1",
+                        create_named_df(
+                            {"s": [100.0, 150.0], "t": [53.0, 144.5]},
+                            index=["f1", "f2"],
+                            name="Coverage difference in fields counts",
                         ),
                     )
                 ],
@@ -114,10 +114,10 @@ def test_check_fields_coverage(df, expected_messages):
                         "",
                         None,
                         None,
-                        pd.Series(
-                            [6.0, 9.0],
+                        create_named_df(
+                            {"s": [100.0, 150.0], "t": [94.0, 141.0]},
                             index=["f1", "f2"],
-                            name="Coverage difference between 0 and 1",
+                            name="Coverage difference in fields counts",
                         ),
                     )
                 ],
@@ -126,13 +126,26 @@ def test_check_fields_coverage(df, expected_messages):
         (
             {"counts": {"state": 100}, "totals": {"input_values": 100}},
             {"counts": {"state": 100}, "totals": {"input_values": 100}},
-            {},
+            {
+                Level.INFO: [
+                    (
+                        "PASSED",
+                        None,
+                        None,
+                        create_named_df(
+                            {"s": [100.0], "t": [100.0]},
+                            index=["state"],
+                            name="Coverage difference in fields counts",
+                        ),
+                    )
+                ]
+            },
         ),
     ],
 )
 def test_get_difference(source_stats, target_stats, expected_messages):
     result = cov.get_difference(
-        Job(stats=source_stats, key="0"), Job(stats=target_stats, key="1")
+        Job(stats=source_stats, key="s"), Job(stats=target_stats, key="t")
     )
     assert result == create_result("Coverage Difference", expected_messages)
 
