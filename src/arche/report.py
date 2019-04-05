@@ -1,6 +1,6 @@
 from typing import Dict, Union
 
-from arche.rules.result import Level, Result
+from arche.rules.result import Level, Result, Stat
 from colorama import Fore, Style
 from IPython.display import display, HTML
 import ipywidgets
@@ -71,46 +71,47 @@ class Report:
                     cls.write_detailed_errors(rule_msg.errors, short, keys_limit)
                 elif rule_msg.detailed:
                     cls.write(rule_msg.detailed)
-                cls.plot(rule_msg.stats)
+        for stat in result.stats:
+            cls.plot(stat)
 
     @staticmethod
-    def plot(stats: Union[pd.DataFrame, pd.Series]):
-        if stats is None:
+    def plot(stat: Stat):
+        if stat is None:
             return
 
-        if isinstance(stats, pd.Series):
-            data = [go.Bar(x=stats.values, y=stats.index.values, orientation="h")]
+        if isinstance(stat, pd.Series):
+            data = [go.Bar(x=stat.values, y=stat.index.values, orientation="h")]
         else:
             data = [
-                go.Bar(x=stats[c].values, y=stats.index.values, orientation="h", name=c)
-                for c in stats.columns
+                go.Bar(x=stat[c].values, y=stat.index.values, orientation="h", name=c)
+                for c in stat.columns
             ]
         layout = go.Layout(
-            title=stats.name,
+            title=stat.name,
             bargap=0.1,
             xaxis=go.layout.XAxis(type="log", title="log"),
             template="ggplot2",
-            height=max(min(len(stats) * 20, 900), 450),
+            height=max(min(len(stat) * 20, 900), 450),
             hovermode="y",
             margin=dict(l=200, t=35),
         )
         f = go.FigureWidget(data, layout)
 
-        if stats.name == "Fields Coverage":
-            Report.add_annotations_checkbox(stats, f)
+        if stat.name == "Fields Coverage":
+            Report.add_annotations_checkbox(stat, f)
         display(f)
 
     @staticmethod
-    def add_annotations_checkbox(stats: pd.Series, figure: go.FigureWidget):
+    def add_annotations_checkbox(stat: pd.Series, figure: go.FigureWidget):
         annotations = []
-        for value, group in stats.groupby(stats):
+        for value, group in stat.groupby(stat):
             annotations.append(
                 dict(
                     xref="paper",
                     yref="y",
                     x=0,
                     y=group.index.values[-1],
-                    text=f"{value/max(stats.values) * 100:.2f}%",
+                    text=f"{value/max(stat.values) * 100:.2f}%",
                     showarrow=False,
                 )
             )

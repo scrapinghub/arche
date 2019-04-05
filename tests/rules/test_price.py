@@ -64,15 +64,17 @@ was_now_inputs = [
 
 
 @pytest.mark.parametrize(
-    "data, tagged_fields, expected_messages, expected_errors", was_now_inputs
+    "data, tagged_fields, expected_messages, expected_err_items_count", was_now_inputs
 )
-def test_compare_was_now(data, tagged_fields, expected_messages, expected_errors):
+def test_compare_was_now(
+    data, tagged_fields, expected_messages, expected_err_items_count
+):
     df = pd.DataFrame(data)
     result = p.compare_was_now(df, tagged_fields)
     assert result == create_result(
         "Compare Price Was And Now",
         expected_messages,
-        expected_errors,
+        err_items_count=expected_err_items_count,
         items_count=len(df),
     )
 

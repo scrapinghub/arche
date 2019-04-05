@@ -1,8 +1,10 @@
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Optional
+from typing import Dict, List, Optional, Union
 
 import pandas as pd
+
+Stat = Union[pd.Series, pd.DataFrame]
 
 
 class Level(Enum):
@@ -17,45 +19,57 @@ class Message:
     Args:
         summary: a concise outcome
         detailed: detailed message
-        errors: grouped by attributes error messages
-        stats: series
+        errors: error messages grouped by attributes
     """
 
     summary: str
     detailed: Optional[str] = None
     errors: Optional[dict] = None
-    stats: Optional[pd.Series] = None
-
-    def __eq__(self, other):
-        if self.stats is None:
-            stats_equals = other.stats is None
-        elif other.stats is None:
-            stats_equals = self.stats is None
-        else:
-            try:
-                if isinstance(self.stats, pd.DataFrame):
-                    pd.testing.assert_frame_equal(self.stats, other.stats)
-                else:
-                    pd.testing.assert_series_equal(self.stats, other.stats)
-                stats_equals = True
-            except AssertionError:
-                stats_equals = False
-
-        return (
-            self.summary == other.summary
-            and self.detailed == other.detailed
-            and self.errors == other.errors
-            and stats_equals
-        )
 
 
 @dataclass
 class Result:
+    """
+    Args:
+        name: a rule name
+        messages: messages separated by severity
+        stats: pandas data to plot
+        items_count: the count of verified items
+        checked_fields: the names of verified fields
+        err_items_count: the number of error items
+    """
+
     name: str
-    messages: dict = field(default_factory=dict)
-    items_count: int = 0
-    checked_fields: list = field(default_factory=list)
-    err_items_count: int = 0
+    messages: Dict[Level, List[Message]] = field(default_factory=dict)
+    stats: Optional[List[Stat]] = field(default_factory=list)
+    items_count: Optional[int] = 0
+    checked_fields: Optional[List[str]] = field(default_factory=list)
+    err_items_count: Optional[int] = 0
+
+    def __eq__(self, other):
+        for left, right in zip(self.stats, other.stats):
+            if not self.tensors_equal(left, right):
+                return False
+
+        return (
+            self.name == other.name
+            and self.messages == other.messages
+            and self.items_count == other.items_count
+            and self.checked_fields == other.checked_fields
+            and self.err_items_count == other.err_items_count
+            and len(self.stats) == len(other.stats)
+        )
+
+    @staticmethod
+    def tensors_equal(left: Stat, right: Stat):
+        try:
+            if isinstance(left, pd.DataFrame):
+                pd.testing.assert_frame_equal(left, right)
+            else:
+                pd.testing.assert_series_equal(left, right)
+            return True
+        except AssertionError:
+            return False
 
     @property
     def info(self):
@@ -69,14 +83,14 @@ class Result:
     def errors(self):
         return self.messages.get(Level.ERROR)
 
-    def add_info(self, summary, detailed=None, errors=None, stats=None):
-        self.add_message(Level.INFO, summary, detailed, errors, stats)
+    def add_info(self, summary, detailed=None, errors=None):
+        self.add_message(Level.INFO, summary, detailed, errors)
 
-    def add_warning(self, summary, detailed=None, errors=None, stats=None):
-        self.add_message(Level.WARNING, summary, detailed, errors, stats)
+    def add_warning(self, summary, detailed=None, errors=None):
+        self.add_message(Level.WARNING, summary, detailed, errors)
 
-    def add_error(self, summary, detailed=None, errors=None, stats=None):
-        self.add_message(Level.ERROR, summary, detailed, errors, stats)
+    def add_error(self, summary, detailed=None, errors=None):
+        self.add_message(Level.ERROR, summary, detailed, errors)
 
     def add_message(
         self,
@@ -84,12 +98,11 @@ class Result:
         summary: str,
         detailed: Optional[str] = None,
         errors: Optional[dict] = None,
-        stats: Optional[pd.Series] = None,
     ):
         if not self.messages.get(level):
             self.messages[level] = []
         self.messages[level].append(
-            Message(summary=summary, detailed=detailed, errors=errors, stats=stats)
+            Message(summary=summary, detailed=detailed, errors=errors)
         )
 
     @property
@@ -97,7 +110,7 @@ class Result:
         return (
             self.get_errors_count()
             or self.get_detailed_messages_count()
-            or self.get_stats_count()
+            or len(self.stats)
         )
 
     def get_errors_count(self):
@@ -117,16 +130,6 @@ class Result:
                 for messages in self.messages.values()
                 for message in messages
                 if message.detailed
-            ]
-        )
-
-    def get_stats_count(self):
-        return len(
-            [
-                message.stats
-                for messages in self.messages.values()
-                for message in messages
-                if message.stats is not None
             ]
         )
 

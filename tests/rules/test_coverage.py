@@ -6,79 +6,44 @@ import pytest
 
 
 @pytest.mark.parametrize(
-    "df, expected_messages",
+    "df, expected_messages, expected_stats",
     [
         (
             pd.DataFrame([{"_key": 0}]),
-            {
-                Level.INFO: [
-                    (
-                        "PASSED",
-                        None,
-                        None,
-                        pd.Series([1], index=["_key"], name="Fields Coverage"),
-                    )
-                ]
-            },
+            {Level.INFO: [("PASSED",)]},
+            [pd.Series([1], index=["_key"], name="Fields Coverage")],
         ),
         (
             pd.DataFrame([("Jordan", None)], columns=["Name", "Field"]),
-            {
-                Level.ERROR: [
-                    (
-                        "1 empty field(s)",
-                        None,
-                        None,
-                        pd.Series(
-                            [1, 0], index=["Name", "Field"], name="Fields Coverage"
-                        ),
-                    )
-                ]
-            },
+            {Level.ERROR: [("1 empty field(s)",)]},
+            [pd.Series([1, 0], index=["Name", "Field"], name="Fields Coverage")],
         ),
         (
             pd.DataFrame([(0, "")], columns=["Name", "Field"]),
-            {
-                Level.INFO: [
-                    (
-                        "PASSED",
-                        None,
-                        None,
-                        pd.Series(
-                            [1, 1], index=["Field", "Name"], name="Fields Coverage"
-                        ),
-                    )
-                ]
-            },
+            {Level.INFO: [("PASSED",)]},
+            [pd.Series([1, 1], index=["Field", "Name"], name="Fields Coverage")],
         ),
     ],
 )
-def test_check_fields_coverage(df, expected_messages):
+def test_check_fields_coverage(df, expected_messages, expected_stats):
     result = cov.check_fields_coverage(df)
-    assert result == create_result("Fields Coverage", expected_messages)
+    assert result == create_result("Fields Coverage", expected_messages, expected_stats)
 
 
 @pytest.mark.parametrize(
-    "source_stats, target_stats, expected_messages",
+    "source_stats, target_stats, expected_messages, expected_stats",
     [
         (
             {"counts": {"f1": 100, "f2": 150}, "totals": {"input_values": 100}},
             {"counts": {"f2": 100, "f3": 150}, "totals": {"input_values": 100}},
-            {
-                Level.ERROR: [("The difference is greater than 10% for 3 field(s)",)],
-                Level.INFO: [
-                    (
-                        "",
-                        None,
-                        None,
-                        pd.Series(
-                            [50.0, 100.0, 150.0],
-                            index=["f2", "f1", "f3"],
-                            name="Coverage difference between 0 and 1",
-                        ),
-                    )
-                ],
-            },
+            {Level.ERROR: [("The difference is greater than 10% for 3 field(s)",)]},
+            [
+                pd.Series(
+                    [50.0, 100.0, 150.0],
+                    index=["f2", "f1", "f3"],
+                    name="Coverage difference between 0 and 1",
+                )
+            ],
         ),
         (
             {"counts": {"f1": 100, "f2": 150}, "totals": {"input_values": 100}},
@@ -88,53 +53,42 @@ def test_check_fields_coverage(df, expected_messages):
                 Level.WARNING: [
                     ("The difference is between 5% and 10% for 1 field(s)",)
                 ],
-                Level.INFO: [
-                    (
-                        "",
-                        None,
-                        None,
-                        pd.Series(
-                            [5.5, 47.0],
-                            index=["f2", "f1"],
-                            name="Coverage difference between 0 and 1",
-                        ),
-                    )
-                ],
             },
+            [
+                pd.Series(
+                    [5.5, 47.0],
+                    index=["f2", "f1"],
+                    name="Coverage difference between 0 and 1",
+                )
+            ],
         ),
         (
             {"counts": {"f1": 100, "f2": 150}, "totals": {"input_values": 100}},
             {"counts": {"f1": 94, "f2": 141}, "totals": {"input_values": 100}},
-            {
-                Level.WARNING: [
-                    ("The difference is between 5% and 10% for 2 field(s)",)
-                ],
-                Level.INFO: [
-                    (
-                        "",
-                        None,
-                        None,
-                        pd.Series(
-                            [6.0, 9.0],
-                            index=["f1", "f2"],
-                            name="Coverage difference between 0 and 1",
-                        ),
-                    )
-                ],
-            },
+            {Level.WARNING: [("The difference is between 5% and 10% for 2 field(s)",)]},
+            [
+                pd.Series(
+                    [6.0, 9.0],
+                    index=["f1", "f2"],
+                    name="Coverage difference between 0 and 1",
+                )
+            ],
         ),
         (
             {"counts": {"state": 100}, "totals": {"input_values": 100}},
             {"counts": {"state": 100}, "totals": {"input_values": 100}},
             {},
+            [],
         ),
     ],
 )
-def test_get_difference(source_stats, target_stats, expected_messages):
+def test_get_difference(source_stats, target_stats, expected_messages, expected_stats):
     result = cov.get_difference(
         Job(stats=source_stats, key="0"), Job(stats=target_stats, key="1")
     )
-    assert result == create_result("Coverage Difference", expected_messages)
+    assert result == create_result(
+        "Coverage Difference", expected_messages, stats=expected_stats
+    )
 
 
 @pytest.mark.parametrize(

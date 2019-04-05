@@ -31,6 +31,7 @@ def get_difference(
             .sort_values(by=[source_key, target_key], kind="mergesort")
         )
         cats.name = f"Coverage difference in {c}"
+        result.stats.append(cats)
         cat_difs = ((cats[source_key] - cats[target_key])).abs()
         cat_difs.name = (
             f"Coverage difference between {source_key}'s and {target_key}'s {c}"
@@ -41,8 +42,6 @@ def get_difference(
                 f"The difference is greater than 20% for {len(errs)} value(s) of {c}"
             )
 
-        result.add_info(f"'{c}' PASSED", stats=cats)
-
     return result
 
 
@@ -51,5 +50,6 @@ def get_coverage_per_category(df: pd.DataFrame, category_names: List):
 
     for c in category_names:
         value_counts = df[c].value_counts(ascending=True)
-        result.add_info(f"{len(value_counts)} categories in '{c}'", stats=value_counts)
+        result.add_info(f"{len(value_counts)} categories in '{c}'")
+        result.stats.append(value_counts)
     return result
