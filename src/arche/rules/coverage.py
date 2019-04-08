@@ -5,7 +5,7 @@ import pandas as pd
 
 def check_fields_coverage(df: pd.DataFrame) -> Result:
     fields_coverage = df.count().sort_values(ascending=False)
-    fields_coverage.name = "Fields Coverage"
+    fields_coverage.name = "Fields coverage"
 
     empty_fields = fields_coverage[fields_coverage == 0]
 
@@ -18,43 +18,39 @@ def check_fields_coverage(df: pd.DataFrame) -> Result:
 
 
 def get_difference(source_job, target_job) -> Result:
-    """Get the percentage difference between job fields counts to items number ratio
+    """Get difference between fields counts towards job size
 
     Args:
         source_job: a base job, the difference is calculated from it
         target_job: a job to compare
 
     Returns:
-        A Result instance with messages if any and stats with differences more than 0
+        A Result instance with messages if any and stats with fields counts coverage
     """
     result = Result("Coverage Difference")
 
-    f_counts = pd.DataFrame(
-        {
-            "s": source_job.items.stats().get("counts", None),
-            "t": target_job.items.stats().get("counts", None),
-        }
-    ).fillna(0)
-
-    coverage_difs = (
-        (
-            (
-                f_counts["s"] / get_items_count(source_job)
-                - f_counts["t"] / get_items_count(target_job)
-            )
-            * 100
+    f_counts = (
+        pd.DataFrame(
+            {
+                source_job.key: source_job.items.stats().get("counts", None),
+                target_job.key: target_job.items.stats().get("counts", None),
+            }
         )
-        .abs()
-        .sort_values()
-        .round(decimals=2)
+        .mul(100)
+        .fillna(0)
+        .sort_values(by=[source_job.key], kind="mergesort")
     )
-    coverage_difs = coverage_difs[coverage_difs > 0]
-    if coverage_difs.empty:
-        return result
+    f_counts[source_job.key] = f_counts[source_job.key].divide(
+        get_items_count(source_job)
+    )
+    f_counts[target_job.key] = f_counts[target_job.key].divide(
+        get_items_count(target_job)
+    )
+    f_counts = f_counts.round(2)
 
-    coverage_difs.name = (
-        f"Coverage difference between {source_job.key} and {target_job.key}"
-    )
+    f_counts.name = "Coverage difference in fields counts"
+
+    coverage_difs = (f_counts[source_job.key] - f_counts[target_job.key]).abs()
 
     errs = coverage_difs[coverage_difs > 10]
     if not errs.empty:
@@ -65,9 +61,9 @@ def get_difference(source_job, target_job) -> Result:
             f"The difference is between 5% and 10% for {len(warns)} field(s)"
         )
     if errs.empty and warns.empty:
-        result.add_info("PASSED", stats=coverage_difs)
+        result.add_info("PASSED", stats=f_counts)
     else:
-        result.add_info("", stats=coverage_difs)
+        result.add_info("", stats=f_counts)
     return result
 
 
