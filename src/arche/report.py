@@ -1,4 +1,4 @@
-from typing import Dict, Union
+from typing import Dict
 
 from arche.rules.result import Level, Result, Stat
 from colorama import Fore, Style
@@ -102,7 +102,7 @@ class Report:
         display(f)
 
     @staticmethod
-    def add_annotations_checkbox(stat: pd.Series, figure: go.FigureWidget):
+    def add_annotations_checkbox(stat: Stat, figure: go.FigureWidget):
         annotations = []
         for value, group in stat.groupby(stat):
             annotations.append(

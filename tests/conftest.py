@@ -1,7 +1,9 @@
-from typing import Optional
+from typing import Dict, List, Optional
+
 
 from arche.readers.items import CollectionItems, JobItems
 from arche.rules.result import Result
+import pandas as pd
 import pytest
 
 
@@ -198,3 +200,9 @@ def pytest_assertrepr_compare(op, left, right):
             elif left_v != right_v:
                 assert_msgs.extend(f"{left_v}", "!=", f"{right_v}")
         return assert_msgs
+
+
+def create_named_df(data: Dict, index: List[str], name: str) -> pd.DataFrame:
+    df = pd.DataFrame(data, index=index)
+    df.name = name
+    return df
