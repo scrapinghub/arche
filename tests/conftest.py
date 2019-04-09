@@ -198,7 +198,7 @@ def pytest_assertrepr_compare(op, left, right):
                     if not Result.tensors_equal(left_stat, right_stat):
                         assert_msgs.extend([f"{left_stat}", "!=", f"{right_stat}"])
             elif left_v != right_v:
-                assert_msgs.extend(f"{left_v}", "!=", f"{right_v}")
+                assert_msgs.extend([f"{left_v}", "!=", f"{right_v}"])
         return assert_msgs
 
 
