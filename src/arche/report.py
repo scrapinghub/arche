@@ -96,7 +96,7 @@ class Report:
             hovermode="y",
             margin=dict(l=200, t=35),
         )
-        if stat.name.startswith("Coverage difference"):
+        if stat.name.startswith("Coverage"):
             layout.xaxis.title = "log scale (%)"
         f = go.FigureWidget(data, layout)
 

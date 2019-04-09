@@ -48,7 +48,7 @@ def get_difference(source_job, target_job) -> Result:
         get_items_count(target_job)
     )
     f_counts = f_counts.round(2)
-    f_counts.name = "Coverage difference in fields counts"
+    f_counts.name = "Coverage from job stats fields counts"
     result.stats.append(f_counts)
 
     coverage_difs = (f_counts[source_job.key] - f_counts[target_job.key]).abs()
