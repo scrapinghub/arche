@@ -86,18 +86,21 @@ class Report:
                 go.Bar(x=stat[c].values, y=stat.index.values, orientation="h", name=c)
                 for c in stat.columns
             ]
+
         layout = go.Layout(
             title=stat.name,
             bargap=0.1,
-            xaxis=go.layout.XAxis(type="log", title="log"),
+            xaxis=go.layout.XAxis(type="log", title="log scale"),
             template="ggplot2",
             height=max(min(len(stat) * 20, 900), 450),
             hovermode="y",
             margin=dict(l=200, t=35),
         )
+        if stat.name.startswith("Coverage"):
+            layout.xaxis.title = "log scale (%)"
         f = go.FigureWidget(data, layout)
 
-        if stat.name == "Fields Coverage":
+        if stat.name == "Fields coverage":
             Report.add_annotations_checkbox(stat, f)
         display(f)
 

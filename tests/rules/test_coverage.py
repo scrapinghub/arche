@@ -41,8 +41,13 @@ def test_check_fields_coverage(df, expected_messages, expected_stats):
                 create_named_df(
                     {"s": [0.0, 100.0, 150.0], "t": [150.0, 0.0, 100.0]},
                     index=["f3", "f1", "f2"],
-                    name="Coverage difference in fields counts",
-                )
+                    name="Coverage from job stats fields counts",
+                ),
+                pd.Series(
+                    [50.0, 100.0, 150.0],
+                    index=["f2", "f1", "f3"],
+                    name="Coverage difference more than 5%",
+                ),
             ],
         ),
         (
@@ -58,8 +63,13 @@ def test_check_fields_coverage(df, expected_messages, expected_stats):
                 create_named_df(
                     {"s": [100.0, 150.0], "t": [53.0, 144.5]},
                     index=["f1", "f2"],
-                    name="Coverage difference in fields counts",
-                )
+                    name="Coverage from job stats fields counts",
+                ),
+                pd.Series(
+                    [5.5, 47.0],
+                    index=["f2", "f1"],
+                    name="Coverage difference more than 5%",
+                ),
             ],
         ),
         (
@@ -70,8 +80,13 @@ def test_check_fields_coverage(df, expected_messages, expected_stats):
                 create_named_df(
                     {"s": [100.0, 150.0], "t": [94.0, 141.0]},
                     index=["f1", "f2"],
-                    name="Coverage difference in fields counts",
-                )
+                    name="Coverage from job stats fields counts",
+                ),
+                pd.Series(
+                    [6.0, 9.0],
+                    index=["f1", "f2"],
+                    name="Coverage difference more than 5%",
+                ),
             ],
         ),
         (
@@ -82,7 +97,7 @@ def test_check_fields_coverage(df, expected_messages, expected_stats):
                 create_named_df(
                     {"s": [100.0], "t": [100.0]},
                     index=["state"],
-                    name="Coverage difference in fields counts",
+                    name="Coverage from job stats fields counts",
                 )
             ],
         ),
