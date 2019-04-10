@@ -16,8 +16,10 @@ Keep a Changelog](https://keepachangelog.com/en/1.0.0/), [Semantic Versioning](h
 
 ### Changed
 - *Fields Coverage* now is printed as a bar plot, #9
-- *Fields Counts* renamed to *Coverage Difference* and is printed as a bar plot, #9
-- *Coverage Difference* finds the absolute difference in coverage in percentage (was difference in ratio before) and plots coverage for both jobs
+- *Fields Counts* renamed to *Coverage Difference* and results in 2 bar plots:
+`Coverage from job stats fields counts` which reflects coverage for each field for both jobs
+`Coverage difference more than 5%` which prints >5% difference between the coverages (was ratio difference before)
+#9, #51
 - *Compare Scraped Categories* renamed to *Category Coverage Difference*
 - Refactored *Category Coverage Difference* to return categories coverage, #9
 - Bar plots xaxis changed from numeric to logarithmic
