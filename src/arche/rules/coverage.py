@@ -26,7 +26,7 @@ def get_difference(source_job, target_job) -> Result:
         target_job: a job to compare
 
     Returns:
-        A Result instance with messages if any and stats with fields counts coverage
+        A Result instance with huge dif and stats with fields counts coverage and dif
     """
     result = Result("Coverage Difference")
 
@@ -48,10 +48,14 @@ def get_difference(source_job, target_job) -> Result:
         get_items_count(target_job)
     )
     f_counts = f_counts.round(2)
-    f_counts.name = "Coverage difference in fields counts"
-    result.stats = [f_counts]
+    f_counts.name = "Coverage from job stats fields counts"
+    result.stats.append(f_counts)
 
     coverage_difs = (f_counts[source_job.key] - f_counts[target_job.key]).abs()
+    coverage_difs = coverage_difs[coverage_difs > 5].sort_values(kind="mergesoft")
+    coverage_difs.name = f"Coverage difference more than 5%"
+    if not coverage_difs.empty:
+        result.stats.append(coverage_difs)
 
     errs = coverage_difs[coverage_difs > 10]
     if not errs.empty:
