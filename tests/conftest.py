@@ -138,7 +138,7 @@ def get_collection_items_mock(mocker, items=default_items, **kwargs):
         count=kwargs.get("count", len(items)),
         filters=kwargs.get("filters", None),
         expand=kwargs.get("expand", True),
-        **kwargs
+        **kwargs,
     )
     return collection_items
 
@@ -164,13 +164,20 @@ def get_items(request):
 
 
 def create_result(
-    rule_name, messages, err_items_count=None, checked_fields=None, items_count=None
+    rule_name,
+    messages,
+    stats=None,
+    err_items_count=None,
+    checked_fields=None,
+    items_count=None,
 ):
     result = Result(rule_name)
     for level, messages in messages.items():
         for message in messages:
             result.add_message(level, *message)
 
+    if stats:
+        result.stats = stats
     if err_items_count:
         result.err_items_count = err_items_count
     if checked_fields:
@@ -178,6 +185,21 @@ def create_result(
     if items_count:
         result.items_count = items_count
     return result
+
+
+def pytest_assertrepr_compare(op, left, right):
+    if isinstance(left, Result) and isinstance(right, Result) and op == "==":
+        assert_msgs = ["Results are equal"]
+        for (left_n, left_v), (_, right_v) in zip(
+            left.__dict__.items(), right.__dict__.items()
+        ):
+            if left_n == "stats":
+                for left_stat, right_stat in zip(left_v, right_v):
+                    if not Result.tensors_equal(left_stat, right_stat):
+                        assert_msgs.extend([f"{left_stat}", "!=", f"{right_stat}"])
+            elif left_v != right_v:
+                assert_msgs.extend([f"{left_v}", "!=", f"{right_v}"])
+        return assert_msgs
 
 
 def create_named_df(data: Dict, index: List[str], name: str) -> pd.DataFrame:

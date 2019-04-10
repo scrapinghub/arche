@@ -10,10 +10,11 @@ def check_fields_coverage(df: pd.DataFrame) -> Result:
     empty_fields = fields_coverage[fields_coverage == 0]
 
     result = Result("Fields Coverage")
+    result.stats = [fields_coverage]
     if empty_fields.empty:
-        result.add_info("PASSED", stats=fields_coverage)
+        result.add_info("PASSED")
     else:
-        result.add_error(f"{len(empty_fields)} empty field(s)", stats=fields_coverage)
+        result.add_error(f"{len(empty_fields)} empty field(s)")
     return result
 
 
@@ -47,8 +48,8 @@ def get_difference(source_job, target_job) -> Result:
         get_items_count(target_job)
     )
     f_counts = f_counts.round(2)
-
     f_counts.name = "Coverage difference in fields counts"
+    result.stats = [f_counts]
 
     coverage_difs = (f_counts[source_job.key] - f_counts[target_job.key]).abs()
 
@@ -60,10 +61,6 @@ def get_difference(source_job, target_job) -> Result:
         result.add_warning(
             f"The difference is between 5% and 10% for {len(warns)} field(s)"
         )
-    if errs.empty and warns.empty:
-        result.add_info("PASSED", stats=f_counts)
-    else:
-        result.add_info("", stats=f_counts)
     return result
 
 
