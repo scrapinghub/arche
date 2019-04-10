@@ -51,17 +51,25 @@ def test_get_coverage_per_category(data, cat_names, expected_messages, expected_
                 create_named_df(
                     {"s": [25.0, 25.0, 50.0], "t": [0.0, 33.33, 66.67]},
                     index=[np.nan, "female", "male"],
-                    name="Coverage difference in sex",
+                    name="Coverage for sex",
+                ),
+                pd.Series(
+                    [25.0, 16.67],
+                    index=[np.nan, "male"],
+                    name="Coverage difference more than 10% for sex",
                 ),
                 create_named_df(
                     {"s": [25.0, 75.0], "t": [0.0, 100.0]},
                     index=["us", "uk"],
-                    name="Coverage difference in country",
+                    name="Coverage for country",
+                ),
+                pd.Series(
+                    [25.0, 25.0],
+                    index=["us", "uk"],
+                    name="Coverage difference more than 10% for country",
                 ),
                 create_named_df(
-                    {"s": [100.0], "t": [100.0]},
-                    index=[25],
-                    name="Coverage difference in age",
+                    {"s": [100.0], "t": [100.0]}, index=[25], name="Coverage for age"
                 ),
             ],
         )

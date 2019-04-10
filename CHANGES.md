@@ -19,8 +19,9 @@ Note that the top-most release is changes in the unreleased master branch on Git
 - *Fields Counts* renamed to *Coverage Difference* and results in 2 bar plots, #9, #51:
    * *Coverage from job stats fields counts* which reflects coverage for each field for both jobs
    * *Coverage difference more than 5%* which prints >5% difference between the coverages (was ratio difference before)
-- *Compare Scraped Categories* renamed to *Category Coverage Difference*
-- Refactored *Category Coverage Difference* to return categories coverage, #9
+- *Compare Scraped Categories* renamed to *Category Coverage Difference* and results in 2 bar plots for each category, #52:
+   * *Coverage for `field`* which reflects value counts (categories) coverage for the field for both jobs
+   * *Coverage difference more than 10% for `field`* which shows >10% differences between the category coverages
 - Bar plots xaxis changed from numeric to logarithmic
 
 ### Removed
