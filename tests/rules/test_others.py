@@ -13,15 +13,11 @@ compare_bool_data = [
     (
         {"b": [True, True]},
         {"b": [False, False]},
-        {
-            Level.ERROR: [
-                (("b_False, b_True relative frequencies differ by more than 10%"),)
-            ]
-        },
+        {Level.ERROR: [(("b relative frequencies differ by more than 10%"),)]},
         [
             create_df(
-                {"source": [0.0, 100.0], "target": [100.0, 0.0]},
-                index=["b_False", "b_True"],
+                {True: [100.0, 0.0], False: [0.0, 100.0]},
+                index=["b_source", "b_target"],
             )
         ],
     ),
@@ -34,23 +30,24 @@ compare_bool_data = [
     ({"bool_f": [True]}, {"str_f": ["True", "True"]}, {Level.INFO: [("SKIPPED",)]}, []),
     ({"str_f": ["True"]}, {"bool_f": [True]}, {Level.INFO: [("SKIPPED",)]}, []),
     (
-        {"boolean_field": [True, True, True]},
-        {"boolean_field": [True]},
+        {"b": [True, True, True]},
+        {"b": [True]},
         {Level.INFO: [("PASSED",)]},
         [
             create_df(
-                {"source": [100.0], "target": [100.0]}, index=["boolean_field_True"]
+                {True: [100.0, 100.0], False: [0.0, 0.0]},
+                index=["b_source", "b_target"],
             )
         ],
     ),
     (
-        {"b1": [True for x in range(9)] + [False]},
-        {"b1": [True for x in range(9)]},
-        {Level.WARNING: [("b1_False, b1_True relative frequencies differ by 5-10%",)]},
+        {"b": [True for x in range(9)] + [False]},
+        {"b": [True for x in range(9)]},
+        {Level.WARNING: [("b relative frequencies differ by 5-10%",)]},
         [
             create_df(
-                {"source": [10.0, 90.0], "target": [0.0, 100.0]},
-                index=["b1_False", "b1_True"],
+                {True: [90.0, 100.0], False: [10.0, 0.0]},
+                index=["b_source", "b_target"],
             )
         ],
     ),

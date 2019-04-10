@@ -7,6 +7,12 @@ import pandas as pd
 
 
 def compare_boolean_fields(source_df: pd.DataFrame, target_df: pd.DataFrame):
+    """Compare booleans distribution between two dataframes
+
+    Returns:
+        A result containing dataframe with distributions and messages if difference
+        greater than 5%
+    """
     source_bool = source_df.select_dtypes(include="bool")
     target_bool = target_df.select_dtypes(include="bool")
 
@@ -15,20 +21,23 @@ def compare_boolean_fields(source_df: pd.DataFrame, target_df: pd.DataFrame):
         result.add_info("SKIPPED")
         return result
 
-    lefts = []
-    for c in source_bool:
-        lefts.append(source_bool[c].value_counts(normalize=True).add_prefix(f"{c}_"))
-    b_ = pd.concat(lefts)
+    dummy = pd.DataFrame(columns=[True, False])
+    source_counts = pd.concat(
+        [dummy, source_bool.apply(pd.value_counts, normalize=True).T * 100], sort=False
+    ).fillna(0.0)
+    target_counts = pd.concat(
+        [dummy, target_bool.apply(pd.value_counts, normalize=True).T * 100], sort=False
+    ).fillna(0.0)
+    difs = (source_counts - target_counts).abs()[True]
 
-    rights = []
-    for c in target_bool:
-        rights.append(target_bool[c].value_counts(normalize=True).add_prefix(f"{c}_"))
-    s_ = pd.concat(rights)
-    bool_covs = pd.DataFrame({"source": b_, "target": s_}).fillna(0) * 100
+    bool_covs = pd.concat(
+        [
+            source_counts.rename("{}_source".format),
+            target_counts.rename("{}_target".format),
+        ]
+    ).sort_index()
     bool_covs.name = "Coverage for boolean fields"
     result.stats.append(bool_covs)
-
-    difs = (bool_covs["source"] - bool_covs["target"]).abs()
 
     err_diffs = difs[difs > 10]
     if not err_diffs.empty:
