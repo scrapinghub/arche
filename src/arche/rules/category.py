@@ -30,12 +30,13 @@ def get_difference(
             .fillna(0)
             .sort_values(by=[source_key, target_key], kind="mergesort")
         )
-        cats.name = f"Coverage difference in {c}"
+        cats.name = f"Coverage for {c}"
         result.stats.append(cats)
         cat_difs = ((cats[source_key] - cats[target_key])).abs()
-        cat_difs.name = (
-            f"Coverage difference between {source_key}'s and {target_key}'s {c}"
-        )
+        cat_difs = cat_difs[cat_difs > 10]
+        cat_difs.name = f"Coverage difference more than 10% for {c}"
+        if not cat_difs.empty:
+            result.stats.append(cat_difs)
         errs = cat_difs[cat_difs > 20]
         if not errs.empty:
             result.add_warning(
