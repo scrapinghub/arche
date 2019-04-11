@@ -6,43 +6,53 @@ import numpy as np
 import pandas as pd
 
 
-def compare_boolean_fields(source_df, target_df):
+def compare_boolean_fields(source_df: pd.DataFrame, target_df: pd.DataFrame):
+    """Compare booleans distribution between two dataframes
+
+    Returns:
+        A result containing dataframe with distributions and messages if difference
+        greater than 5%
+    """
     source_bool = source_df.select_dtypes(include="bool")
     target_bool = target_df.select_dtypes(include="bool")
 
     result = Result("Boolean Fields")
     if not fields_to_compare(source_bool, target_bool):
-        result.add_info("No fields to compare")
+        result.add_info("SKIPPED")
         return result
 
-    source_relative_fr = get_bool_relative_frequency(source_bool)
-    target_relative_fr = get_bool_relative_frequency(target_bool)
-    relative_diffs = abs(source_relative_fr - target_relative_fr) * 100
+    dummy = pd.DataFrame(columns=[True, False])
+    source_counts = pd.concat(
+        [dummy, source_bool.apply(pd.value_counts, normalize=True).T * 100], sort=False
+    ).fillna(0.0)
+    target_counts = pd.concat(
+        [dummy, target_bool.apply(pd.value_counts, normalize=True).T * 100], sort=False
+    ).fillna(0.0)
+    difs = (source_counts - target_counts).abs()[True]
 
-    err_diffs = relative_diffs[(relative_diffs > 10).all(1)]
+    bool_covs = pd.concat(
+        [
+            source_counts.rename("{}_source".format),
+            target_counts.rename("{}_target".format),
+        ]
+    ).sort_index()
+    bool_covs.name = "Coverage for boolean fields"
+    result.stats.append(bool_covs)
+
+    err_diffs = difs[difs > 10]
     if not err_diffs.empty:
         result.add_error(
-            (
-                f"{err_diffs.index.values} relative frequencies differ "
-                "by more than 10%"
-            ),
-            err_diffs.to_string(),
+            f"{', '.join(err_diffs.index)} relative frequencies differ "
+            "by more than 10%"
         )
 
-    warn_diffs = relative_diffs[((relative_diffs <= 10) & (relative_diffs > 5)).all(1)]
+    warn_diffs = difs[(difs <= 10) & (difs > 5)]
     if not warn_diffs.empty:
         result.add_warning(
-            f"{warn_diffs.index.values} relative frequencies differ by 5-10%",
-            warn_diffs.to_string(),
+            f"{', '.join(warn_diffs.index)} relative frequencies differ by 5-10%"
         )
     if err_diffs.empty and warn_diffs.empty:
-        result.add_info(
-            f"{relative_diffs.index.values} relative frequencies are equal "
-            "or differ by less than 5%",
-            relative_diffs.to_string(
-                header=["Difference in False, %", "Difference in True, %"]
-            ),
-        )
+        result.add_info("PASSED")
 
     return result
 
@@ -57,16 +67,6 @@ def fields_to_compare(source_df, target_df):
     ):
         return True
     return False
-
-
-def get_bool_relative_frequency(bool_df):
-    return pd.concat(
-        [
-            bool_df.apply(pd.value_counts, normalize=True).T,
-            pd.DataFrame(columns=[False, True]),
-        ],
-        sort=False,
-    ).fillna(0)
 
 
 def garbage_symbols(items: Items) -> Result:

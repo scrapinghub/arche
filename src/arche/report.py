@@ -98,6 +98,9 @@ class Report:
         )
         if stat.name.startswith("Coverage"):
             layout.xaxis.title = "log scale (%)"
+
+        if stat.name == "Coverage for boolean fields":
+            layout.barmode = "stack"
         f = go.FigureWidget(data, layout)
 
         if stat.name == "Fields coverage":
