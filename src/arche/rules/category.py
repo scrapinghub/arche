@@ -12,19 +12,15 @@ def get_difference(
     category_names: List,
 ):
     result = Result("Category Coverage Difference")
+    warn_thr = 0.10
+    err_thr = 0.20
 
     for c in category_names:
         cats = (
             pd.DataFrame(
                 {
-                    source_key: source_df[c]
-                    .value_counts(dropna=False, normalize=True)
-                    .mul(100)
-                    .round(decimals=2),
-                    target_key: target_df[c]
-                    .value_counts(dropna=False, normalize=True)
-                    .mul(100)
-                    .round(decimals=2),
+                    source_key: source_df[c].value_counts(dropna=False, normalize=True),
+                    target_key: target_df[c].value_counts(dropna=False, normalize=True),
                 }
             )
             .fillna(0)
@@ -33,14 +29,14 @@ def get_difference(
         cats.name = f"Coverage for {c}"
         result.stats.append(cats)
         cat_difs = ((cats[source_key] - cats[target_key])).abs()
-        cat_difs = cat_difs[cat_difs > 10]
-        cat_difs.name = f"Coverage difference more than 10% for {c}"
+        cat_difs = cat_difs[cat_difs > warn_thr]
+        cat_difs.name = f"Coverage difference more than {warn_thr:.0%} for {c}"
         if not cat_difs.empty:
             result.stats.append(cat_difs)
-        errs = cat_difs[cat_difs > 20]
+        errs = cat_difs[cat_difs > err_thr]
         if not errs.empty:
             result.add_warning(
-                f"The difference is greater than 20% for {len(errs)} value(s) of {c}"
+                f"The difference is greater than {err_thr:.0%} for {len(errs)} value(s) of {c}"
             )
 
     return result
