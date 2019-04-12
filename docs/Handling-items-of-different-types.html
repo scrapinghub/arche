@@ -1,12 +1,10 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Handling items of different types &#8212; Arche 2019.03.18 documentation</title>
+    <meta charset="utf-8" />
+    <title>Handling items of different types &#8212; Arche 2019.03.25 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -38,14 +36,14 @@
 <h1>Handling items of different types<a class="headerlink" href="#handling-items-of-different-types" title="Permalink to this headline">¶</a></h1>
 <p>A data source could contain items of different types, which can be handled with some preparation:</p>
 <ul class="simple">
-<li>Create one schema per item type choosing homogeneous items  <code class="docutils literal notranslate"><span class="pre">basic_json_schema('job_key',</span> <span class="pre">items_number=[0,1)</span></code></li>
-<li>Pass a filter argument to choose items of one type - <code class="docutils literal notranslate"><span class="pre">Arche(source='000000/000/0',</span> <span class="pre">schema=schema,</span> <span class="pre">filter=[(&quot;_type&quot;,</span> <span class="pre">&quot;=&quot;,</span> <span class="pre">[&quot;ItemType&quot;])])</span></code></li>
-<li>Repeat the previous steps for each item type</li>
+<li><p>Create one schema per item type choosing homogeneous items  <code class="docutils literal notranslate"><span class="pre">basic_json_schema('job_key',</span> <span class="pre">items_number=[0,1)</span></code></p></li>
+<li><p>Pass a filter argument to choose items of one type - <code class="docutils literal notranslate"><span class="pre">Arche(source='000000/000/0',</span> <span class="pre">schema=schema,</span> <span class="pre">filter=[(&quot;_type&quot;,</span> <span class="pre">&quot;=&quot;,</span> <span class="pre">[&quot;ItemType&quot;])])</span></code></p></li>
+<li><p>Repeat the previous steps for each item type</p></li>
 </ul>
 <p>The library also supports other API arguments, such as <code class="docutils literal notranslate"><span class="pre">count,</span> <span class="pre">start</span></code>. The complete list of arguments is available in Scrapinghub Python API documentation:</p>
 <ul class="simple">
-<li>https://python-scrapinghub.readthedocs.io/en/latest/client/apidocs.html#scrapinghub.client.items.Items.iter</li>
-<li>https://python-scrapinghub.readthedocs.io/en/latest/client/apidocs.html#scrapinghub.client.collections.Collection.iter</li>
+<li><p>https://python-scrapinghub.readthedocs.io/en/latest/client/apidocs.html#scrapinghub.client.items.Items.iter</p></li>
+<li><p>https://python-scrapinghub.readthedocs.io/en/latest/client/apidocs.html#scrapinghub.client.collections.Collection.iter</p></li>
 </ul>
 </div>
 
@@ -91,8 +89,6 @@
     <form class="search" action="search.html" method="get">
       <input type="text" name="q" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
@@ -113,7 +109,7 @@
       &copy;2018-2019, Arche developers.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

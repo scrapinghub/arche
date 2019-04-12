@@ -1,12 +1,10 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>arche.report module &#8212; Arche 2019.03.18 documentation</title>
+    <meta charset="utf-8" />
+    <title>arche.report module &#8212; Arche 2019.03.25 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -41,8 +39,13 @@
 <em class="property">class </em><code class="descclassname">arche.report.</code><code class="descname">Report</code><a class="headerlink" href="#arche.report.Report" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <dl class="staticmethod">
+<dt id="arche.report.Report.make_annotations">
+<em class="property">static </em><code class="descname">make_annotations</code><span class="sig-paren">(</span><em>stat: Union[pandas.core.series.Series, pandas.core.frame.DataFrame]</em><span class="sig-paren">)</span> &#x2192; List[Dict[KT, VT]]<a class="headerlink" href="#arche.report.Report.make_annotations" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
 <dt id="arche.report.Report.plot">
-<em class="property">static </em><code class="descname">plot</code><span class="sig-paren">(</span><em>stats</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.report.Report.plot" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="descname">plot</code><span class="sig-paren">(</span><em>stat: Union[pandas.core.series.Series, pandas.core.frame.DataFrame]</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#arche.report.Report.plot" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="classmethod">
@@ -52,57 +55,52 @@
 
 <dl class="method">
 <dt id="arche.report.Report.save">
-<code class="descname">save</code><span class="sig-paren">(</span><em>result</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.report.Report.save" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="arche.report.Report.wipe">
-<code class="descname">wipe</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arche.report.Report.wipe" title="Permalink to this definition">¶</a></dt>
+<code class="descname">save</code><span class="sig-paren">(</span><em>result: arche.rules.result.Result</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#arche.report.Report.save" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="classmethod">
 <dt id="arche.report.Report.write">
-<em class="property">classmethod </em><code class="descname">write</code><span class="sig-paren">(</span><em>text</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.report.Report.write" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="descname">write</code><span class="sig-paren">(</span><em>text: str</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#arche.report.Report.write" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="staticmethod">
 <dt id="arche.report.Report.write_color_text">
-<em class="property">static </em><code class="descname">write_color_text</code><span class="sig-paren">(</span><em>text</em>, <em>color='\x1b[31m'</em>, <em>style=''</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.report.Report.write_color_text" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="descname">write_color_text</code><span class="sig-paren">(</span><em>text: str</em>, <em>color: &lt;colorama.ansi.AnsiFore object at 0x1106cc860&gt; = '\x1b[31m'</em>, <em>style: &lt;colorama.ansi.AnsiStyle object at 0x1106cc8d0&gt; = '\x1b[0m'</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#arche.report.Report.write_color_text" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="classmethod">
 <dt id="arche.report.Report.write_detailed_errors">
-<em class="property">classmethod </em><code class="descname">write_detailed_errors</code><span class="sig-paren">(</span><em>errors: dict</em>, <em>short: bool</em>, <em>keys_limit: int</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.report.Report.write_detailed_errors" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="descname">write_detailed_errors</code><span class="sig-paren">(</span><em>errors: Dict[KT, VT], short: bool, keys_limit: int</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#arche.report.Report.write_detailed_errors" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="arche.report.Report.write_details">
-<code class="descname">write_details</code><span class="sig-paren">(</span><em>short: bool = False</em>, <em>keys_limit: int = 10</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.report.Report.write_details" title="Permalink to this definition">¶</a></dt>
+<code class="descname">write_details</code><span class="sig-paren">(</span><em>short: bool = False</em>, <em>keys_limit: int = 10</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#arche.report.Report.write_details" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="classmethod">
 <dt id="arche.report.Report.write_rule_details">
-<em class="property">classmethod </em><code class="descname">write_rule_details</code><span class="sig-paren">(</span><em>result: arche.rules.result.Result</em>, <em>short: bool = False</em>, <em>keys_limit: int = 10</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.report.Report.write_rule_details" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="descname">write_rule_details</code><span class="sig-paren">(</span><em>result: arche.rules.result.Result</em>, <em>short: bool = False</em>, <em>keys_limit: int = 10</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#arche.report.Report.write_rule_details" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="staticmethod">
 <dt id="arche.report.Report.write_rule_name">
-<em class="property">static </em><code class="descname">write_rule_name</code><span class="sig-paren">(</span><em>rule_name</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.report.Report.write_rule_name" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="descname">write_rule_name</code><span class="sig-paren">(</span><em>rule_name: str</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#arche.report.Report.write_rule_name" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="classmethod">
 <dt id="arche.report.Report.write_rule_outcome">
-<em class="property">classmethod </em><code class="descname">write_rule_outcome</code><span class="sig-paren">(</span><em>result</em>, <em>level=&lt;Level.INFO: 0&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.report.Report.write_rule_outcome" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="descname">write_rule_outcome</code><span class="sig-paren">(</span><em>result: arche.rules.result.Result</em>, <em>level: arche.rules.result.Level = &lt;Level.INFO: 0&gt;</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#arche.report.Report.write_rule_outcome" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="arche.report.Report.write_summaries">
-<code class="descname">write_summaries</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arche.report.Report.write_summaries" title="Permalink to this definition">¶</a></dt>
+<code class="descname">write_summaries</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#arche.report.Report.write_summaries" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="classmethod">
 <dt id="arche.report.Report.write_summary">
-<em class="property">classmethod </em><code class="descname">write_summary</code><span class="sig-paren">(</span><em>result: arche.rules.result.Result</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.report.Report.write_summary" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="descname">write_summary</code><span class="sig-paren">(</span><em>result: arche.rules.result.Result</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#arche.report.Report.write_summary" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -158,8 +156,6 @@
     <form class="search" action="../search.html" method="get">
       <input type="text" name="q" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
@@ -180,7 +176,7 @@
       &copy;2018-2019, Arche developers.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

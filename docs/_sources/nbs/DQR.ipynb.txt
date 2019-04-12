@@ -1,0 +1,813 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Data Quality Report"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {
+    "ExecuteTime": {
+     "end_time": "2019-03-26T20:53:09.184825Z",
+     "start_time": "2019-03-26T20:53:09.175845Z"
+    }
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "/Users/valery/Documents/_code/arche/src\n"
+     ]
+    }
+   ],
+   "source": [
+    "%cd ../../../src"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {
+    "ExecuteTime": {
+     "end_time": "2019-03-26T20:53:32.861848Z",
+     "start_time": "2019-03-26T20:53:32.856776Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<script type=\"text/javascript\">window.PlotlyConfig = {MathJaxConfig: 'local'};</script><script type=\"text/javascript\">if (window.MathJax) {MathJax.Hub.Config({SVG: {font: \"STIX-Web\"}});}</script><script>requirejs.config({paths: { 'plotly': ['https://cdn.plot.ly/plotly-latest.min']},});if(!window._Plotly) {require(['plotly'],function(plotly) {window._Plotly=plotly;});}</script>"
+      ],
+      "text/vnd.plotly.v1+html": [
+       "<script type=\"text/javascript\">window.PlotlyConfig = {MathJaxConfig: 'local'};</script><script type=\"text/javascript\">if (window.MathJax) {MathJax.Hub.Config({SVG: {font: \"STIX-Web\"}});}</script><script>requirejs.config({paths: { 'plotly': ['https://cdn.plot.ly/plotly-latest.min']},});if(!window._Plotly) {require(['plotly'],function(plotly) {window._Plotly=plotly;});}</script>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "from arche import *"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {
+    "ExecuteTime": {
+     "end_time": "2019-03-26T20:53:13.002701Z",
+     "start_time": "2019-03-26T20:53:12.996232Z"
+    }
+   },
+   "outputs": [],
+   "source": [
+    "schema = {\n",
+    "    \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n",
+    "    \"definitions\": {\n",
+    "        \"float\": {\n",
+    "            \"pattern\": \"^-?[0-9]+\\\\.[0-9]{2}$\"\n",
+    "        },\n",
+    "        \"url\": {\n",
+    "            \"pattern\": \"^https?://(www\\\\.)?[a-z0-9.-]*\\\\.[a-z]{2,}([^<>%\\\\x20\\\\x00-\\\\x1f\\\\x7F]|%[0-9a-fA-F]{2})*$\"\n",
+    "        }\n",
+    "    },\n",
+    "    \"additionalProperties\": False,\n",
+    "    \"type\": \"object\",\n",
+    "    \"properties\": {\n",
+    "        \"category\": {\"type\": \"string\", \"tag\": [\"category\"]},\n",
+    "        \"price\": {\"type\": \"string\", \"pattern\": \"^£\\d{2}.\\d{2}$\"},\n",
+    "        \"_type\": {\"type\": \"string\"},\n",
+    "        \"description\": {\"type\": \"string\"},\n",
+    "        \"title\": {\"type\": \"string\", \"tag\": [\"unique\"]},\n",
+    "        \"_key\": {\"type\": \"string\"}\n",
+    "    },\n",
+    "    \"required\": [\n",
+    "        \"_key\",\n",
+    "        \"_type\",\n",
+    "        \"category\",\n",
+    "        \"description\",\n",
+    "        \"price\",\n",
+    "        \"title\"\n",
+    "    ]\n",
+    "}"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {
+    "ExecuteTime": {
+     "end_time": "2019-03-26T21:02:27.787232Z",
+     "start_time": "2019-03-26T21:02:27.777820Z"
+    },
+    "scrolled": false
+   },
+   "outputs": [],
+   "source": [
+    "a = Arche(\"381798/1/2\", schema=schema)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {
+    "ExecuteTime": {
+     "end_time": "2019-03-26T21:03:29.207553Z",
+     "start_time": "2019-03-26T21:03:14.648303Z"
+    },
+    "scrolled": false
+   },
+   "outputs": [
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "6c4576895fd34ab2a7dfcdfd7936f96d",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": [
+       "HBox(children=(IntProgress(value=0, description='Fetching 0:1000 from 381798/1/2', max=1000, style=ProgressSty…"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "\n"
+     ]
+    },
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "289a81a516284854944b499bd2a5f46f",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": [
+       "HBox(children=(IntProgress(value=0, description='JSON Schema Validation', max=1000, style=ProgressStyle(descri…"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "\n"
+     ]
+    },
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "099cb00762c24dd3bb341c8e76ffadf6",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": [
+       "HBox(children=(IntProgress(value=0, description='Flattening df', max=6, style=ProgressStyle(description_width=…"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "\n"
+     ]
+    },
+    {
+     "data": {
+      "application/vnd.plotly.v1+json": {
+       "config": {
+        "linkText": "Export to plot.ly",
+        "plotlyServerURL": "https://plot.ly",
+        "showLink": false
+       },
+       "data": [
+        {
+         "cells": {
+          "fill": {
+           "color": [
+            [
+             "rgb(112,194,99)"
+            ]
+           ]
+          },
+          "font": {
+           "color": "black",
+           "size": 20
+          },
+          "values": [
+           [
+            "<b>Overall Quality Score</b>"
+           ],
+           [
+            "<b>81</b>"
+           ]
+          ]
+         },
+         "header": {
+          "fill": {
+           "color": "gray"
+          },
+          "font": {
+           "color": "black",
+           "size": 20
+          },
+          "values": [
+           "<b>Field Accuracy Score</b>",
+           "<b>75<b>"
+          ]
+         },
+         "type": "table",
+         "uid": "aaffaacb-33e7-41ef-8a4c-18e93393f3a4"
+        }
+       ],
+       "layout": {
+        "autosize": true,
+        "margin": {
+         "b": 25,
+         "l": 0,
+         "r": 0,
+         "t": 25
+        }
+       }
+      },
+      "text/html": [
+       "<div id=\"8efca72a-b5d4-43a5-9ba6-04b1c97626d1\" style=\"height: 150px; width: 100%;\" class=\"plotly-graph-div\"></div><script type=\"text/javascript\">require([\"plotly\"], function(Plotly) { window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL=\"https://plot.ly\";\n",
+       "if (document.getElementById(\"8efca72a-b5d4-43a5-9ba6-04b1c97626d1\")) {\n",
+       "    Plotly.newPlot(\"8efca72a-b5d4-43a5-9ba6-04b1c97626d1\", [{\"cells\": {\"fill\": {\"color\": [[\"rgb(112,194,99)\"]]}, \"font\": {\"color\": \"black\", \"size\": 20}, \"values\": [[\"<b>Overall Quality Score</b>\"], [\"<b>81</b>\"]]}, \"header\": {\"fill\": {\"color\": \"gray\"}, \"font\": {\"color\": \"black\", \"size\": 20}, \"values\": [\"<b>Field Accuracy Score</b>\", \"<b>75<b>\"]}, \"type\": \"table\", \"uid\": \"23c2dc37-2330-466e-aa45-480ed54265d9\"}], {\"autosize\": true, \"height\": 150, \"margin\": {\"b\": 25, \"l\": 0, \"r\": 0, \"t\": 25}}, {\"showLink\": false, \"linkText\": \"Export to plot.ly\", \"plotlyServerURL\": \"https://plot.ly\"}); \n",
+       "}\n",
+       "});</script><script type=\"text/javascript\">window.addEventListener(\"resize\", function(){if (document.getElementById(\"8efca72a-b5d4-43a5-9ba6-04b1c97626d1\")) {window._Plotly.Plots.resize(document.getElementById(\"8efca72a-b5d4-43a5-9ba6-04b1c97626d1\"));};})</script>"
+      ],
+      "text/vnd.plotly.v1+html": [
+       "<div id=\"8efca72a-b5d4-43a5-9ba6-04b1c97626d1\" style=\"height: 150px; width: 100%;\" class=\"plotly-graph-div\"></div><script type=\"text/javascript\">require([\"plotly\"], function(Plotly) { window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL=\"https://plot.ly\";\n",
+       "if (document.getElementById(\"8efca72a-b5d4-43a5-9ba6-04b1c97626d1\")) {\n",
+       "    Plotly.newPlot(\"8efca72a-b5d4-43a5-9ba6-04b1c97626d1\", [{\"cells\": {\"fill\": {\"color\": [[\"rgb(112,194,99)\"]]}, \"font\": {\"color\": \"black\", \"size\": 20}, \"values\": [[\"<b>Overall Quality Score</b>\"], [\"<b>81</b>\"]]}, \"header\": {\"fill\": {\"color\": \"gray\"}, \"font\": {\"color\": \"black\", \"size\": 20}, \"values\": [\"<b>Field Accuracy Score</b>\", \"<b>75<b>\"]}, \"type\": \"table\", \"uid\": \"23c2dc37-2330-466e-aa45-480ed54265d9\"}], {\"autosize\": true, \"height\": 150, \"margin\": {\"b\": 25, \"l\": 0, \"r\": 0, \"t\": 25}}, {\"showLink\": false, \"linkText\": \"Export to plot.ly\", \"plotlyServerURL\": \"https://plot.ly\"}); \n",
+       "}\n",
+       "});</script><script type=\"text/javascript\">window.addEventListener(\"resize\", function(){if (document.getElementById(\"8efca72a-b5d4-43a5-9ba6-04b1c97626d1\")) {window._Plotly.Plots.resize(document.getElementById(\"8efca72a-b5d4-43a5-9ba6-04b1c97626d1\"));};})</script>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "data": {
+      "application/vnd.plotly.v1+json": {
+       "config": {
+        "linkText": "Export to plot.ly",
+        "plotlyServerURL": "https://plot.ly",
+        "showLink": false
+       },
+       "data": [
+        {
+         "cells": {
+          "align": [
+           "left",
+           "left",
+           "left",
+           "left",
+           "left"
+          ],
+          "fill": {
+           "color": "lightgrey"
+          },
+          "font": {
+           "color": "black",
+           "size": 12
+          },
+          "height": 25,
+          "values": [
+           [
+            "Job URL",
+            "Spider State",
+            "Spider Close Reason",
+            "Number of Scraped Items",
+            "Number of Errors",
+            "Runtime",
+            "Request Success Ratio [requests/scraped items]",
+            "Crawling Speed [items/min]",
+            "Crawlera user",
+            "Max Memory Usage [Bytes]",
+            "Response Status Count"
+           ],
+           [
+            "<a href=\"https://app.scrapinghub.com/p/381798/1/2\">https://app.scrapinghub.com/p/381798/1/2</a>",
+            "finished",
+            "finished",
+            1000,
+            0,
+            "0:00:00.049589",
+            1.05,
+            0.001,
+            "Not Used",
+            52572160,
+            "200: 1050<br>301: 0<br>404: 1<br>503: 0<br>"
+           ]
+          ]
+         },
+         "columnorder": [
+          1,
+          2
+         ],
+         "columnwidth": [
+          300,
+          200
+         ],
+         "header": {
+          "align": [
+           "left",
+           "left",
+           "left",
+           "left",
+           "left"
+          ],
+          "fill": {
+           "color": "gray"
+          },
+          "font": {
+           "color": "black",
+           "size": 14
+          },
+          "height": 30,
+          "values": [
+           "<b>Job Stat</b>",
+           "<b>Stat Value</b>"
+          ]
+         },
+         "type": "table",
+         "uid": "6422552a-92b4-4d05-bc8b-cfff97fcd7e4"
+        }
+       ],
+       "layout": {
+        "autosize": true,
+        "margin": {
+         "b": 25,
+         "l": 0,
+         "r": 0,
+         "t": 40
+        },
+        "title": {
+         "text": "Summary for spider books"
+        }
+       }
+      },
+      "text/html": [
+       "<div id=\"2cb5c342-c485-4f3f-8fb9-ef53231d7f4d\" style=\"height: 445px; width: 100%;\" class=\"plotly-graph-div\"></div><script type=\"text/javascript\">require([\"plotly\"], function(Plotly) { window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL=\"https://plot.ly\";\n",
+       "if (document.getElementById(\"2cb5c342-c485-4f3f-8fb9-ef53231d7f4d\")) {\n",
+       "    Plotly.newPlot(\"2cb5c342-c485-4f3f-8fb9-ef53231d7f4d\", [{\"cells\": {\"align\": [\"left\", \"left\", \"left\", \"left\", \"left\"], \"fill\": {\"color\": \"lightgrey\"}, \"font\": {\"color\": \"black\", \"size\": 12}, \"height\": 25, \"values\": [[\"Job URL\", \"Spider State\", \"Spider Close Reason\", \"Number of Scraped Items\", \"Number of Errors\", \"Runtime\", \"Request Success Ratio [requests/scraped items]\", \"Crawling Speed [items/min]\", \"Crawlera user\", \"Max Memory Usage [Bytes]\", \"Response Status Count\"], [\"<a href=\\\"https://app.scrapinghub.com/p/381798/1/2\\\">https://app.scrapinghub.com/p/381798/1/2</a>\", \"finished\", \"finished\", 1000, 0, \"0:00:00.049589\", 1.05, 0.001, \"Not Used\", 52572160, \"200: 1050<br>301: 0<br>404: 1<br>503: 0<br>\"]]}, \"columnorder\": [1, 2], \"columnwidth\": [300, 200], \"header\": {\"align\": [\"left\", \"left\", \"left\", \"left\", \"left\"], \"fill\": {\"color\": \"gray\"}, \"font\": {\"color\": \"black\", \"size\": 14}, \"height\": 30, \"values\": [\"<b>Job Stat</b>\", \"<b>Stat Value</b>\"]}, \"type\": \"table\", \"uid\": \"bad4ea24-865d-470d-b464-ee70a59885e4\"}], {\"autosize\": true, \"height\": 445, \"margin\": {\"b\": 25, \"l\": 0, \"r\": 0, \"t\": 40}, \"title\": {\"text\": \"Summary for spider books\"}}, {\"showLink\": false, \"linkText\": \"Export to plot.ly\", \"plotlyServerURL\": \"https://plot.ly\"}); \n",
+       "}\n",
+       "});</script><script type=\"text/javascript\">window.addEventListener(\"resize\", function(){if (document.getElementById(\"2cb5c342-c485-4f3f-8fb9-ef53231d7f4d\")) {window._Plotly.Plots.resize(document.getElementById(\"2cb5c342-c485-4f3f-8fb9-ef53231d7f4d\"));};})</script>"
+      ],
+      "text/vnd.plotly.v1+html": [
+       "<div id=\"2cb5c342-c485-4f3f-8fb9-ef53231d7f4d\" style=\"height: 445px; width: 100%;\" class=\"plotly-graph-div\"></div><script type=\"text/javascript\">require([\"plotly\"], function(Plotly) { window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL=\"https://plot.ly\";\n",
+       "if (document.getElementById(\"2cb5c342-c485-4f3f-8fb9-ef53231d7f4d\")) {\n",
+       "    Plotly.newPlot(\"2cb5c342-c485-4f3f-8fb9-ef53231d7f4d\", [{\"cells\": {\"align\": [\"left\", \"left\", \"left\", \"left\", \"left\"], \"fill\": {\"color\": \"lightgrey\"}, \"font\": {\"color\": \"black\", \"size\": 12}, \"height\": 25, \"values\": [[\"Job URL\", \"Spider State\", \"Spider Close Reason\", \"Number of Scraped Items\", \"Number of Errors\", \"Runtime\", \"Request Success Ratio [requests/scraped items]\", \"Crawling Speed [items/min]\", \"Crawlera user\", \"Max Memory Usage [Bytes]\", \"Response Status Count\"], [\"<a href=\\\"https://app.scrapinghub.com/p/381798/1/2\\\">https://app.scrapinghub.com/p/381798/1/2</a>\", \"finished\", \"finished\", 1000, 0, \"0:00:00.049589\", 1.05, 0.001, \"Not Used\", 52572160, \"200: 1050<br>301: 0<br>404: 1<br>503: 0<br>\"]]}, \"columnorder\": [1, 2], \"columnwidth\": [300, 200], \"header\": {\"align\": [\"left\", \"left\", \"left\", \"left\", \"left\"], \"fill\": {\"color\": \"gray\"}, \"font\": {\"color\": \"black\", \"size\": 14}, \"height\": 30, \"values\": [\"<b>Job Stat</b>\", \"<b>Stat Value</b>\"]}, \"type\": \"table\", \"uid\": \"bad4ea24-865d-470d-b464-ee70a59885e4\"}], {\"autosize\": true, \"height\": 445, \"margin\": {\"b\": 25, \"l\": 0, \"r\": 0, \"t\": 40}, \"title\": {\"text\": \"Summary for spider books\"}}, {\"showLink\": false, \"linkText\": \"Export to plot.ly\", \"plotlyServerURL\": \"https://plot.ly\"}); \n",
+       "}\n",
+       "});</script><script type=\"text/javascript\">window.addEventListener(\"resize\", function(){if (document.getElementById(\"2cb5c342-c485-4f3f-8fb9-ef53231d7f4d\")) {window._Plotly.Plots.resize(document.getElementById(\"2cb5c342-c485-4f3f-8fb9-ef53231d7f4d\"));};})</script>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "data": {
+      "application/vnd.plotly.v1+json": {
+       "config": {
+        "linkText": "Export to plot.ly",
+        "plotlyServerURL": "https://plot.ly",
+        "showLink": false
+       },
+       "data": [
+        {
+         "cells": {
+          "align": "left",
+          "fill": {
+           "color": [
+            "lightgrey",
+            "lightgrey",
+            "lightgrey",
+            [
+             "rgb(233,81,51)",
+             "rgb(233,81,51)",
+             "rgb(112,194,99)"
+            ]
+           ]
+          },
+          "font": {
+           "color": "black",
+           "size": 12
+          },
+          "height": 25,
+          "values": [
+           [
+            "Adherence to schema",
+            "Duplicated Field Values",
+            "Garbage Symbols"
+           ],
+           [
+            "All scraped fields",
+            [
+             "title"
+            ],
+            "All scraped fields"
+           ],
+           [
+            "1 warnings",
+            "2 warnings",
+            "0 warnings (1000 items checked)"
+           ],
+           [
+            "Fail",
+            "Fail",
+            "Pass"
+           ]
+          ]
+         },
+         "columnwidth": [
+          100,
+          230,
+          140,
+          40
+         ],
+         "header": {
+          "align": "left",
+          "fill": {
+           "color": "gray"
+          },
+          "font": {
+           "color": "black",
+           "size": 14
+          },
+          "values": [
+           "Test Name",
+           "Tested Fields",
+           "Result",
+           "Status"
+          ]
+         },
+         "type": "table",
+         "uid": "39a9f09a-aff5-4912-a818-7920e2c4e90e"
+        }
+       ],
+       "layout": {
+        "autosize": true,
+        "margin": {
+         "b": 25,
+         "l": 0,
+         "r": 0,
+         "t": 25
+        },
+        "title": {
+         "text": "Test Summary"
+        }
+       }
+      },
+      "text/html": [
+       "<div id=\"afb6e1d7-c090-4dec-af60-5a20ff0e5e0a\" style=\"height: 175px; width: 100%;\" class=\"plotly-graph-div\"></div><script type=\"text/javascript\">require([\"plotly\"], function(Plotly) { window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL=\"https://plot.ly\";\n",
+       "if (document.getElementById(\"afb6e1d7-c090-4dec-af60-5a20ff0e5e0a\")) {\n",
+       "    Plotly.newPlot(\"afb6e1d7-c090-4dec-af60-5a20ff0e5e0a\", [{\"cells\": {\"align\": \"left\", \"fill\": {\"color\": [\"lightgrey\", \"lightgrey\", \"lightgrey\", [\"rgb(233,81,51)\", \"rgb(233,81,51)\", \"rgb(112,194,99)\"]]}, \"font\": {\"color\": \"black\", \"size\": 12}, \"height\": 25, \"values\": [[\"Adherence to schema\", \"Duplicated Field Values\", \"Garbage Symbols\"], [\"All scraped fields\", [\"title\"], \"All scraped fields\"], [\"1 warnings\", \"2 warnings\", \"0 warnings (1000 items checked)\"], [\"Fail\", \"Fail\", \"Pass\"]]}, \"columnwidth\": [100, 230, 140, 40], \"header\": {\"align\": \"left\", \"fill\": {\"color\": \"gray\"}, \"font\": {\"color\": \"black\", \"size\": 14}, \"values\": [\"Test Name\", \"Tested Fields\", \"Result\", \"Status\"]}, \"type\": \"table\", \"uid\": \"39a9f09a-aff5-4912-a818-7920e2c4e90e\"}], {\"autosize\": true, \"height\": 175, \"margin\": {\"b\": 25, \"l\": 0, \"r\": 0, \"t\": 25}, \"title\": {\"text\": \"Test Summary\"}}, {\"showLink\": false, \"linkText\": \"Export to plot.ly\", \"plotlyServerURL\": \"https://plot.ly\"}); \n",
+       "}\n",
+       "});</script><script type=\"text/javascript\">window.addEventListener(\"resize\", function(){if (document.getElementById(\"afb6e1d7-c090-4dec-af60-5a20ff0e5e0a\")) {window._Plotly.Plots.resize(document.getElementById(\"afb6e1d7-c090-4dec-af60-5a20ff0e5e0a\"));};})</script>"
+      ],
+      "text/vnd.plotly.v1+html": [
+       "<div id=\"afb6e1d7-c090-4dec-af60-5a20ff0e5e0a\" style=\"height: 175px; width: 100%;\" class=\"plotly-graph-div\"></div><script type=\"text/javascript\">require([\"plotly\"], function(Plotly) { window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL=\"https://plot.ly\";\n",
+       "if (document.getElementById(\"afb6e1d7-c090-4dec-af60-5a20ff0e5e0a\")) {\n",
+       "    Plotly.newPlot(\"afb6e1d7-c090-4dec-af60-5a20ff0e5e0a\", [{\"cells\": {\"align\": \"left\", \"fill\": {\"color\": [\"lightgrey\", \"lightgrey\", \"lightgrey\", [\"rgb(233,81,51)\", \"rgb(233,81,51)\", \"rgb(112,194,99)\"]]}, \"font\": {\"color\": \"black\", \"size\": 12}, \"height\": 25, \"values\": [[\"Adherence to schema\", \"Duplicated Field Values\", \"Garbage Symbols\"], [\"All scraped fields\", [\"title\"], \"All scraped fields\"], [\"1 warnings\", \"2 warnings\", \"0 warnings (1000 items checked)\"], [\"Fail\", \"Fail\", \"Pass\"]]}, \"columnwidth\": [100, 230, 140, 40], \"header\": {\"align\": \"left\", \"fill\": {\"color\": \"gray\"}, \"font\": {\"color\": \"black\", \"size\": 14}, \"values\": [\"Test Name\", \"Tested Fields\", \"Result\", \"Status\"]}, \"type\": \"table\", \"uid\": \"39a9f09a-aff5-4912-a818-7920e2c4e90e\"}], {\"autosize\": true, \"height\": 175, \"margin\": {\"b\": 25, \"l\": 0, \"r\": 0, \"t\": 25}, \"title\": {\"text\": \"Test Summary\"}}, {\"showLink\": false, \"linkText\": \"Export to plot.ly\", \"plotlyServerURL\": \"https://plot.ly\"}); \n",
+       "}\n",
+       "});</script><script type=\"text/javascript\">window.addEventListener(\"resize\", function(){if (document.getElementById(\"afb6e1d7-c090-4dec-af60-5a20ff0e5e0a\")) {window._Plotly.Plots.resize(document.getElementById(\"afb6e1d7-c090-4dec-af60-5a20ff0e5e0a\"));};})</script>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "data": {
+      "application/vnd.plotly.v1+json": {
+       "config": {
+        "linkText": "Export to plot.ly",
+        "plotlyServerURL": "https://plot.ly",
+        "showLink": false
+       },
+       "data": [
+        {
+         "marker": {
+          "color": "rgba(50, 171, 96, 0.2)",
+          "line": {
+           "color": "rgba(50, 171, 96, 1.0)",
+           "width": 1
+          }
+         },
+         "name": "381798/1/2",
+         "opacity": 0.75,
+         "orientation": "h",
+         "type": "bar",
+         "uid": "85974fa4-0437-4275-b400-e23a1ba1a8f0",
+         "x": [
+          99.8,
+          100,
+          100,
+          100
+         ],
+         "y": [
+          "description",
+          "category",
+          "price",
+          "title"
+         ]
+        }
+       ],
+       "layout": {
+        "annotations": [
+         {
+          "font": {
+           "color": "rgb(50, 171, 96)",
+           "family": "Arial",
+           "size": 12
+          },
+          "showarrow": false,
+          "text": "99.8%",
+          "x": 104.8,
+          "xref": "x",
+          "y": "description",
+          "yref": "y"
+         },
+         {
+          "font": {
+           "color": "rgb(50, 171, 96)",
+           "family": "Arial",
+           "size": 12
+          },
+          "showarrow": false,
+          "text": "100.0%",
+          "x": 105,
+          "xref": "x",
+          "y": "category",
+          "yref": "y"
+         },
+         {
+          "font": {
+           "color": "rgb(50, 171, 96)",
+           "family": "Arial",
+           "size": 12
+          },
+          "showarrow": false,
+          "text": "100.0%",
+          "x": 105,
+          "xref": "x",
+          "y": "price",
+          "yref": "y"
+         },
+         {
+          "font": {
+           "color": "rgb(50, 171, 96)",
+           "family": "Arial",
+           "size": 12
+          },
+          "showarrow": false,
+          "text": "100.0%",
+          "x": 105,
+          "xref": "x",
+          "y": "title",
+          "yref": "y"
+         }
+        ],
+        "autosize": true,
+        "margin": {
+         "b": 70,
+         "l": 200,
+         "r": 20,
+         "t": 40
+        },
+        "title": {
+         "text": "Scraped Fields Coverage"
+        },
+        "xaxis": {
+         "autorange": true,
+         "range": [
+          0,
+          107.41662752465946
+         ],
+         "showgrid": false,
+         "showline": false,
+         "showticklabels": true,
+         "type": "linear",
+         "zeroline": false
+        },
+        "yaxis": {
+         "autorange": true,
+         "range": [
+          -0.5,
+          3.5
+         ],
+         "showgrid": false,
+         "showline": false,
+         "showticklabels": true,
+         "type": "category",
+         "zeroline": false
+        }
+       }
+      },
+      "text/html": [
+       "<div id=\"268f44b6-1302-4772-b51b-86f18bd06a5c\" style=\"height: 180px; width: 100%;\" class=\"plotly-graph-div\"></div><script type=\"text/javascript\">require([\"plotly\"], function(Plotly) { window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL=\"https://plot.ly\";\n",
+       "if (document.getElementById(\"268f44b6-1302-4772-b51b-86f18bd06a5c\")) {\n",
+       "    Plotly.newPlot(\"268f44b6-1302-4772-b51b-86f18bd06a5c\", [{\"marker\": {\"color\": \"rgba(50, 171, 96, 0.2)\", \"line\": {\"color\": \"rgba(50, 171, 96, 1.0)\", \"width\": 1}}, \"name\": \"381798/1/2\", \"opacity\": 0.75, \"orientation\": \"h\", \"x\": [99.8, 100.0, 100.0, 100.0], \"y\": [\"description\", \"category\", \"price\", \"title\"], \"type\": \"bar\", \"uid\": \"85974fa4-0437-4275-b400-e23a1ba1a8f0\"}], {\"annotations\": [{\"font\": {\"color\": \"rgb(50, 171, 96)\", \"family\": \"Arial\", \"size\": 12}, \"showarrow\": false, \"text\": \"99.8%\", \"x\": 104.8, \"xref\": \"x\", \"y\": \"description\", \"yref\": \"y\"}, {\"font\": {\"color\": \"rgb(50, 171, 96)\", \"family\": \"Arial\", \"size\": 12}, \"showarrow\": false, \"text\": \"100.0%\", \"x\": 105.0, \"xref\": \"x\", \"y\": \"category\", \"yref\": \"y\"}, {\"font\": {\"color\": \"rgb(50, 171, 96)\", \"family\": \"Arial\", \"size\": 12}, \"showarrow\": false, \"text\": \"100.0%\", \"x\": 105.0, \"xref\": \"x\", \"y\": \"price\", \"yref\": \"y\"}, {\"font\": {\"color\": \"rgb(50, 171, 96)\", \"family\": \"Arial\", \"size\": 12}, \"showarrow\": false, \"text\": \"100.0%\", \"x\": 105.0, \"xref\": \"x\", \"y\": \"title\", \"yref\": \"y\"}], \"height\": 180, \"margin\": {\"b\": 70, \"l\": 200, \"r\": 20, \"t\": 40}, \"title\": {\"text\": \"Scraped Fields Coverage\"}, \"xaxis\": {\"showgrid\": false, \"showline\": false, \"showticklabels\": true, \"zeroline\": false}, \"yaxis\": {\"showgrid\": false, \"showline\": false, \"showticklabels\": true, \"zeroline\": false}}, {\"showLink\": false, \"linkText\": \"Export to plot.ly\", \"plotlyServerURL\": \"https://plot.ly\"}); \n",
+       "}\n",
+       "});</script><script type=\"text/javascript\">window.addEventListener(\"resize\", function(){if (document.getElementById(\"268f44b6-1302-4772-b51b-86f18bd06a5c\")) {window._Plotly.Plots.resize(document.getElementById(\"268f44b6-1302-4772-b51b-86f18bd06a5c\"));};})</script>"
+      ],
+      "text/vnd.plotly.v1+html": [
+       "<div id=\"268f44b6-1302-4772-b51b-86f18bd06a5c\" style=\"height: 180px; width: 100%;\" class=\"plotly-graph-div\"></div><script type=\"text/javascript\">require([\"plotly\"], function(Plotly) { window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL=\"https://plot.ly\";\n",
+       "if (document.getElementById(\"268f44b6-1302-4772-b51b-86f18bd06a5c\")) {\n",
+       "    Plotly.newPlot(\"268f44b6-1302-4772-b51b-86f18bd06a5c\", [{\"marker\": {\"color\": \"rgba(50, 171, 96, 0.2)\", \"line\": {\"color\": \"rgba(50, 171, 96, 1.0)\", \"width\": 1}}, \"name\": \"381798/1/2\", \"opacity\": 0.75, \"orientation\": \"h\", \"x\": [99.8, 100.0, 100.0, 100.0], \"y\": [\"description\", \"category\", \"price\", \"title\"], \"type\": \"bar\", \"uid\": \"85974fa4-0437-4275-b400-e23a1ba1a8f0\"}], {\"annotations\": [{\"font\": {\"color\": \"rgb(50, 171, 96)\", \"family\": \"Arial\", \"size\": 12}, \"showarrow\": false, \"text\": \"99.8%\", \"x\": 104.8, \"xref\": \"x\", \"y\": \"description\", \"yref\": \"y\"}, {\"font\": {\"color\": \"rgb(50, 171, 96)\", \"family\": \"Arial\", \"size\": 12}, \"showarrow\": false, \"text\": \"100.0%\", \"x\": 105.0, \"xref\": \"x\", \"y\": \"category\", \"yref\": \"y\"}, {\"font\": {\"color\": \"rgb(50, 171, 96)\", \"family\": \"Arial\", \"size\": 12}, \"showarrow\": false, \"text\": \"100.0%\", \"x\": 105.0, \"xref\": \"x\", \"y\": \"price\", \"yref\": \"y\"}, {\"font\": {\"color\": \"rgb(50, 171, 96)\", \"family\": \"Arial\", \"size\": 12}, \"showarrow\": false, \"text\": \"100.0%\", \"x\": 105.0, \"xref\": \"x\", \"y\": \"title\", \"yref\": \"y\"}], \"height\": 180, \"margin\": {\"b\": 70, \"l\": 200, \"r\": 20, \"t\": 40}, \"title\": {\"text\": \"Scraped Fields Coverage\"}, \"xaxis\": {\"showgrid\": false, \"showline\": false, \"showticklabels\": true, \"zeroline\": false}, \"yaxis\": {\"showgrid\": false, \"showline\": false, \"showticklabels\": true, \"zeroline\": false}}, {\"showLink\": false, \"linkText\": \"Export to plot.ly\", \"plotlyServerURL\": \"https://plot.ly\"}); \n",
+       "}\n",
+       "});</script><script type=\"text/javascript\">window.addEventListener(\"resize\", function(){if (document.getElementById(\"268f44b6-1302-4772-b51b-86f18bd06a5c\")) {window._Plotly.Plots.resize(document.getElementById(\"268f44b6-1302-4772-b51b-86f18bd06a5c\"));};})</script>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "data": {
+      "application/vnd.plotly.v1+json": {
+       "config": {
+        "linkText": "Export to plot.ly",
+        "plotlyServerURL": "https://plot.ly",
+        "showLink": false
+       },
+       "data": [
+        {
+         "cells": {
+          "align": "left",
+          "fill": {
+           "color": "lightgrey"
+          },
+          "font": {
+           "color": "black",
+           "size": 12
+          },
+          "height": 30,
+          "values": [
+           [
+            "Default",
+            "Nonfiction",
+            "Sequential Art",
+            "Add a comment",
+            "Fiction",
+            "Young Adult",
+            "Fantasy",
+            "Romance",
+            "Mystery",
+            "Food and Drink",
+            "Childrens",
+            "Historical Fiction",
+            "Classics",
+            "Poetry",
+            "History",
+            "Horror",
+            "Womens Fiction",
+            "Science Fiction",
+            "Science",
+            "Music"
+           ],
+           [
+            152,
+            110,
+            75,
+            67,
+            65,
+            54,
+            48,
+            35,
+            32,
+            30,
+            29,
+            26,
+            19,
+            19,
+            18,
+            17,
+            17,
+            16,
+            14,
+            13
+           ]
+          ]
+         },
+         "columnorder": [
+          1,
+          2
+         ],
+         "columnwidth": [
+          400,
+          80
+         ],
+         "header": {
+          "align": [
+           "left",
+           "left",
+           "left",
+           "left",
+           "left"
+          ],
+          "fill": {
+           "color": "gray"
+          },
+          "font": {
+           "color": "white",
+           "size": 12
+          },
+          "height": 30,
+          "values": [
+           "CATEGORY",
+           "SCRAPED ITEMS"
+          ]
+         },
+         "type": "table",
+         "uid": "629df948-5eb6-4fe1-9361-af43b580855c"
+        }
+       ],
+       "layout": {
+        "autosize": true,
+        "margin": {
+         "b": 25,
+         "l": 0,
+         "r": 0,
+         "t": 30
+        },
+        "title": {
+         "text": "Top 20 Categories for 'category'"
+        }
+       }
+      },
+      "text/html": [
+       "<div id=\"36cd4bc2-b2e7-4736-945c-ba6fb3078bf3\" style=\"height: 990px; width: 100%;\" class=\"plotly-graph-div\"></div><script type=\"text/javascript\">require([\"plotly\"], function(Plotly) { window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL=\"https://plot.ly\";\n",
+       "if (document.getElementById(\"36cd4bc2-b2e7-4736-945c-ba6fb3078bf3\")) {\n",
+       "    Plotly.newPlot(\"36cd4bc2-b2e7-4736-945c-ba6fb3078bf3\", [{\"cells\": {\"align\": \"left\", \"fill\": {\"color\": \"lightgrey\"}, \"font\": {\"color\": \"black\", \"size\": 12}, \"height\": 30, \"values\": [[\"Default\", \"Nonfiction\", \"Sequential Art\", \"Add a comment\", \"Fiction\", \"Young Adult\", \"Fantasy\", \"Romance\", \"Mystery\", \"Food and Drink\", \"Childrens\", \"Historical Fiction\", \"Classics\", \"Poetry\", \"History\", \"Horror\", \"Womens Fiction\", \"Science Fiction\", \"Science\", \"Music\"], [152, 110, 75, 67, 65, 54, 48, 35, 32, 30, 29, 26, 19, 19, 18, 17, 17, 16, 14, 13]]}, \"columnorder\": [1, 2], \"columnwidth\": [400, 80], \"header\": {\"align\": [\"left\", \"left\", \"left\", \"left\", \"left\"], \"fill\": {\"color\": \"gray\"}, \"font\": {\"color\": \"white\", \"size\": 12}, \"height\": 30, \"values\": [\"CATEGORY\", \"SCRAPED ITEMS\"]}, \"type\": \"table\", \"uid\": \"3aa40ef9-3767-4264-98a2-897030edbfb0\"}], {\"autosize\": true, \"height\": 990, \"margin\": {\"b\": 25, \"l\": 0, \"r\": 0, \"t\": 30}, \"title\": {\"text\": \"Top 20 Categories for 'category'\"}}, {\"showLink\": false, \"linkText\": \"Export to plot.ly\", \"plotlyServerURL\": \"https://plot.ly\"}); \n",
+       "}\n",
+       "});</script><script type=\"text/javascript\">window.addEventListener(\"resize\", function(){if (document.getElementById(\"36cd4bc2-b2e7-4736-945c-ba6fb3078bf3\")) {window._Plotly.Plots.resize(document.getElementById(\"36cd4bc2-b2e7-4736-945c-ba6fb3078bf3\"));};})</script>"
+      ],
+      "text/vnd.plotly.v1+html": [
+       "<div id=\"36cd4bc2-b2e7-4736-945c-ba6fb3078bf3\" style=\"height: 990px; width: 100%;\" class=\"plotly-graph-div\"></div><script type=\"text/javascript\">require([\"plotly\"], function(Plotly) { window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL=\"https://plot.ly\";\n",
+       "if (document.getElementById(\"36cd4bc2-b2e7-4736-945c-ba6fb3078bf3\")) {\n",
+       "    Plotly.newPlot(\"36cd4bc2-b2e7-4736-945c-ba6fb3078bf3\", [{\"cells\": {\"align\": \"left\", \"fill\": {\"color\": \"lightgrey\"}, \"font\": {\"color\": \"black\", \"size\": 12}, \"height\": 30, \"values\": [[\"Default\", \"Nonfiction\", \"Sequential Art\", \"Add a comment\", \"Fiction\", \"Young Adult\", \"Fantasy\", \"Romance\", \"Mystery\", \"Food and Drink\", \"Childrens\", \"Historical Fiction\", \"Classics\", \"Poetry\", \"History\", \"Horror\", \"Womens Fiction\", \"Science Fiction\", \"Science\", \"Music\"], [152, 110, 75, 67, 65, 54, 48, 35, 32, 30, 29, 26, 19, 19, 18, 17, 17, 16, 14, 13]]}, \"columnorder\": [1, 2], \"columnwidth\": [400, 80], \"header\": {\"align\": [\"left\", \"left\", \"left\", \"left\", \"left\"], \"fill\": {\"color\": \"gray\"}, \"font\": {\"color\": \"white\", \"size\": 12}, \"height\": 30, \"values\": [\"CATEGORY\", \"SCRAPED ITEMS\"]}, \"type\": \"table\", \"uid\": \"3aa40ef9-3767-4264-98a2-897030edbfb0\"}], {\"autosize\": true, \"height\": 990, \"margin\": {\"b\": 25, \"l\": 0, \"r\": 0, \"t\": 30}, \"title\": {\"text\": \"Top 20 Categories for 'category'\"}}, {\"showLink\": false, \"linkText\": \"Export to plot.ly\", \"plotlyServerURL\": \"https://plot.ly\"}); \n",
+       "}\n",
+       "});</script><script type=\"text/javascript\">window.addEventListener(\"resize\", function(){if (document.getElementById(\"36cd4bc2-b2e7-4736-945c-ba6fb3078bf3\")) {window._Plotly.Plots.resize(document.getElementById(\"36cd4bc2-b2e7-4736-945c-ba6fb3078bf3\"));};})</script>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "https://files.scrapinghub.com.s3.amazonaws.com/reports/dqr/381798/Data%20Quality%20Report%20-%20books.html\n"
+     ]
+    }
+   ],
+   "source": [
+    "a.data_quality_report(bucket=\"files.scrapinghub.com\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.7.2"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}

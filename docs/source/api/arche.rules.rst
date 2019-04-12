@@ -11,13 +11,12 @@ Submodules
 
 .. toctree::
 
-   arche.rules.category_coverage
+   arche.rules.category
    arche.rules.coverage
    arche.rules.duplicates
-   arche.rules.garbage_symbols
    arche.rules.json_schema
    arche.rules.metadata
-   arche.rules.other_rules
+   arche.rules.others
    arche.rules.price
    arche.rules.result
 
