@@ -148,10 +148,3 @@ def test_save():
     dummy_result = create_result("dummy", {Level.INFO: [("outcome",)]})
     r.save(dummy_result)
     assert r.results == {dummy_result.name: dummy_result}
-
-
-def test_wipe():
-    r = Report()
-    r.save(create_result("dummy", {Level.INFO: [("outcome",)]}))
-    r.wipe()
-    assert r.results == {}

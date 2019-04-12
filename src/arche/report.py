@@ -1,41 +1,40 @@
-from typing import Dict
+from typing import Dict, List
 
 from arche.rules.result import Level, Result, Stat
 from colorama import Fore, Style
 from IPython.display import display, HTML
-import ipywidgets
 import pandas as pd
 import plotly.graph_objs as go
+from plotly.offline import plot
 
 
 class Report:
     def __init__(self):
         self.results: Dict[str, Result] = {}
 
-    def wipe(self):
-        self.results = {}
-
-    def save(self, result):
+    def save(self, result: Result) -> None:
         self.results[result.name] = result
 
     @staticmethod
-    def write_color_text(text, color=Fore.RED, style=""):
+    def write_color_text(
+        text: str, color: Fore = Fore.RED, style: Style = Style.RESET_ALL
+    ) -> None:
         print(color + style + text + Style.RESET_ALL)
 
     @staticmethod
-    def write_rule_name(rule_name):
+    def write_rule_name(rule_name: str) -> None:
         print(f"\n{rule_name}:")
 
     @classmethod
-    def write(cls, text):
+    def write(cls, text: str) -> None:
         print(text)
 
-    def write_summaries(self):
+    def write_summaries(self) -> None:
         for result in self.results.values():
             self.write_summary(result)
 
     @classmethod
-    def write_summary(cls, result: Result):
+    def write_summary(cls, result: Result) -> None:
         if not result.messages:
             return
         cls.write_rule_name(result.name)
@@ -44,7 +43,7 @@ class Report:
                 cls.write_rule_outcome(rule_msg.summary, level)
 
     @classmethod
-    def write_rule_outcome(cls, result, level=Level.INFO):
+    def write_rule_outcome(cls, result: Result, level: Level = Level.INFO) -> None:
         msg = f"\t{result}"
         if level == Level.ERROR:
             cls.write_color_text(msg)
@@ -53,7 +52,7 @@ class Report:
         else:
             cls.write(msg)
 
-    def write_details(self, short: bool = False, keys_limit: int = 10):
+    def write_details(self, short: bool = False, keys_limit: int = 10) -> None:
         for result in self.results.values():
             if result.detailed_messages_count:
                 self.write_rule_name(
@@ -64,7 +63,7 @@ class Report:
     @classmethod
     def write_rule_details(
         cls, result: Result, short: bool = False, keys_limit: int = 10
-    ):
+    ) -> None:
         for rule_msgs in result.messages.values():
             for rule_msg in rule_msgs:
                 if rule_msg.errors:
@@ -75,7 +74,7 @@ class Report:
             cls.plot(stat)
 
     @staticmethod
-    def plot(stat: Stat):
+    def plot(stat: Stat) -> None:
         if isinstance(stat, pd.Series):
             data = [go.Bar(x=stat.values, y=stat.index.values, orientation="h")]
         else:
@@ -97,14 +96,14 @@ class Report:
             layout.xaxis.tickformat = ".2p"
         if stat.name == "Coverage for boolean fields":
             layout.barmode = "stack"
+        if stat.name.startswith("Fields coverage"):
+            layout.annotations = Report.make_annotations(stat)
 
         f = go.FigureWidget(data, layout)
-        if stat.name == "Fields coverage":
-            Report.add_annotations_checkbox(stat, f)
-        display(f)
+        display(HTML(plot(f, include_plotlyjs=False, output_type="div")))
 
     @staticmethod
-    def add_annotations_checkbox(stat: Stat, figure: go.FigureWidget):
+    def make_annotations(stat: Stat) -> List[Dict]:
         annotations = []
         for value, group in stat.groupby(stat):
             annotations.append(
@@ -117,19 +116,10 @@ class Report:
                     showarrow=False,
                 )
             )
-        ants_enabled = ipywidgets.Checkbox(description="%", value=False)
-
-        def response(change):
-            if ants_enabled.value:
-                figure.layout.annotations = annotations
-            else:
-                figure.layout.annotations = []
-
-        ants_enabled.observe(response, names="value")
-        display(ants_enabled)
+        return annotations
 
     @classmethod
-    def write_detailed_errors(cls, errors: dict, short: bool, keys_limit: int):
+    def write_detailed_errors(cls, errors: Dict, short: bool, keys_limit: int) -> None:
         if short:
             keys_limit = 5
             error_messages = list(errors.items())[:5]
