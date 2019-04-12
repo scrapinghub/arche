@@ -98,7 +98,6 @@ def test_tags():
     assert jf.values == {
         "unique",
         "category",
-        "category_field",
         "name_field",
         "product_url_field",
         "product_price_field",
@@ -133,7 +132,7 @@ def test_get_tags(schema, expected_tags):
         (
             ["name_field", "t"],
             (
-                "{'t'} tag(s) are unsupported, valid tags are:\ncategory, category_field, "
+                "{'t'} tag(s) are unsupported, valid tags are:\ncategory, "
                 "name_field, product_price_field, product_price_was_field, "
                 "product_url_field, unique"
             ),

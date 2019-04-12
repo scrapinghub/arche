@@ -5,7 +5,7 @@ from typing import Dict, List, Optional, Union
 from urllib.parse import urlparse
 from urllib.request import urlopen
 
-from arche.tools import maintenance, s3
+from arche.tools import s3
 import perfect_jsonschema
 
 EXTENDED_KEYWORDS = {"tag", "unique", "coverage_percentage"}
@@ -50,7 +50,6 @@ def get_contents(url: str):
 class Tag(Enum):
     unique = (0,)
     category = (1,)
-    category_field = (1,)
     name_field = (2,)
     product_url_field = (3,)
     product_price_field = (4,)
@@ -88,14 +87,6 @@ class Tags:
             )
 
         for tag in tags:
-            if tag == "category_field":
-                tag = "category"
-                maintenance.deprecate(
-                    "'category_field' tag was deprecated in 2019.03.11 and "
-                    "will be removed in 2019.04.01.",
-                    replacement="Use 'category' instead",
-                    gone_in="2019.04.01",
-                )
             self.tagged_fields[tag].append(field)
 
     @staticmethod

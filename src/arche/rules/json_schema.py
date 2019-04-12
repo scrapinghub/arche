@@ -37,7 +37,7 @@ def check_tags(
         result.add_info(f"Used - {', '.join(found_tags)}")
 
     all_tags = set([name for name, _ in Tag.__members__.items()])
-    not_used_tags = sorted(all_tags - set(["category_field"]) - set(tags))
+    not_used_tags = sorted(all_tags - set(tags))
     if not_used_tags:
         result.add_info(f"Not used - {', '.join(not_used_tags)}")
 
