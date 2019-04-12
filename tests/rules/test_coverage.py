@@ -9,19 +9,27 @@ import pytest
     "df, expected_messages, expected_stats",
     [
         (
-            pd.DataFrame([{"_key": 0}]),
+            pd.DataFrame({"_key": [n for n in range(1000)]}),
             {Level.INFO: [("PASSED",)]},
-            [pd.Series([1], index=["_key"], name="Fields coverage")],
+            [pd.Series([1000], index=["_key"], name="Fields coverage for 1_000 items")],
         ),
         (
             pd.DataFrame([("Jordan", None)], columns=["Name", "Field"]),
             {Level.ERROR: [("1 empty field(s)",)]},
-            [pd.Series([1, 0], index=["Name", "Field"], name="Fields coverage")],
+            [
+                pd.Series(
+                    [1, 0], index=["Name", "Field"], name="Fields coverage for 1 items"
+                )
+            ],
         ),
         (
             pd.DataFrame([(0, "")], columns=["Name", "Field"]),
             {Level.INFO: [("PASSED",)]},
-            [pd.Series([1, 1], index=["Field", "Name"], name="Fields coverage")],
+            [
+                pd.Series(
+                    [1, 1], index=["Field", "Name"], name="Fields coverage for 1 items"
+                )
+            ],
         ),
     ],
 )

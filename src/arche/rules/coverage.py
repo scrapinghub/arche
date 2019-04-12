@@ -1,11 +1,22 @@
+from arche.readers.items import Job
 from arche.rules.result import Result
 from arche.tools.api import get_items_count
 import pandas as pd
 
 
 def check_fields_coverage(df: pd.DataFrame) -> Result:
+    """Get fields coverage from df. Coverage reflects the percentage of real values
+    (exluding `nan`) per column.
+
+    Args:
+        df: a data to count the coverage
+
+    Returns:
+        A result with coverage for all columns in provided df. If column contains only `nan`,
+        treat it as an error.
+    """
     fields_coverage = df.count().sort_values(ascending=False)
-    fields_coverage.name = "Fields coverage"
+    fields_coverage.name = f"Fields coverage for {len(df):_} items"
 
     empty_fields = fields_coverage[fields_coverage == 0]
 
@@ -18,8 +29,9 @@ def check_fields_coverage(df: pd.DataFrame) -> Result:
     return result
 
 
-def get_difference(source_job, target_job) -> Result:
-    """Get difference between fields counts towards job size
+def get_difference(source_job: Job, target_job: Job) -> Result:
+    """Get difference between jobs coverages. The coverage is job fields counts
+    divided on the job size.
 
     Args:
         source_job: a base job, the difference is calculated from it

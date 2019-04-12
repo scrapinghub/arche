@@ -5,6 +5,9 @@ from typing import Optional
 from arche.tools import pandas, api
 import pandas as pd
 from scrapinghub import ScrapinghubClient
+from scrapinghub.client.jobs import Job
+
+# Job = scrapinghub.client.jobs.Job
 
 
 class Items(ABC):
@@ -81,7 +84,7 @@ class Items(ABC):
 class JobItems(Items):
     def __init__(self, start: int = 0, *args, **kwargs):
         self.start_index = start
-        self._job = None
+        self._job: Job = None
         super().__init__(*args, **kwargs)
 
     @property

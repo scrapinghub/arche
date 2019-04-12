@@ -9,8 +9,23 @@ def get_difference(
     target_key: str,
     source_df: pd.DataFrame,
     target_df: pd.DataFrame,
-    category_names: List,
-):
+    category_names: List[str],
+) -> Result:
+    """Find and show differences between categories coverage, including nan values.
+    Coverage means value counts divided on total size.
+
+    Args:
+        source_key: name of data you want to compare
+        target_key: name of data you want to compare source with
+        source_df: a data you want to compare
+        target_df: a data you want to compare with
+        category_names: list of columns which values to compare
+
+    Returns:
+        A result instance with messages containing significant difference defined by
+        thresholds, a dataframe showing all normalized value counts in percents,
+        a series containing significant difference.
+    """
     result = Result("Category Coverage Difference")
     warn_thr = 0.10
     err_thr = 0.20
@@ -28,7 +43,7 @@ def get_difference(
         )
         cats.name = f"Coverage for {c}"
         result.stats.append(cats)
-        cat_difs = ((cats[source_key] - cats[target_key])).abs()
+        cat_difs = (cats[source_key] - cats[target_key]).abs()
         cat_difs = cat_difs[cat_difs > warn_thr]
         cat_difs.name = f"Coverage difference more than {warn_thr:.0%} for {c}"
         if not cat_difs.empty:
@@ -42,7 +57,16 @@ def get_difference(
     return result
 
 
-def get_coverage_per_category(df: pd.DataFrame, category_names: List):
+def get_coverage_per_category(df: pd.DataFrame, category_names: List) -> Result:
+    """Get value counts per column, excluding nan.
+
+    Args:
+        df: a source data to assess
+        category_names: list of columns which values counts to see
+
+    Returns:
+        Number of categories per field, value counts series for each field.
+    """
     result = Result("Coverage For Scraped Categories")
 
     for c in category_names:

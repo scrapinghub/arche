@@ -6,12 +6,12 @@ import numpy as np
 import pandas as pd
 
 
-def compare_boolean_fields(source_df: pd.DataFrame, target_df: pd.DataFrame):
+def compare_boolean_fields(source_df: pd.DataFrame, target_df: pd.DataFrame) -> Result:
     """Compare booleans distribution between two dataframes
 
     Returns:
-        A result containing dataframe with distributions and messages if difference
-        greater than 5%
+        A result containing dataframe with distributions and messages if differences
+        are in thresholds
     """
     warn_thr = 0.05
     err_thr = 0.10
@@ -48,7 +48,7 @@ def compare_boolean_fields(source_df: pd.DataFrame, target_df: pd.DataFrame):
             f"by more than {err_thr:.0%}"
         )
 
-    warn_diffs = difs[(difs <= err_thr) & (difs > warn_thr)]
+    warn_diffs = difs[(difs > warn_thr) & (difs <= err_thr)]
     if not warn_diffs.empty:
         result.add_warning(
             f"{', '.join(warn_diffs.index)} relative frequencies differ by "
@@ -60,7 +60,7 @@ def compare_boolean_fields(source_df: pd.DataFrame, target_df: pd.DataFrame):
     return result
 
 
-def fields_to_compare(source_df, target_df):
+def fields_to_compare(source_df: pd.DataFrame, target_df: pd.DataFrame) -> bool:
     source_fields = source_df.columns.values
     target_fields = target_df.columns.values
     if (
