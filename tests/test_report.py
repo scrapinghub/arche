@@ -119,10 +119,6 @@ def test_write_detailed_errors(mocker, errors, short, keys_limit, expected_messa
     html_mock.assert_has_calls(calls, any_order=True)
 
 
-def test_plot_empty():
-    assert not Report.plot(None)
-
-
 @pytest.mark.parametrize(
     "keys, limit, expected_sample",
     [

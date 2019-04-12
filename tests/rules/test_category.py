@@ -33,12 +33,12 @@ def test_get_coverage_per_category(data, cat_names, expected_messages, expected_
             {
                 "sex": ["male", "female", "male", np.nan],
                 "country": ["uk", "uk", "uk", "us"],
-                "age": [25, 25, 25, 25],
+                "age": [26, 26, 26, 26],
             },
             {
                 "sex": ["male", "female", "male"],
                 "country": ["uk", "uk", "uk"],
-                "age": [25, 25, 25],
+                "age": [26, 26, 26],
             },
             ["sex", "country", "age"],
             {
@@ -49,27 +49,27 @@ def test_get_coverage_per_category(data, cat_names, expected_messages, expected_
             },
             [
                 create_named_df(
-                    {"s": [25.0, 25.0, 50.0], "t": [0.0, 33.33, 66.67]},
+                    {"s": [0.25, 0.25, 0.5], "t": [0.000000, 0.333333, 0.666667]},
                     index=[np.nan, "female", "male"],
                     name="Coverage for sex",
                 ),
                 pd.Series(
-                    [25.0, 16.67],
+                    [0.250000, 0.166667],
                     index=[np.nan, "male"],
                     name="Coverage difference more than 10% for sex",
                 ),
                 create_named_df(
-                    {"s": [25.0, 75.0], "t": [0.0, 100.0]},
+                    {"s": [0.25, 0.75], "t": [0.0, 1.0]},
                     index=["us", "uk"],
                     name="Coverage for country",
                 ),
                 pd.Series(
-                    [25.0, 25.0],
+                    [0.25, 0.25],
                     index=["us", "uk"],
                     name="Coverage difference more than 10% for country",
                 ),
                 create_named_df(
-                    {"s": [100.0], "t": [100.0]}, index=[25], name="Coverage for age"
+                    {"s": [1.0], "t": [1.0]}, index=[26], name="Coverage for age"
                 ),
             ],
         )

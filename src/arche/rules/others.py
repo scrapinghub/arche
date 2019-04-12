@@ -6,13 +6,15 @@ import numpy as np
 import pandas as pd
 
 
-def compare_boolean_fields(source_df: pd.DataFrame, target_df: pd.DataFrame):
+def compare_boolean_fields(source_df: pd.DataFrame, target_df: pd.DataFrame) -> Result:
     """Compare booleans distribution between two dataframes
 
     Returns:
-        A result containing dataframe with distributions and messages if difference
-        greater than 5%
+        A result containing dataframe with distributions and messages if differences
+        are in thresholds
     """
+    warn_thr = 0.05
+    err_thr = 0.10
     source_bool = source_df.select_dtypes(include="bool")
     target_bool = target_df.select_dtypes(include="bool")
 
@@ -23,10 +25,10 @@ def compare_boolean_fields(source_df: pd.DataFrame, target_df: pd.DataFrame):
 
     dummy = pd.DataFrame(columns=[True, False])
     source_counts = pd.concat(
-        [dummy, source_bool.apply(pd.value_counts, normalize=True).T * 100], sort=False
+        [dummy, source_bool.apply(pd.value_counts, normalize=True).T], sort=False
     ).fillna(0.0)
     target_counts = pd.concat(
-        [dummy, target_bool.apply(pd.value_counts, normalize=True).T * 100], sort=False
+        [dummy, target_bool.apply(pd.value_counts, normalize=True).T], sort=False
     ).fillna(0.0)
     difs = (source_counts - target_counts).abs()[True]
 
@@ -39,17 +41,18 @@ def compare_boolean_fields(source_df: pd.DataFrame, target_df: pd.DataFrame):
     bool_covs.name = "Coverage for boolean fields"
     result.stats.append(bool_covs)
 
-    err_diffs = difs[difs > 10]
+    err_diffs = difs[difs > err_thr]
     if not err_diffs.empty:
         result.add_error(
             f"{', '.join(err_diffs.index)} relative frequencies differ "
-            "by more than 10%"
+            f"by more than {err_thr:.0%}"
         )
 
-    warn_diffs = difs[(difs <= 10) & (difs > 5)]
+    warn_diffs = difs[(difs > warn_thr) & (difs <= err_thr)]
     if not warn_diffs.empty:
         result.add_warning(
-            f"{', '.join(warn_diffs.index)} relative frequencies differ by 5-10%"
+            f"{', '.join(warn_diffs.index)} relative frequencies differ by "
+            f"{warn_thr:.0%}-{err_thr:.0%}"
         )
     if err_diffs.empty and warn_diffs.empty:
         result.add_info("PASSED")
@@ -57,7 +60,7 @@ def compare_boolean_fields(source_df: pd.DataFrame, target_df: pd.DataFrame):
     return result
 
 
-def fields_to_compare(source_df, target_df):
+def fields_to_compare(source_df: pd.DataFrame, target_df: pd.DataFrame) -> bool:
     source_fields = source_df.columns.values
     target_fields = target_df.columns.values
     if (

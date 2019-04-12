@@ -16,8 +16,7 @@ compare_bool_data = [
         {Level.ERROR: [(("b relative frequencies differ by more than 10%"),)]},
         [
             create_df(
-                {True: [100.0, 0.0], False: [0.0, 100.0]},
-                index=["b_source", "b_target"],
+                {True: [1.0, 0.0], False: [0.0, 1.0]}, index=["b_source", "b_target"]
             )
         ],
     ),
@@ -35,19 +34,17 @@ compare_bool_data = [
         {Level.INFO: [("PASSED",)]},
         [
             create_df(
-                {True: [100.0, 100.0], False: [0.0, 0.0]},
-                index=["b_source", "b_target"],
+                {True: [1.0, 1.0], False: [0.0, 0.0]}, index=["b_source", "b_target"]
             )
         ],
     ),
     (
         {"b": [True for x in range(9)] + [False]},
         {"b": [True for x in range(9)]},
-        {Level.WARNING: [("b relative frequencies differ by 5-10%",)]},
+        {Level.WARNING: [("b relative frequencies differ by 5%-10%",)]},
         [
             create_df(
-                {True: [90.0, 100.0], False: [10.0, 0.0]},
-                index=["b_source", "b_target"],
+                {True: [0.9, 1.0], False: [0.1, 0.0]}, index=["b_source", "b_target"]
             )
         ],
     ),

@@ -76,9 +76,6 @@ class Report:
 
     @staticmethod
     def plot(stat: Stat):
-        if stat is None:
-            return
-
         if isinstance(stat, pd.Series):
             data = [go.Bar(x=stat.values, y=stat.index.values, orientation="h")]
         else:
@@ -90,19 +87,18 @@ class Report:
         layout = go.Layout(
             title=stat.name,
             bargap=0.1,
-            xaxis=go.layout.XAxis(type="log", title="log scale"),
             template="ggplot2",
             height=max(min(len(stat) * 20, 900), 450),
             hovermode="y",
             margin=dict(l=200, t=35),
+            xaxis=go.layout.XAxis(range=[0, max(stat.values.max(), 1) * 1.05]),
         )
         if stat.name.startswith("Coverage"):
-            layout.xaxis.title = "log scale (%)"
-
+            layout.xaxis.tickformat = ".2p"
         if stat.name == "Coverage for boolean fields":
             layout.barmode = "stack"
-        f = go.FigureWidget(data, layout)
 
+        f = go.FigureWidget(data, layout)
         if stat.name == "Fields coverage":
             Report.add_annotations_checkbox(stat, f)
         display(f)
