@@ -1,12 +1,10 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>arche package &#8212; Arche 2019.03.18 documentation</title>
+    <meta charset="utf-8" />
+    <title>arche package &#8212; Arche 2019.03.25 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -40,18 +38,14 @@
 <dt id="arche.basic_json_schema">
 <code class="descclassname">arche.</code><code class="descname">basic_json_schema</code><span class="sig-paren">(</span><em>data_source: str</em>, <em>items_numbers: List[int] = None</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.basic_json_schema" title="Permalink to this definition">¶</a></dt>
 <dd><p>Prints a json schema based on the provided job_key and item numbers</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>data_source</strong> – a collection or job key</li>
-<li><strong>items_numbers</strong> – array of item numbers to create schema from</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_source</strong> – a collection or job key</p></li>
+<li><p><strong>items_numbers</strong> – array of item numbers to create schema from</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="class">
@@ -62,14 +56,11 @@
 <dt id="arche.Arche.basic_json_schema">
 <code class="descname">basic_json_schema</code><span class="sig-paren">(</span><em>items_numbers: List[int] = None</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.Arche.basic_json_schema" title="Permalink to this definition">¶</a></dt>
 <dd><p>Prints a json schema based on data from <cite>self.source</cite></p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>items_numbers</strong> – array of item numbers to create a schema from</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>items_numbers</strong> – array of item numbers to create a schema from</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
@@ -164,6 +155,68 @@ there are no guarantees. Slower than <cite>check_with_json_schema()</cite></p>
 
 </dd></dl>
 
+<dl class="function">
+<dt id="arche.find_duplicates_by">
+<code class="descclassname">arche.</code><code class="descname">find_duplicates_by</code><span class="sig-paren">(</span><em>df: pandas.core.frame.DataFrame, columns: List[str]</em><span class="sig-paren">)</span> &#x2192; arche.rules.result.Result<a class="headerlink" href="#arche.find_duplicates_by" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compare items rows in <cite>df</cite> by <cite>columns</cite></p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Any duplicates</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="arche.CollectionItems">
+<em class="property">class </em><code class="descclassname">arche.</code><code class="descname">CollectionItems</code><span class="sig-paren">(</span><em>key: str</em>, <em>count: Optional[int] = None</em>, <em>filters: Optional[List[Tuple[str</em>, <em>str</em>, <em>str]]] = None</em>, <em>expand: bool = True</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.CollectionItems" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="arche.readers.items.html#arche.readers.items.Items" title="arche.readers.items.Items"><code class="xref py py-class docutils literal notranslate"><span class="pre">arche.readers.items.Items</span></code></a></p>
+<dl class="attribute">
+<dt id="arche.CollectionItems.count">
+<code class="descname">count</code><a class="headerlink" href="#arche.CollectionItems.count" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of items users wants to retrieve</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="arche.CollectionItems.fetch_data">
+<code class="descname">fetch_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arche.CollectionItems.fetch_data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="arche.CollectionItems.limit">
+<code class="descname">limit</code><a class="headerlink" href="#arche.CollectionItems.limit" title="Permalink to this definition">¶</a></dt>
+<dd><p>The maximum number of items in source</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="arche.JobItems">
+<em class="property">class </em><code class="descclassname">arche.</code><code class="descname">JobItems</code><span class="sig-paren">(</span><em>start: int = 0</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.JobItems" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="arche.readers.items.html#arche.readers.items.Items" title="arche.readers.items.Items"><code class="xref py py-class docutils literal notranslate"><span class="pre">arche.readers.items.Items</span></code></a></p>
+<dl class="attribute">
+<dt id="arche.JobItems.count">
+<code class="descname">count</code><a class="headerlink" href="#arche.JobItems.count" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of items users wants to retrieve</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="arche.JobItems.fetch_data">
+<code class="descname">fetch_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arche.JobItems.fetch_data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="arche.JobItems.job">
+<code class="descname">job</code><a class="headerlink" href="#arche.JobItems.job" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="arche.JobItems.limit">
+<code class="descname">limit</code><a class="headerlink" href="#arche.JobItems.limit" title="Permalink to this definition">¶</a></dt>
+<dd><p>The maximum number of items in source</p>
+</dd></dl>
+
+</dd></dl>
+
 <div class="section" id="subpackages">
 <h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
@@ -186,13 +239,12 @@ there are no guarantees. Slower than <cite>check_with_json_schema()</cite></p>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="arche.rules.html">arche.rules package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="arche.rules.html#submodules">Submodules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="arche.rules.category_coverage.html">arche.rules.category_coverage module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="arche.rules.category.html">arche.rules.category module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="arche.rules.coverage.html">arche.rules.coverage module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="arche.rules.duplicates.html">arche.rules.duplicates module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="arche.rules.garbage_symbols.html">arche.rules.garbage_symbols module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="arche.rules.json_schema.html">arche.rules.json_schema module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="arche.rules.metadata.html">arche.rules.metadata module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="arche.rules.other_rules.html">arche.rules.other_rules module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="arche.rules.others.html">arche.rules.others module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="arche.rules.price.html">arche.rules.price module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="arche.rules.result.html">arche.rules.result module</a></li>
 </ul>
@@ -276,8 +328,6 @@ there are no guarantees. Slower than <cite>check_with_json_schema()</cite></p>
     <form class="search" action="../search.html" method="get">
       <input type="text" name="q" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
@@ -298,7 +348,7 @@ there are no guarantees. Slower than <cite>check_with_json_schema()</cite></p>
       &copy;2018-2019, Arche developers.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

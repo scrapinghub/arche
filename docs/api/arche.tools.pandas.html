@@ -1,12 +1,10 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>arche.tools.pandas module &#8212; Arche 2019.03.18 documentation</title>
+    <meta charset="utf-8" />
+    <title>arche.tools.pandas module &#8212; Arche 2019.03.25 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -48,25 +46,21 @@
 or dict key and containing respective cell values. If new name conflicts
 with an existing column, a short hash is used.
 Almost as fast as json_normalize but supports lists.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>df</strong> – a dataframe to expand</li>
-<li><strong>i</strong> – start index of columns slice, since there’s no need to iterate</li>
-<li><strong>over completely expanded column</strong> (<em>twice</em>) – </li>
-<li><strong>columns_map</strong> – a dict with old name references {new_name: old}</li>
-<li><strong>p_bar</strong> – a progress bar</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> – a dataframe to expand</p></li>
+<li><p><strong>i</strong> – start index of columns slice, since there’s no need to iterate</p></li>
+<li><p><strong>over completely expanded column</strong> (<em>twice</em>) – </p></li>
+<li><p><strong>columns_map</strong> – a dict with old name references {new_name: old}</p></li>
+<li><p><strong>p_bar</strong> – a progress bar</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A flat dataframe with new columns from expanded lists and dicts
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A flat dataframe with new columns from expanded lists and dicts
 and a columns map dict with old name references {new_name: old}</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <p>Examples:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;links&quot;</span><span class="p">:</span> <span class="p">[[{</span><span class="s2">&quot;im&quot;</span><span class="p">:</span> <span class="s2">&quot;http://www.im.com/illinoi&quot;</span><span class="p">},</span>
 <span class="gp">... </span>                              <span class="p">{</span><span class="s2">&quot;ITW website&quot;</span><span class="p">:</span> <span class="s2">&quot;http://www.itw.com&quot;</span><span class="p">}]]})</span>
@@ -137,8 +131,6 @@ and a columns map dict with old name references {new_name: old}</p>
     <form class="search" action="../search.html" method="get">
       <input type="text" name="q" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
@@ -159,7 +151,7 @@ and a columns map dict with old name references {new_name: old}</p>
       &copy;2018-2019, Arche developers.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

@@ -1,12 +1,10 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>arche.rules.result module &#8212; Arche 2019.03.18 documentation</title>
+    <meta charset="utf-8" />
+    <title>arche.rules.result module &#8212; Arche 2019.03.25 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -60,22 +58,17 @@
 
 <dl class="class">
 <dt id="arche.rules.result.Message">
-<em class="property">class </em><code class="descclassname">arche.rules.result.</code><code class="descname">Message</code><span class="sig-paren">(</span><em>summary: str</em>, <em>detailed: Optional[str] = None</em>, <em>errors: Optional[dict] = None</em>, <em>stats: Optional[pandas.core.series.Series] = None</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.rules.result.Message" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">arche.rules.result.</code><code class="descname">Message</code><span class="sig-paren">(</span><em>summary: str</em>, <em>detailed: Optional[str] = None</em>, <em>errors: Optional[dict] = None</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.rules.result.Message" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>summary</strong> – a concise outcome</li>
-<li><strong>detailed</strong> – detailed message</li>
-<li><strong>errors</strong> – grouped by attributes error messages</li>
-<li><strong>stats</strong> – series</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>summary</strong> – a concise outcome</p></li>
+<li><p><strong>detailed</strong> – detailed message</p></li>
+<li><p><strong>errors</strong> – error messages grouped by attributes</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <dl class="attribute">
 <dt id="arche.rules.result.Message.detailed">
 <code class="descname">detailed</code><em class="property"> = None</em><a class="headerlink" href="#arche.rules.result.Message.detailed" title="Permalink to this definition">¶</a></dt>
@@ -86,35 +79,42 @@
 <code class="descname">errors</code><em class="property"> = None</em><a class="headerlink" href="#arche.rules.result.Message.errors" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
-<dt id="arche.rules.result.Message.stats">
-<code class="descname">stats</code><em class="property"> = None</em><a class="headerlink" href="#arche.rules.result.Message.stats" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="class">
 <dt id="arche.rules.result.Result">
-<em class="property">class </em><code class="descclassname">arche.rules.result.</code><code class="descname">Result</code><span class="sig-paren">(</span><em>name: str</em>, <em>messages: dict = &lt;factory&gt;</em>, <em>items_count: int = 0</em>, <em>checked_fields: list = &lt;factory&gt;</em>, <em>err_items_count: int = 0</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.rules.result.Result" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">arche.rules.result.</code><code class="descname">Result</code><span class="sig-paren">(</span><em>name: str</em>, <em>messages: Dict[arche.rules.result.Level</em>, <em>List[arche.rules.result.Message]] = &lt;factory&gt;</em>, <em>stats: Optional[List[Union[pandas.core.series.Series</em>, <em>pandas.core.frame.DataFrame]]] = &lt;factory&gt;</em>, <em>items_count: Optional[int] = 0</em>, <em>checked_fields: Optional[List[str]] = &lt;factory&gt;</em>, <em>err_items_count: Optional[int] = 0</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.rules.result.Result" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – a rule name</p></li>
+<li><p><strong>messages</strong> – messages separated by severity</p></li>
+<li><p><strong>stats</strong> – pandas data to plot</p></li>
+<li><p><strong>items_count</strong> – the count of verified items</p></li>
+<li><p><strong>checked_fields</strong> – the names of verified fields</p></li>
+<li><p><strong>err_items_count</strong> – the number of error items</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="method">
 <dt id="arche.rules.result.Result.add_error">
-<code class="descname">add_error</code><span class="sig-paren">(</span><em>summary</em>, <em>detailed=None</em>, <em>errors=None</em>, <em>stats=None</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.rules.result.Result.add_error" title="Permalink to this definition">¶</a></dt>
+<code class="descname">add_error</code><span class="sig-paren">(</span><em>summary</em>, <em>detailed=None</em>, <em>errors=None</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.rules.result.Result.add_error" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="arche.rules.result.Result.add_info">
-<code class="descname">add_info</code><span class="sig-paren">(</span><em>summary</em>, <em>detailed=None</em>, <em>errors=None</em>, <em>stats=None</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.rules.result.Result.add_info" title="Permalink to this definition">¶</a></dt>
+<code class="descname">add_info</code><span class="sig-paren">(</span><em>summary</em>, <em>detailed=None</em>, <em>errors=None</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.rules.result.Result.add_info" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="arche.rules.result.Result.add_message">
-<code class="descname">add_message</code><span class="sig-paren">(</span><em>level: arche.rules.result.Level</em>, <em>summary: str</em>, <em>detailed: Optional[str] = None</em>, <em>errors: Optional[dict] = None</em>, <em>stats: Optional[pandas.core.series.Series] = None</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.rules.result.Result.add_message" title="Permalink to this definition">¶</a></dt>
+<code class="descname">add_message</code><span class="sig-paren">(</span><em>level: arche.rules.result.Level</em>, <em>summary: str</em>, <em>detailed: Optional[str] = None</em>, <em>errors: Optional[dict] = None</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.rules.result.Result.add_message" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="arche.rules.result.Result.add_warning">
-<code class="descname">add_warning</code><span class="sig-paren">(</span><em>summary</em>, <em>detailed=None</em>, <em>errors=None</em>, <em>stats=None</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.rules.result.Result.add_warning" title="Permalink to this definition">¶</a></dt>
+<code class="descname">add_warning</code><span class="sig-paren">(</span><em>summary</em>, <em>detailed=None</em>, <em>errors=None</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.rules.result.Result.add_warning" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -142,11 +142,6 @@
 <code class="descname">get_errors_count</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arche.rules.result.Result.get_errors_count" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
-<dt id="arche.rules.result.Result.get_stats_count">
-<code class="descname">get_stats_count</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arche.rules.result.Result.get_stats_count" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 <dl class="attribute">
 <dt id="arche.rules.result.Result.info">
 <code class="descname">info</code><a class="headerlink" href="#arche.rules.result.Result.info" title="Permalink to this definition">¶</a></dt>
@@ -160,6 +155,11 @@
 <dl class="method">
 <dt id="arche.rules.result.Result.show">
 <code class="descname">show</code><span class="sig-paren">(</span><em>short: bool = False</em>, <em>keys_limit: int = 10</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.rules.result.Result.show" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="arche.rules.result.Result.tensors_equal">
+<em class="property">static </em><code class="descname">tensors_equal</code><span class="sig-paren">(</span><em>left: Union[pandas.core.series.Series, pandas.core.frame.DataFrame], right: Union[pandas.core.series.Series, pandas.core.frame.DataFrame]</em><span class="sig-paren">)</span><a class="headerlink" href="#arche.rules.result.Result.tensors_equal" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -222,8 +222,6 @@
     <form class="search" action="../search.html" method="get">
       <input type="text" name="q" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
@@ -244,7 +242,7 @@
       &copy;2018-2019, Arche developers.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

@@ -1,12 +1,10 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Strategy &#8212; Arche 2019.03.18 documentation</title>
+    <meta charset="utf-8" />
+    <title>Strategy &#8212; Arche 2019.03.25 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -38,8 +36,8 @@
 <h1>Strategy<a class="headerlink" href="#strategy" title="Permalink to this headline">¶</a></h1>
 <p>The purpose of this page is to highlight the key points which shape the library, targeting both:</p>
 <ol class="simple">
-<li>Stakeholders (e.g. QA teams and developers), to help making it clear why things are done in such way</li>
-<li>Maintainers - to not deviate from the main purpose</li>
+<li><p>Stakeholders (e.g. QA teams and developers), to help making it clear why things are done in such way</p></li>
+<li><p>Maintainers - to not deviate from the main purpose</p></li>
 </ol>
 <p>While the library is an ongoing job and a lot has been changed the underlying principles should stay more or less the same.</p>
 <p>By no means the information listed here should limit any work for the sake of the rules or processes. Instead it should be an additional instrument along with stakeholders’ needs to evolve the framework.</p>
@@ -57,12 +55,12 @@
 <h2>Long-term<a class="headerlink" href="#long-term" title="Permalink to this headline">¶</a></h2>
 <p>6 months and more</p>
 <ul class="simple">
-<li><strong>Choose tools wisely.</strong> Any libraries and even the language should be chosen because it’s one of the most suitable tools for a given task keeping in mind the following points, not just because it works.</li>
-<li><strong>Add unit tests.</strong> They are cheap and bring efficient results. All new features should be covered, old features should be covered and refactored if needed, in other words test coverage should strive for 100%.</li>
-<li><strong>Manage data of any sane size with size growth in mind.</strong> I.e. the framework should allow to test required data in a sensible time.</li>
-<li><strong>Support the most common input data sources.</strong> A good reference is <a class="reference external" href="https://pandas.pydata.org/">pandas</a> which allows a wide number of way to read and transform data to DataFrame with simply API <code class="docutils literal notranslate"><span class="pre">pd.DataFrame()</span></code>.</li>
-<li><strong>UX. The framework is used by people, so it should be simple.</strong> Take pains to keep it backwards compatible with at least the previous version, deprecate code noticeably, keep it simple. Another point is integration, for example in Scrapy Cloud.</li>
-<li><strong>Do not depend on custom rules, e.g. JSON schema.</strong> Data should be enough by itself to verify it, custom rules should clarify verification and be optional.</li>
+<li><p><strong>Choose tools wisely.</strong> Any libraries and even the language should be chosen because it’s one of the most suitable tools for a given task keeping in mind the following points, not just because it works.</p></li>
+<li><p><strong>Add unit tests.</strong> They are cheap and bring efficient results. All new features should be covered, old features should be covered and refactored if needed, in other words test coverage should strive for 100%.</p></li>
+<li><p><strong>Manage data of any sane size with size growth in mind.</strong> I.e. the framework should allow to test required data in a sensible time.</p></li>
+<li><p><strong>Support the most common input data sources.</strong> A good reference is <a class="reference external" href="https://pandas.pydata.org/">pandas</a> which allows a wide number of way to read and transform data to DataFrame with simply API <code class="docutils literal notranslate"><span class="pre">pd.DataFrame()</span></code>.</p></li>
+<li><p><strong>UX. The framework is used by people, so it should be simple.</strong> Take pains to keep it backwards compatible with at least the previous version, deprecate code noticeably, keep it simple. Another point is integration, for example in Scrapy Cloud.</p></li>
+<li><p><strong>Do not depend on custom rules, e.g. JSON schema.</strong> Data should be enough by itself to verify it, custom rules should clarify verification and be optional.</p></li>
 </ul>
 </div>
 </div>
@@ -114,8 +112,6 @@
     <form class="search" action="search.html" method="get">
       <input type="text" name="q" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
@@ -136,7 +132,7 @@
       &copy;2018-2019, Arche developers.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

@@ -122,7 +122,7 @@ class Arche:
             "'Arche.basic_json_schema()' was deprecated in 2019.03.25 and "
             "will be removed in 2019.04.22.",
             replacement="Use 'basic_json_schema()' instead",
-            gone_in="2019.04.22",
+            gone_in="0.4.0",
         )
         schema.basic_json_schema(self.source, items_numbers)
 
