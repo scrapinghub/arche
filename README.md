@@ -11,7 +11,7 @@
 
     pip install arche
 
-The library helps to verify data using set of defined rules, for example:
+Arche (pronounced as Arkey) helps to verify data using set of defined rules, for example:
   * Validation with JSON schema
   * Coverage
   * Duplicates
