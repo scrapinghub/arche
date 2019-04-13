@@ -7,6 +7,7 @@ from arche.arche import Arche
 from arche.readers.items import CollectionItems, JobItems
 from arche.rules.duplicates import find_by as find_duplicates_by
 from arche.tools.schema import basic_json_schema
+from IPython.display import display, HTML
 from plotly.offline import init_notebook_mode
 
 __all__ = [
@@ -23,3 +24,4 @@ logging.getLogger("HubstorageClient").setLevel(logging.CRITICAL)
 logging.getLogger().setLevel(logging.DEBUG)
 
 init_notebook_mode(connected=True)
+display(HTML("<script src='https://cdn.plot.ly/plotly-latest.min.js'></script>"))

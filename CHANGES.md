@@ -12,6 +12,12 @@ Note that the top-most release is changes in the unreleased master branch on Git
 ## [0.4.0.dev] (Work In Progress)
 
 
+## [0.3.1] (2019-04-12)
+
+### Fixed
+- Empty graphs due to lack of plotlyjs, #61
+
+
 ## [0.3.0] (2019-04-12)
 
 ### Fixed
