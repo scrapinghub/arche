@@ -20,6 +20,14 @@ Arche (pronounced as Arkey) helps to verify data using set of defined rules, for
   
 _We use it in Scrapinghub to ensure quality of scraped data_
 
+## Installation
+
+Arche requires [Jupyter](https://jupyter.org/install) environment, supporting both [JupyterLab](https://github.com/jupyterlab/jupyterlab#installation) and [Notebook](https://github.com/jupyter/notebook) UI
+
+For JupyterLab, you will need to properly install [plotly extensions](https://github.com/plotly/plotly.py#jupyterlab-support-python-35)
+
+Then just `pip install arche`
+
 ## Use case
 * You need to check the quality of data from Scrapy Cloud jobs continuously.
 
