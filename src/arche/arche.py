@@ -49,11 +49,10 @@ class Arche:
         self.count = count
         self.filters = filters
         self.expand = expand
-        self.schema_source = schema
+        self.schema_source = None
+        self._schema = None
         if schema:
-            self._schema = sr.get_schema(schema)
-        else:
-            self._schema = None
+            self.schema = sr.get_schema(schema)
         self._source_items = None
         self._target_items = None
 
