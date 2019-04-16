@@ -1,6 +1,7 @@
 import arche.rules.price as p
 from arche.rules.result import Level
 from conftest import create_result
+import numpy as np
 import pandas as pd
 import pytest
 
@@ -81,8 +82,16 @@ def test_compare_was_now(
 
 compare_prices_inputs = [
     (
-        {"_key": ["1", "0"], "price": [1, "2"], "url": ["http://1", "http://2"]},
-        {"_key": ["0", "1"], "price": [1.15, "2.3"], "url": ["http://1", "http://2"]},
+        {
+            "_key": ["1", "0", "2"],
+            "price": [1, "2", 5],
+            "url": ["http://1", "http://2", np.nan],
+        },
+        {
+            "_key": ["0", "1", "2"],
+            "price": [1.15, "2.3", 6],
+            "url": ["http://1", "http://2", np.nan],
+        },
         {"product_price_field": ["price"], "product_url_field": ["url"]},
         {
             Level.INFO: [

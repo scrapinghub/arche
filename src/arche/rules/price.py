@@ -89,6 +89,9 @@ def compare_prices_for_same_urls(
     url_field = url_field[0]
     price_field = tagged_fields.get("product_price_field")
 
+    source_df = source_df.dropna(subset=[url_field])
+    target_df = target_df.dropna(subset=[url_field])
+
     same_urls = source_df[(source_df[url_field].isin(target_df[url_field].values))][
         url_field
     ]
