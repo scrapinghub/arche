@@ -10,6 +10,7 @@ This section contains real notebooks with real output from a real project
    basics
    compare
    API
+   schema
 
 Indices and tables
 ==================

@@ -2,8 +2,8 @@ import arche.readers.schema as reader
 from jsonschema.exceptions import SchemaError
 import pytest
 
-
 good_schema = {
+    "$schema": "http://json-schema.org/draft-07/schema#",
     "definitions": {"unicode_number": {"pattern": "^-?[0-9]{1,7}\\.[0-9]{2}$"}},
     "required": ["company"],
     "properties": {"company": {"pattern": "^Dell$"}},
@@ -90,6 +90,38 @@ def test_get_schema_from_url_fails(path, expected_message):
     with pytest.raises(ValueError) as excinfo:
         reader.get_schema_from_url(path)
     assert str(excinfo.value) == expected_message
+
+
+def test_get_schema_from_url_request_fails(mocker):
+    cm = mocker.MagicMock()
+    cm.__enter__.return_value = cm
+    cm.read.side_effect = ValueError("'ValueError' object has no attribute 'decode'")
+    mocker.patch(
+        "arche.readers.schema.urllib.request.urlopen", return_value=cm, autospec=True
+    )
+    with pytest.raises(ValueError) as excinfo:
+        reader.get_schema_from_url("https://example.com/schema.json")
+    assert str(excinfo.value) == "'ValueError' object has no attribute 'decode'"
+
+
+def test_set_auth_skipped(mocker):
+    mocked_install = mocker.patch(
+        "arche.readers.schema.urllib.request.install_opener", autospec=True
+    )
+    reader.set_auth()
+    mocked_install.assert_not_called()
+
+
+def test_set_auth(mocker):
+    mocked_install = mocker.patch(
+        "arche.readers.schema.urllib.request.install_opener", autospec=True
+    )
+    mocker.patch.dict(
+        "arche.readers.schema.os.environ",
+        {"BITBUCKET_USER": "user", "BITBUCKET_PASSWORD": "pass"},
+    )
+    reader.set_auth()
+    mocked_install.assert_called_once()
 
 
 def test_tags():

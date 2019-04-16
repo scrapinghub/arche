@@ -1,9 +1,10 @@
 from collections import defaultdict
 from enum import Enum
 import json
+import os
 from typing import Dict, List, Optional, Union
 from urllib.parse import urlparse
-from urllib.request import urlopen
+import urllib.request
 
 from arche.tools import s3
 import perfect_jsonschema
@@ -42,8 +43,21 @@ def get_schema_from_url(path: str) -> Schema:
         return json.loads(get_contents(path))
 
 
-def get_contents(url: str):
-    with urlopen(url) as f:
+def set_auth() -> None:
+    if "BITBUCKET_USER" in os.environ and "BITBUCKET_PASSWORD" in os.environ:
+        auth_handler = urllib.request.HTTPBasicAuthHandler()
+        auth_handler.add_password(
+            realm="Bitbucket.org HTTP",
+            uri="https://bitbucket.org",
+            user=os.getenv("BITBUCKET_USER"),
+            passwd=os.getenv("BITBUCKET_PASSWORD"),
+        )
+        opener = urllib.request.build_opener(auth_handler)
+        urllib.request.install_opener(opener)
+
+
+def get_contents(url: str) -> str:
+    with urllib.request.urlopen(url) as f:
         return f.read().decode("utf-8")
 
 
@@ -96,3 +110,6 @@ class Tags:
         if isinstance(value, list):
             return set(value)
         return None
+
+
+set_auth()
