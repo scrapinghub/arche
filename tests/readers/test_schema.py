@@ -96,7 +96,7 @@ def test_get_schema_from_url_request_fails(mocker):
     cm = mocker.MagicMock()
     cm.__enter__.return_value = cm
     cm.read.side_effect = ValueError("'ValueError' object has no attribute 'decode'")
-    mocked_urlopen = mocker.patch(
+    mocker.patch(
         "arche.readers.schema.urllib.request.urlopen", return_value=cm, autospec=True
     )
     with pytest.raises(ValueError) as excinfo:
