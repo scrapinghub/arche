@@ -14,6 +14,7 @@ import arche.rules.metadata as metadata_rules
 from arche.rules.others import compare_boolean_fields, garbage_symbols
 import arche.rules.price as price_rules
 from arche.tools import api, helpers, maintenance, schema
+import IPython
 
 logger = logging.getLogger(__name__)
 
@@ -127,6 +128,7 @@ class Arche:
 
     def report_all(self):
         self.run_all_rules()
+        IPython.display.clear_output()
         self.report.write_summaries()
         self.report.write("\n" * 2)
         self.report.write_details(short=True)

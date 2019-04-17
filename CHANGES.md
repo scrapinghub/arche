@@ -9,12 +9,13 @@ Note that the top-most release is changes in the unreleased master branch on Git
 
 [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.4.0.dev] (Work In Progress)
+## [0.3.2dev] (Work In Progress)
 ### Added
 - Allow reading private raw schemas directly from bitbucket, #58
 
 ### Fixed
 - Failing `Compare Prices For Same Urls` when url is `nan`, #67
+- Empty graphs in Jupyter Notebook, #63
 
 
 ## [0.3.1] (2019-04-12)

@@ -5,7 +5,7 @@ from colorama import Fore, Style
 from IPython.display import display, HTML
 import pandas as pd
 import plotly.graph_objs as go
-from plotly.offline import plot
+import plotly.io as pio
 
 
 class Report:
@@ -100,7 +100,7 @@ class Report:
             layout.annotations = Report.make_annotations(stat)
 
         f = go.FigureWidget(data, layout)
-        display(HTML(plot(f, include_plotlyjs=False, output_type="div")))
+        pio.show(f)
 
     @staticmethod
     def make_annotations(stat: Stat) -> List[Dict]:
