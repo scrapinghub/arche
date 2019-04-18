@@ -17,6 +17,9 @@ Note that the top-most release is changes in the unreleased master branch on Git
 - Failing `Compare Prices For Same Urls` when url is `nan`, #67
 - Empty graphs in Jupyter Notebook, #63
 
+### Removed
+- Scraped Items History graphs
+
 
 ## [0.3.1] (2019-04-12)
 
