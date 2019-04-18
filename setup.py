@@ -4,7 +4,7 @@ from setuptools import find_packages, setup
 install_requires = (
     "pandas",
     "scrapinghub[msgpack]",
-    "plotly",
+    "plotly>=3.8.0",
     "genson",
     "boto3",
     "jsonschema[format]>=3.0.0",

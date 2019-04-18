@@ -14,7 +14,7 @@ from arche.rules.others import garbage_symbols
 import arche.rules.price as price_rules
 from arche.tools import api
 from arche.tools.s3 import upload_str_stream
-import plotly
+import plotly.io as pio
 
 
 class DataQualityReport:
@@ -100,21 +100,14 @@ class DataQualityReport:
         self.scraped_fields_coverage(items.job.key, cleaned_df)
         self.coverage_by_categories(cleaned_df, tagged_fields)
 
-    def plot_to_notebook(self):
+    def plot_to_notebook(self) -> None:
         for fig in self.figures:
-            plotly.offline.iplot(fig)
+            pio.show(fig)
 
-    def plot_html_to_stream(self):
+    def plot_html_to_stream(self) -> StringIO:
         output = StringIO()
-        output.write(
-            '<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>\n'
-        )
         for fig in self.figures:
-            output.write(
-                plotly.offline.plot(
-                    fig, include_plotlyjs=False, output_type="div", show_link=False
-                )
-            )
+            output.write(pio.to_html(fig, include_plotlyjs="cdn", full_html=False))
             output.write("\n")
         output.write(self.appendix)
         return output
@@ -185,12 +178,8 @@ class DataQualityReport:
         sfc = graphs.scraped_fields_coverage(job, df)
         self.figures.append(sfc)
 
-    def scraped_items_history(self, job_no, job_numbers, date_items):
-        sih = graphs.scraped_items_history(job_no, job_numbers, date_items)
-        self.figures.append(sih)
-
     def coverage_by_categories(self, df, tagged_fields):
-        """Makes tables which show the number of items per category,
+        """Make tables which show the number of items per category,
         set up with a category tag
 
         Args:
