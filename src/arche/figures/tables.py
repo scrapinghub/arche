@@ -4,7 +4,7 @@ import pandas as pd
 import plotly.graph_objs as go
 
 
-def score_table(quality_estimation, field_accuracy):
+def score_table(quality_estimation, field_accuracy) -> go.FigureWidget:
     cells = [
         ["<b>Field Accuracy Score</b>", "<b>Overall Quality Score</b>"],
         ["<b>" + str(field_accuracy) + "<b>", "<b>" + str(quality_estimation) + "</b>"],
@@ -23,7 +23,7 @@ def score_table(quality_estimation, field_accuracy):
     )
 
     layout = go.Layout(autosize=True, margin=dict(l=0, t=25, b=25, r=0), height=150)
-    return dict(data=[trace], layout=layout)
+    return go.FigureWidget(data=[trace], layout=layout)
 
 
 def get_color(value):
@@ -34,7 +34,7 @@ def get_color(value):
     return "rgb(233,81,51)"
 
 
-def job_summary_table(job):
+def job_summary_table(job) -> go.FigureWidget:
     job_url = f"{SH_URL}/{job.key}"
     job_state = api.get_job_state(job)
     job_close_reason = api.get_job_close_reason(job)
@@ -120,7 +120,7 @@ def job_summary_table(job):
         height=445,
     )
 
-    return dict(data=[trace], layout=layout)
+    return go.FigureWidget(data=[trace], layout=layout)
 
 
 def rules_summary_table(
@@ -138,7 +138,7 @@ def rules_summary_table(
     no_of_checked_price_items,
     no_of_price_warns,
     **kwargs,
-):
+) -> go.FigureWidget:
     test_name_values = ["Adherence to schema"]
     tested_fields_values = ["All scraped fields" for i in range(1)]
     test_results_values = [f"{no_of_validation_warnings} warnings"]
@@ -204,7 +204,7 @@ def rules_summary_table(
         margin=dict(t=25, b=25, l=0, r=0),
         height=100 + len(df.index) * 25,
     )
-    return go.Figure(data=[trace], layout=layout)
+    return go.FigureWidget(data=[trace], layout=layout)
 
 
 def get_rule_status(err_values_number):
@@ -213,7 +213,7 @@ def get_rule_status(err_values_number):
     return "Pass"
 
 
-def coverage_by_categories(category_field, df, product_url_fields):
+def coverage_by_categories(category_field, df, product_url_fields) -> go.FigureWidget:
     if category_field not in df.columns:
         return None
     if df[category_field].notnull().sum() == 0:
@@ -264,4 +264,4 @@ def coverage_by_categories(category_field, df, product_url_fields):
         margin=dict(t=30, b=25, l=0, r=0),
         height=(len(category_names) + 2) * 45,
     )
-    return dict(data=[trace], layout=layout)
+    return go.FigureWidget(data=[trace], layout=layout)

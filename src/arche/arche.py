@@ -153,7 +153,7 @@ class Arche:
                     self.schema, items_dicts=self.source_items.dicts, fast=False
                 )
             )
-
+        IPython.display.clear_output()
         DataQualityReport(self.source_items, self.schema, self.report, bucket)
 
     @lru_cache(maxsize=32)

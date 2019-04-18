@@ -13,6 +13,10 @@ Note that the top-most release is changes in the unreleased master branch on Git
 ### Added
 - Allow reading private raw schemas directly from bitbucket, #58
 
+### Changed
+- Progress widgets are removed before printing graphs
+- New plotly v4 API
+
 ### Fixed
 - Failing `Compare Prices For Same Urls` when url is `nan`, #67
 - Empty graphs in Jupyter Notebook, #63

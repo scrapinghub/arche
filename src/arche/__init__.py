@@ -3,6 +3,7 @@ import logging
 __version__ = "0.3.1"
 SH_URL = "https://app.scrapinghub.com/p"  # noqa
 
+from _plotly_future_ import v4  # noqa
 from arche.arche import Arche
 from arche.readers.items import CollectionItems, JobItems
 from arche.rules.duplicates import find_by as find_duplicates_by
