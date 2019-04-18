@@ -27,7 +27,7 @@ project = "Arche"
 copyright = f"2018-{datetime.now().year}, Arche developers"
 author = "Arche developers"
 
-version = "0.3.1"
+version = "0.3.2"
 # The short X.Y version
 version = version
 # The full version, including alpha/beta/rc tags

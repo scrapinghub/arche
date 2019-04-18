@@ -9,7 +9,15 @@ Note that the top-most release is changes in the unreleased master branch on Git
 
 [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.3.2dev] (Work In Progress)
+
+## [0.4.0] (Work In Progress)
+### Added
+### Changed
+### Fixed
+### Removed
+
+
+## [0.3.2] (2019-04-18)
 ### Added
 - Allow reading private raw schemas directly from bitbucket, #58
 
