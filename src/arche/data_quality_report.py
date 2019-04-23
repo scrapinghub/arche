@@ -14,6 +14,7 @@ from arche.rules.others import garbage_symbols
 import arche.rules.price as price_rules
 from arche.tools import api
 from arche.tools.s3 import upload_str_stream
+import IPython
 import plotly.io as pio
 
 
@@ -101,6 +102,7 @@ class DataQualityReport:
         self.coverage_by_categories(cleaned_df, tagged_fields)
 
     def plot_to_notebook(self) -> None:
+        IPython.display.clear_output()
         for fig in self.figures:
             pio.show(fig)
 

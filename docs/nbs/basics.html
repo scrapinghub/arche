@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Basics &#8212; Arche 2019.03.25 documentation</title>
+    <title>Basics &#8212; Arche 0.3.2 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -15,7 +15,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Compare jobs" href="compare.html" />
-    <link rel="prev" title="Notebooks" href="notebooks.html" />
+    <link rel="prev" title="In Short" href="in-short.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -234,26 +234,18 @@ div.rendered_html tbody tr:hover {
 </style>
 <div class="section" id="Basics">
 <h1>Basics<a class="headerlink" href="#Basics" title="Permalink to this headline">¶</a></h1>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="o">%</span><span class="k">cd</span> ../../../src
+<span></span><span class="o">%</span><span class="k">cd</span> -q ../../../src
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-/Users/valery/Documents/_code/arche/src
-</pre></div></div>
-</div>
 <div class="section" id="Bare">
 <h2>Bare<a class="headerlink" href="#Bare" title="Permalink to this headline">¶</a></h2>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
@@ -261,12 +253,6 @@ div.rendered_html tbody tr:hover {
 <span></span><span class="kn">from</span> <span class="nn">arche</span> <span class="k">import</span> <span class="o">*</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area rendered_html docutils container">
-<script type="text/javascript">window.PlotlyConfig = {MathJaxConfig: 'local'};</script><script type="text/javascript">if (window.MathJax) {MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}</script><script>requirejs.config({paths: { 'plotly': ['https://cdn.plot.ly/plotly-latest.min']},});if(!window._Plotly) {require(['plotly'],function(plotly) {window._Plotly=plotly;});}</script></div>
 </div>
 <p>Any project requires auth which is done with an api key set in <code class="docutils literal notranslate"><span class="pre">SH_APIKEY</span></code></p>
 <div class="nbinput nblast docutils container">
@@ -291,28 +277,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "b51f679e218c4932bd4b1e32671c81a1", "version_major": 2, "version_minor": 0}</script></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
 <div class="highlight"><pre>
-
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "8fab9507b38c4636bc900cab55c13245", "version_major": 2, "version_minor": 0}</script></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-
 
 Job Outcome:
         Finished
@@ -332,15 +297,70 @@ Fields Coverage:
 Fields Coverage (1 message(s)):
 </pre></div></div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<script type="text/javascript">
+window.PlotlyConfig = {MathJaxConfig: 'local'};
+if (window.MathJax) {MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}
+if (typeof require !== 'undefined') {
+require.undef("plotly");
+requirejs.config({
+    paths: {
+        'plotly': ['https://cdn.plot.ly/plotly-latest.min']
+    }
+});
+require(['plotly'], function(Plotly) {
+    window._Plotly = Plotly;
+});
+}
+</script></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<script type="text/javascript">
+window.PlotlyConfig = {MathJaxConfig: 'local'};
+if (window.MathJax) {MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}
+if (typeof require !== 'undefined') {
+require.undef("plotly");
+requirejs.config({
+    paths: {
+        'plotly': ['https://cdn.plot.ly/plotly-latest.min']
+    }
+});
+require(['plotly'], function(Plotly) {
+    window._Plotly = Plotly;
+});
+}
+</script></div>
+</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area rendered_html docutils container">
-<div><div id="91e8d9ca-ded4-4f83-9b3d-2b697b4e725e" style="height: 450px; width: 100%;" class="plotly-graph-div"></div><script type="text/javascript">window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL="https://plot.ly";
-if (document.getElementById("91e8d9ca-ded4-4f83-9b3d-2b697b4e725e")) {
-    Plotly.newPlot("91e8d9ca-ded4-4f83-9b3d-2b697b4e725e", [{"orientation": "h", "x": [1000, 1000, 1000, 998], "y": ["title", "price", "category", "description"], "type": "bar", "uid": "cd3a375c-f419-4606-8a5d-2042e78bef94"}], {"annotations": [{"showarrow": false, "text": "99.80%", "x": 0, "xref": "paper", "y": "description", "yref": "y"}, {"showarrow": false, "text": "100.00%", "x": 0, "xref": "paper", "y": "category", "yref": "y"}], "bargap": 0.1, "height": 450, "hovermode": "y", "margin": {"l": 200, "t": 35}, "template": {"data": {"barpolar": [{"marker": {"line": {"color": "rgb(237,237,237)", "width": 0.5}}, "type": "barpolar"}], "bar": [{"marker": {"line": {"color": "rgb(237,237,237)", "width": 0.5}}, "type": "bar"}], "carpet": [{"aaxis": {"endlinecolor": "rgb(51,51,51)", "gridcolor": "white", "linecolor": "white", "minorgridcolor": "white", "startlinecolor": "rgb(51,51,51)"}, "baxis": {"endlinecolor": "rgb(51,51,51)", "gridcolor": "white", "linecolor": "white", "minorgridcolor": "white", "startlinecolor": "rgb(51,51,51)"}, "type": "carpet"}], "choropleth": [{"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}, "type": "choropleth"}], "contourcarpet": [{"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}, "type": "contourcarpet"}], "contour": [{"autocolorscale": true, "colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}, "type": "contour"}], "heatmapgl": [{"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}, "type": "heatmapgl"}], "heatmap": [{"autocolorscale": true, "colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}, "type": "heatmap"}], "histogram2dcontour": [{"autocolorscale": true, "colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}, "type": "histogram2dcontour"}], "histogram2d": [{"autocolorscale": true, "colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}, "type": "histogram2d"}], "histogram": [{"marker": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "histogram"}], "mesh3d": [{"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}, "type": "mesh3d"}], "parcoords": [{"line": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "parcoords"}], "scatter3d": [{"marker": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "scatter3d"}], "scattercarpet": [{"marker": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "scattercarpet"}], "scattergeo": [{"marker": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "scattergeo"}], "scattergl": [{"marker": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "scattergl"}], "scattermapbox": [{"marker": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "scattermapbox"}], "scatterpolargl": [{"marker": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "scatterpolargl"}], "scatterpolar": [{"marker": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "scatterpolar"}], "scatter": [{"marker": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "scatter"}], "scatterternary": [{"marker": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "scatterternary"}], "surface": [{"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}, "type": "surface"}], "table": [{"cells": {"fill": {"color": "rgb(237,237,237)"}, "line": {"color": "white"}}, "header": {"fill": {"color": "rgb(217,217,217)"}, "line": {"color": "white"}}, "type": "table"}]}, "layout": {"annotationdefaults": {"arrowhead": 0, "arrowwidth": 1}, "colorscale": {"sequential": [[0, "rgb(20,44,66)"], [1, "rgb(90,179,244)"]], "sequentialminus": [[0, "rgb(20,44,66)"], [1, "rgb(90,179,244)"]]}, "colorway": ["#F8766D", "#A3A500", "#00BF7D", "#00B0F6", "#E76BF3"], "font": {"color": "rgb(51,51,51)"}, "geo": {"bgcolor": "white", "lakecolor": "white", "landcolor": "rgb(237,237,237)", "showlakes": true, "showland": true, "subunitcolor": "white"}, "hovermode": "closest", "paper_bgcolor": "white", "plot_bgcolor": "rgb(237,237,237)", "polar": {"angularaxis": {"gridcolor": "white", "linecolor": "white", "showgrid": true, "tickcolor": "rgb(51,51,51)", "ticks": "outside"}, "bgcolor": "rgb(237,237,237)", "radialaxis": {"gridcolor": "white", "linecolor": "white", "showgrid": true, "tickcolor": "rgb(51,51,51)", "ticks": "outside"}}, "scene": {"xaxis": {"backgroundcolor": "rgb(237,237,237)", "gridcolor": "white", "gridwidth": 2, "linecolor": "white", "showbackground": true, "showgrid": true, "tickcolor": "rgb(51,51,51)", "ticks": "outside", "zerolinecolor": "white"}, "yaxis": {"backgroundcolor": "rgb(237,237,237)", "gridcolor": "white", "gridwidth": 2, "linecolor": "white", "showbackground": true, "showgrid": true, "tickcolor": "rgb(51,51,51)", "ticks": "outside", "zerolinecolor": "white"}, "zaxis": {"backgroundcolor": "rgb(237,237,237)", "gridcolor": "white", "gridwidth": 2, "linecolor": "white", "showbackground": true, "showgrid": true, "tickcolor": "rgb(51,51,51)", "ticks": "outside", "zerolinecolor": "white"}}, "shapedefaults": {"fillcolor": "black", "line": {"width": 0}, "opacity": 0.3}, "ternary": {"aaxis": {"gridcolor": "white", "linecolor": "white", "showgrid": true, "tickcolor": "rgb(51,51,51)", "ticks": "outside"}, "baxis": {"gridcolor": "white", "linecolor": "white", "showgrid": true, "tickcolor": "rgb(51,51,51)", "ticks": "outside"}, "bgcolor": "rgb(237,237,237)", "caxis": {"gridcolor": "white", "linecolor": "white", "showgrid": true, "tickcolor": "rgb(51,51,51)", "ticks": "outside"}}, "xaxis": {"automargin": true, "gridcolor": "white", "linecolor": "white", "showgrid": true, "tickcolor": "rgb(51,51,51)", "ticks": "outside", "zerolinecolor": "white"}, "yaxis": {"automargin": true, "gridcolor": "white", "linecolor": "white", "showgrid": true, "tickcolor": "rgb(51,51,51)", "ticks": "outside", "zerolinecolor": "white"}}}, "title": {"text": "Fields coverage for 1_000 items"}, "xaxis": {"range": [0, 1050.0]}}, {"showLink": false, "linkText": "Export to plot.ly", "plotlyServerURL": "https://plot.ly"});
-}
-</script><script type="text/javascript">window.addEventListener("resize", function(){if (document.getElementById("91e8d9ca-ded4-4f83-9b3d-2b697b4e725e")) {Plotly.Plots.resize(document.getElementById("91e8d9ca-ded4-4f83-9b3d-2b697b4e725e"));};})</script></div></div>
+<div>
+
+
+            <div id="bc157b88-8035-41cc-a853-57bb5c36c718" class="plotly-graph-div"></div>
+            <script type="text/javascript">
+                require(["plotly"], function(Plotly) {
+                    window.PLOTLYENV=window.PLOTLYENV || {};
+                    window.PLOTLYENV.BASE_URL='https://plot.ly';
+
+                if (document.getElementById("bc157b88-8035-41cc-a853-57bb5c36c718")) {
+                    Plotly.newPlot(
+                        'bc157b88-8035-41cc-a853-57bb5c36c718',
+                        [{"orientation": "h", "type": "bar", "uid": "cbff75cd-9971-417d-9373-b4218fec6246", "x": [1000, 1000, 1000, 998], "y": ["title", "price", "category", "description"]}],
+                        {"annotations": [{"showarrow": false, "text": "99.80%", "x": 0, "xref": "paper", "y": "description", "yref": "y"}, {"showarrow": false, "text": "100.00%", "x": 0, "xref": "paper", "y": "category", "yref": "y"}], "bargap": 0.1, "height": 450, "hovermode": "y", "margin": {"l": 200, "t": 35}, "template": {"data": {"bar": [{"marker": {"line": {"color": "rgb(237,237,237)", "width": 0.5}}, "type": "bar"}], "barpolar": [{"marker": {"line": {"color": "rgb(237,237,237)", "width": 0.5}}, "type": "barpolar"}], "carpet": [{"aaxis": {"endlinecolor": "rgb(51,51,51)", "gridcolor": "white", "linecolor": "white", "minorgridcolor": "white", "startlinecolor": "rgb(51,51,51)"}, "baxis": {"endlinecolor": "rgb(51,51,51)", "gridcolor": "white", "linecolor": "white", "minorgridcolor": "white", "startlinecolor": "rgb(51,51,51)"}, "type": "carpet"}], "choropleth": [{"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}, "type": "choropleth"}], "contour": [{"autocolorscale": true, "colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}, "type": "contour"}], "contourcarpet": [{"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}, "type": "contourcarpet"}], "heatmap": [{"autocolorscale": true, "colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}, "type": "heatmap"}], "heatmapgl": [{"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}, "type": "heatmapgl"}], "histogram": [{"marker": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "histogram"}], "histogram2d": [{"autocolorscale": true, "colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}, "type": "histogram2d"}], "histogram2dcontour": [{"autocolorscale": true, "colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}, "type": "histogram2dcontour"}], "mesh3d": [{"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}, "type": "mesh3d"}], "parcoords": [{"line": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "parcoords"}], "scatter": [{"marker": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "scatter"}], "scatter3d": [{"marker": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "scatter3d"}], "scattercarpet": [{"marker": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "scattercarpet"}], "scattergeo": [{"marker": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "scattergeo"}], "scattergl": [{"marker": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "scattergl"}], "scattermapbox": [{"marker": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "scattermapbox"}], "scatterpolar": [{"marker": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "scatterpolar"}], "scatterpolargl": [{"marker": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "scatterpolargl"}], "scatterternary": [{"marker": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "scatterternary"}], "surface": [{"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}, "type": "surface"}], "table": [{"cells": {"fill": {"color": "rgb(237,237,237)"}, "line": {"color": "white"}}, "header": {"fill": {"color": "rgb(217,217,217)"}, "line": {"color": "white"}}, "type": "table"}]}, "layout": {"annotationdefaults": {"arrowhead": 0, "arrowwidth": 1}, "colorscale": {"sequential": [[0, "rgb(20,44,66)"], [1, "rgb(90,179,244)"]], "sequentialminus": [[0, "rgb(20,44,66)"], [1, "rgb(90,179,244)"]]}, "colorway": ["#F8766D", "#A3A500", "#00BF7D", "#00B0F6", "#E76BF3"], "font": {"color": "rgb(51,51,51)"}, "geo": {"bgcolor": "white", "lakecolor": "white", "landcolor": "rgb(237,237,237)", "showlakes": true, "showland": true, "subunitcolor": "white"}, "hoverlabel": {"align": "left"}, "hovermode": "closest", "legend": {"itemsizing": "constant"}, "paper_bgcolor": "white", "plot_bgcolor": "rgb(237,237,237)", "polar": {"angularaxis": {"gridcolor": "white", "linecolor": "white", "showgrid": true, "tickcolor": "rgb(51,51,51)", "ticks": "outside"}, "bgcolor": "rgb(237,237,237)", "radialaxis": {"gridcolor": "white", "linecolor": "white", "showgrid": true, "tickcolor": "rgb(51,51,51)", "ticks": "outside"}}, "scene": {"xaxis": {"backgroundcolor": "rgb(237,237,237)", "gridcolor": "white", "gridwidth": 2, "linecolor": "white", "showbackground": true, "showgrid": true, "tickcolor": "rgb(51,51,51)", "ticks": "outside", "zerolinecolor": "white"}, "yaxis": {"backgroundcolor": "rgb(237,237,237)", "gridcolor": "white", "gridwidth": 2, "linecolor": "white", "showbackground": true, "showgrid": true, "tickcolor": "rgb(51,51,51)", "ticks": "outside", "zerolinecolor": "white"}, "zaxis": {"backgroundcolor": "rgb(237,237,237)", "gridcolor": "white", "gridwidth": 2, "linecolor": "white", "showbackground": true, "showgrid": true, "tickcolor": "rgb(51,51,51)", "ticks": "outside", "zerolinecolor": "white"}}, "shapedefaults": {"fillcolor": "black", "line": {"width": 0}, "opacity": 0.3}, "ternary": {"aaxis": {"gridcolor": "white", "linecolor": "white", "showgrid": true, "tickcolor": "rgb(51,51,51)", "ticks": "outside"}, "baxis": {"gridcolor": "white", "linecolor": "white", "showgrid": true, "tickcolor": "rgb(51,51,51)", "ticks": "outside"}, "bgcolor": "rgb(237,237,237)", "caxis": {"gridcolor": "white", "linecolor": "white", "showgrid": true, "tickcolor": "rgb(51,51,51)", "ticks": "outside"}}, "xaxis": {"automargin": true, "gridcolor": "white", "linecolor": "white", "showgrid": true, "tickcolor": "rgb(51,51,51)", "ticks": "outside", "zerolinecolor": "white"}, "yaxis": {"automargin": true, "gridcolor": "white", "linecolor": "white", "showgrid": true, "tickcolor": "rgb(51,51,51)", "ticks": "outside", "zerolinecolor": "white"}}}, "title": {"text": "Fields coverage for 1_000 items"}, "xaxis": {"range": [0, 1050.0]}},
+                        {"plotlyServerURL": "https://plot.ly", "responsive": true}
+                    )
+                };
+                });
+            </script>
+        </div></div>
 </div>
 <p>We just ran a minimal number of rules. The validation can be improved with adding a json schema, let’s infer one from the data we already have.</p>
 </div>
@@ -517,7 +537,7 @@ if (document.getElementById("91e8d9ca-ded4-4f83-9b3d-2b697b4e725e")) {
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "a34baa764b0b43e1848f439512f2d3b7", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "88742f17a334424d8bf425b414778017", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
@@ -556,7 +576,7 @@ JSON Schema Validation:
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "6aa54d11042344ca8539624acbf3fee5", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "ce87105ce202479b82d62276c3817324", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
@@ -583,7 +603,7 @@ JSON Schema Validation:
 </div>
 <p>We already got something! Let’s execute the whole thing again to see how <code class="docutils literal notranslate"><span class="pre">category</span></code> tag works.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -595,14 +615,7 @@ JSON Schema Validation:
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "eabf41a5c1574c50b6baa99e4523b0b9", "version_major": 2, "version_minor": 0}</script></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
 <div class="highlight"><pre>
-
 
 Job Outcome:
         Finished
@@ -645,11 +658,26 @@ Fields Coverage (1 message(s)):
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area rendered_html docutils container">
-<div><div id="c5eb7bd9-8638-4900-992a-874e61ee6f8a" style="height: 450px; width: 100%;" class="plotly-graph-div"></div><script type="text/javascript">window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL="https://plot.ly";
-if (document.getElementById("c5eb7bd9-8638-4900-992a-874e61ee6f8a")) {
-    Plotly.newPlot("c5eb7bd9-8638-4900-992a-874e61ee6f8a", [{"orientation": "h", "x": [1000, 1000, 1000, 998], "y": ["title", "price", "category", "description"], "type": "bar", "uid": "2ace7664-cc65-41ca-98c8-82720f840232"}], {"annotations": [{"showarrow": false, "text": "99.80%", "x": 0, "xref": "paper", "y": "description", "yref": "y"}, {"showarrow": false, "text": "100.00%", "x": 0, "xref": "paper", "y": "category", "yref": "y"}], "bargap": 0.1, "height": 450, "hovermode": "y", "margin": {"l": 200, "t": 35}, "template": {"data": {"barpolar": [{"marker": {"line": {"color": "rgb(237,237,237)", "width": 0.5}}, "type": "barpolar"}], "bar": [{"marker": {"line": {"color": "rgb(237,237,237)", "width": 0.5}}, "type": "bar"}], "carpet": [{"aaxis": {"endlinecolor": "rgb(51,51,51)", "gridcolor": "white", "linecolor": "white", "minorgridcolor": "white", "startlinecolor": "rgb(51,51,51)"}, "baxis": {"endlinecolor": "rgb(51,51,51)", "gridcolor": "white", "linecolor": "white", "minorgridcolor": "white", "startlinecolor": "rgb(51,51,51)"}, "type": "carpet"}], "choropleth": [{"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}, "type": "choropleth"}], "contourcarpet": [{"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}, "type": "contourcarpet"}], "contour": [{"autocolorscale": true, "colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}, "type": "contour"}], "heatmapgl": [{"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}, "type": "heatmapgl"}], "heatmap": [{"autocolorscale": true, "colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}, "type": "heatmap"}], "histogram2dcontour": [{"autocolorscale": true, "colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}, "type": "histogram2dcontour"}], "histogram2d": [{"autocolorscale": true, "colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}, "type": "histogram2d"}], "histogram": [{"marker": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "histogram"}], "mesh3d": [{"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}, "type": "mesh3d"}], "parcoords": [{"line": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "parcoords"}], "scatter3d": [{"marker": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "scatter3d"}], "scattercarpet": [{"marker": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "scattercarpet"}], "scattergeo": [{"marker": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "scattergeo"}], "scattergl": [{"marker": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "scattergl"}], "scattermapbox": [{"marker": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "scattermapbox"}], "scatterpolargl": [{"marker": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "scatterpolargl"}], "scatterpolar": [{"marker": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "scatterpolar"}], "scatter": [{"marker": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "scatter"}], "scatterternary": [{"marker": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "scatterternary"}], "surface": [{"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}, "type": "surface"}], "table": [{"cells": {"fill": {"color": "rgb(237,237,237)"}, "line": {"color": "white"}}, "header": {"fill": {"color": "rgb(217,217,217)"}, "line": {"color": "white"}}, "type": "table"}]}, "layout": {"annotationdefaults": {"arrowhead": 0, "arrowwidth": 1}, "colorscale": {"sequential": [[0, "rgb(20,44,66)"], [1, "rgb(90,179,244)"]], "sequentialminus": [[0, "rgb(20,44,66)"], [1, "rgb(90,179,244)"]]}, "colorway": ["#F8766D", "#A3A500", "#00BF7D", "#00B0F6", "#E76BF3"], "font": {"color": "rgb(51,51,51)"}, "geo": {"bgcolor": "white", "lakecolor": "white", "landcolor": "rgb(237,237,237)", "showlakes": true, "showland": true, "subunitcolor": "white"}, "hovermode": "closest", "paper_bgcolor": "white", "plot_bgcolor": "rgb(237,237,237)", "polar": {"angularaxis": {"gridcolor": "white", "linecolor": "white", "showgrid": true, "tickcolor": "rgb(51,51,51)", "ticks": "outside"}, "bgcolor": "rgb(237,237,237)", "radialaxis": {"gridcolor": "white", "linecolor": "white", "showgrid": true, "tickcolor": "rgb(51,51,51)", "ticks": "outside"}}, "scene": {"xaxis": {"backgroundcolor": "rgb(237,237,237)", "gridcolor": "white", "gridwidth": 2, "linecolor": "white", "showbackground": true, "showgrid": true, "tickcolor": "rgb(51,51,51)", "ticks": "outside", "zerolinecolor": "white"}, "yaxis": {"backgroundcolor": "rgb(237,237,237)", "gridcolor": "white", "gridwidth": 2, "linecolor": "white", "showbackground": true, "showgrid": true, "tickcolor": "rgb(51,51,51)", "ticks": "outside", "zerolinecolor": "white"}, "zaxis": {"backgroundcolor": "rgb(237,237,237)", "gridcolor": "white", "gridwidth": 2, "linecolor": "white", "showbackground": true, "showgrid": true, "tickcolor": "rgb(51,51,51)", "ticks": "outside", "zerolinecolor": "white"}}, "shapedefaults": {"fillcolor": "black", "line": {"width": 0}, "opacity": 0.3}, "ternary": {"aaxis": {"gridcolor": "white", "linecolor": "white", "showgrid": true, "tickcolor": "rgb(51,51,51)", "ticks": "outside"}, "baxis": {"gridcolor": "white", "linecolor": "white", "showgrid": true, "tickcolor": "rgb(51,51,51)", "ticks": "outside"}, "bgcolor": "rgb(237,237,237)", "caxis": {"gridcolor": "white", "linecolor": "white", "showgrid": true, "tickcolor": "rgb(51,51,51)", "ticks": "outside"}}, "xaxis": {"automargin": true, "gridcolor": "white", "linecolor": "white", "showgrid": true, "tickcolor": "rgb(51,51,51)", "ticks": "outside", "zerolinecolor": "white"}, "yaxis": {"automargin": true, "gridcolor": "white", "linecolor": "white", "showgrid": true, "tickcolor": "rgb(51,51,51)", "ticks": "outside", "zerolinecolor": "white"}}}, "title": {"text": "Fields coverage for 1_000 items"}, "xaxis": {"range": [0, 1050.0]}}, {"showLink": false, "linkText": "Export to plot.ly", "plotlyServerURL": "https://plot.ly"});
-}
-</script><script type="text/javascript">window.addEventListener("resize", function(){if (document.getElementById("c5eb7bd9-8638-4900-992a-874e61ee6f8a")) {Plotly.Plots.resize(document.getElementById("c5eb7bd9-8638-4900-992a-874e61ee6f8a"));};})</script></div></div>
+<div>
+
+
+            <div id="74cef80f-63b6-4403-9679-01e592679f92" class="plotly-graph-div"></div>
+            <script type="text/javascript">
+                require(["plotly"], function(Plotly) {
+                    window.PLOTLYENV=window.PLOTLYENV || {};
+                    window.PLOTLYENV.BASE_URL='https://plot.ly';
+
+                if (document.getElementById("74cef80f-63b6-4403-9679-01e592679f92")) {
+                    Plotly.newPlot(
+                        '74cef80f-63b6-4403-9679-01e592679f92',
+                        [{"orientation": "h", "type": "bar", "uid": "2d0fd92f-ba7a-4cfa-8888-7aa9458f8de4", "x": [1000, 1000, 1000, 998], "y": ["title", "price", "category", "description"]}],
+                        {"annotations": [{"showarrow": false, "text": "99.80%", "x": 0, "xref": "paper", "y": "description", "yref": "y"}, {"showarrow": false, "text": "100.00%", "x": 0, "xref": "paper", "y": "category", "yref": "y"}], "bargap": 0.1, "height": 450, "hovermode": "y", "margin": {"l": 200, "t": 35}, "template": {"data": {"bar": [{"marker": {"line": {"color": "rgb(237,237,237)", "width": 0.5}}, "type": "bar"}], "barpolar": [{"marker": {"line": {"color": "rgb(237,237,237)", "width": 0.5}}, "type": "barpolar"}], "carpet": [{"aaxis": {"endlinecolor": "rgb(51,51,51)", "gridcolor": "white", "linecolor": "white", "minorgridcolor": "white", "startlinecolor": "rgb(51,51,51)"}, "baxis": {"endlinecolor": "rgb(51,51,51)", "gridcolor": "white", "linecolor": "white", "minorgridcolor": "white", "startlinecolor": "rgb(51,51,51)"}, "type": "carpet"}], "choropleth": [{"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}, "type": "choropleth"}], "contour": [{"autocolorscale": true, "colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}, "type": "contour"}], "contourcarpet": [{"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}, "type": "contourcarpet"}], "heatmap": [{"autocolorscale": true, "colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}, "type": "heatmap"}], "heatmapgl": [{"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}, "type": "heatmapgl"}], "histogram": [{"marker": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "histogram"}], "histogram2d": [{"autocolorscale": true, "colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}, "type": "histogram2d"}], "histogram2dcontour": [{"autocolorscale": true, "colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}, "type": "histogram2dcontour"}], "mesh3d": [{"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}, "type": "mesh3d"}], "parcoords": [{"line": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "parcoords"}], "scatter": [{"marker": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "scatter"}], "scatter3d": [{"marker": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "scatter3d"}], "scattercarpet": [{"marker": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "scattercarpet"}], "scattergeo": [{"marker": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "scattergeo"}], "scattergl": [{"marker": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "scattergl"}], "scattermapbox": [{"marker": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "scattermapbox"}], "scatterpolar": [{"marker": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "scatterpolar"}], "scatterpolargl": [{"marker": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "scatterpolargl"}], "scatterternary": [{"marker": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "scatterternary"}], "surface": [{"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}, "type": "surface"}], "table": [{"cells": {"fill": {"color": "rgb(237,237,237)"}, "line": {"color": "white"}}, "header": {"fill": {"color": "rgb(217,217,217)"}, "line": {"color": "white"}}, "type": "table"}]}, "layout": {"annotationdefaults": {"arrowhead": 0, "arrowwidth": 1}, "colorscale": {"sequential": [[0, "rgb(20,44,66)"], [1, "rgb(90,179,244)"]], "sequentialminus": [[0, "rgb(20,44,66)"], [1, "rgb(90,179,244)"]]}, "colorway": ["#F8766D", "#A3A500", "#00BF7D", "#00B0F6", "#E76BF3"], "font": {"color": "rgb(51,51,51)"}, "geo": {"bgcolor": "white", "lakecolor": "white", "landcolor": "rgb(237,237,237)", "showlakes": true, "showland": true, "subunitcolor": "white"}, "hoverlabel": {"align": "left"}, "hovermode": "closest", "legend": {"itemsizing": "constant"}, "paper_bgcolor": "white", "plot_bgcolor": "rgb(237,237,237)", "polar": {"angularaxis": {"gridcolor": "white", "linecolor": "white", "showgrid": true, "tickcolor": "rgb(51,51,51)", "ticks": "outside"}, "bgcolor": "rgb(237,237,237)", "radialaxis": {"gridcolor": "white", "linecolor": "white", "showgrid": true, "tickcolor": "rgb(51,51,51)", "ticks": "outside"}}, "scene": {"xaxis": {"backgroundcolor": "rgb(237,237,237)", "gridcolor": "white", "gridwidth": 2, "linecolor": "white", "showbackground": true, "showgrid": true, "tickcolor": "rgb(51,51,51)", "ticks": "outside", "zerolinecolor": "white"}, "yaxis": {"backgroundcolor": "rgb(237,237,237)", "gridcolor": "white", "gridwidth": 2, "linecolor": "white", "showbackground": true, "showgrid": true, "tickcolor": "rgb(51,51,51)", "ticks": "outside", "zerolinecolor": "white"}, "zaxis": {"backgroundcolor": "rgb(237,237,237)", "gridcolor": "white", "gridwidth": 2, "linecolor": "white", "showbackground": true, "showgrid": true, "tickcolor": "rgb(51,51,51)", "ticks": "outside", "zerolinecolor": "white"}}, "shapedefaults": {"fillcolor": "black", "line": {"width": 0}, "opacity": 0.3}, "ternary": {"aaxis": {"gridcolor": "white", "linecolor": "white", "showgrid": true, "tickcolor": "rgb(51,51,51)", "ticks": "outside"}, "baxis": {"gridcolor": "white", "linecolor": "white", "showgrid": true, "tickcolor": "rgb(51,51,51)", "ticks": "outside"}, "bgcolor": "rgb(237,237,237)", "caxis": {"gridcolor": "white", "linecolor": "white", "showgrid": true, "tickcolor": "rgb(51,51,51)", "ticks": "outside"}}, "xaxis": {"automargin": true, "gridcolor": "white", "linecolor": "white", "showgrid": true, "tickcolor": "rgb(51,51,51)", "ticks": "outside", "zerolinecolor": "white"}, "yaxis": {"automargin": true, "gridcolor": "white", "linecolor": "white", "showgrid": true, "tickcolor": "rgb(51,51,51)", "ticks": "outside", "zerolinecolor": "white"}}}, "title": {"text": "Fields coverage for 1_000 items"}, "xaxis": {"range": [0, 1050.0]}},
+                        {"plotlyServerURL": "https://plot.ly", "responsive": true}
+                    )
+                };
+                });
+            </script>
+        </div></div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
@@ -706,11 +734,26 @@ Coverage For Scraped Categories (1 message(s)):
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area rendered_html docutils container">
-<div><div id="6bb2d77e-aa50-4250-b67f-ba536407bb48" style="height: 900px; width: 100%;" class="plotly-graph-div"></div><script type="text/javascript">window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL="https://plot.ly";
-if (document.getElementById("6bb2d77e-aa50-4250-b67f-ba536407bb48")) {
-    Plotly.newPlot("6bb2d77e-aa50-4250-b67f-ba536407bb48", [{"orientation": "h", "x": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 3, 3, 3, 4, 5, 5, 5, 6, 6, 6, 7, 7, 8, 9, 10, 11, 11, 11, 12, 13, 14, 16, 17, 17, 18, 19, 19, 26, 29, 30, 32, 35, 48, 54, 65, 67, 75, 110, 152], "y": ["Cultural", "Academic", "Parenting", "Crime", "Suspense", "Novels", "Short Stories", "Paranormal", "Erotica", "Adult Fiction", "Historical", "Politics", "Christian", "Contemporary", "Health", "Sports and Games", "Self Help", "Biography", "New Adult", "Christian Fiction", "Spirituality", "Psychology", "Religion", "Art", "Autobiography", "Humor", "Travel", "Thriller", "Philosophy", "Business", "Music", "Science", "Science Fiction", "Womens Fiction", "Horror", "History", "Poetry", "Classics", "Historical Fiction", "Childrens", "Food and Drink", "Mystery", "Romance", "Fantasy", "Young Adult", "Fiction", "Add a comment", "Sequential Art", "Nonfiction", "Default"], "type": "bar", "uid": "899afbd6-82b8-4343-bf17-14f3f361a6f5"}], {"bargap": 0.1, "height": 900, "hovermode": "y", "margin": {"l": 200, "t": 35}, "template": {"data": {"barpolar": [{"marker": {"line": {"color": "rgb(237,237,237)", "width": 0.5}}, "type": "barpolar"}], "bar": [{"marker": {"line": {"color": "rgb(237,237,237)", "width": 0.5}}, "type": "bar"}], "carpet": [{"aaxis": {"endlinecolor": "rgb(51,51,51)", "gridcolor": "white", "linecolor": "white", "minorgridcolor": "white", "startlinecolor": "rgb(51,51,51)"}, "baxis": {"endlinecolor": "rgb(51,51,51)", "gridcolor": "white", "linecolor": "white", "minorgridcolor": "white", "startlinecolor": "rgb(51,51,51)"}, "type": "carpet"}], "choropleth": [{"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}, "type": "choropleth"}], "contourcarpet": [{"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}, "type": "contourcarpet"}], "contour": [{"autocolorscale": true, "colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}, "type": "contour"}], "heatmapgl": [{"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}, "type": "heatmapgl"}], "heatmap": [{"autocolorscale": true, "colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}, "type": "heatmap"}], "histogram2dcontour": [{"autocolorscale": true, "colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}, "type": "histogram2dcontour"}], "histogram2d": [{"autocolorscale": true, "colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}, "type": "histogram2d"}], "histogram": [{"marker": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "histogram"}], "mesh3d": [{"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}, "type": "mesh3d"}], "parcoords": [{"line": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "parcoords"}], "scatter3d": [{"marker": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "scatter3d"}], "scattercarpet": [{"marker": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "scattercarpet"}], "scattergeo": [{"marker": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "scattergeo"}], "scattergl": [{"marker": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "scattergl"}], "scattermapbox": [{"marker": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "scattermapbox"}], "scatterpolargl": [{"marker": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "scatterpolargl"}], "scatterpolar": [{"marker": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "scatterpolar"}], "scatter": [{"marker": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "scatter"}], "scatterternary": [{"marker": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "scatterternary"}], "surface": [{"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}, "type": "surface"}], "table": [{"cells": {"fill": {"color": "rgb(237,237,237)"}, "line": {"color": "white"}}, "header": {"fill": {"color": "rgb(217,217,217)"}, "line": {"color": "white"}}, "type": "table"}]}, "layout": {"annotationdefaults": {"arrowhead": 0, "arrowwidth": 1}, "colorscale": {"sequential": [[0, "rgb(20,44,66)"], [1, "rgb(90,179,244)"]], "sequentialminus": [[0, "rgb(20,44,66)"], [1, "rgb(90,179,244)"]]}, "colorway": ["#F8766D", "#A3A500", "#00BF7D", "#00B0F6", "#E76BF3"], "font": {"color": "rgb(51,51,51)"}, "geo": {"bgcolor": "white", "lakecolor": "white", "landcolor": "rgb(237,237,237)", "showlakes": true, "showland": true, "subunitcolor": "white"}, "hovermode": "closest", "paper_bgcolor": "white", "plot_bgcolor": "rgb(237,237,237)", "polar": {"angularaxis": {"gridcolor": "white", "linecolor": "white", "showgrid": true, "tickcolor": "rgb(51,51,51)", "ticks": "outside"}, "bgcolor": "rgb(237,237,237)", "radialaxis": {"gridcolor": "white", "linecolor": "white", "showgrid": true, "tickcolor": "rgb(51,51,51)", "ticks": "outside"}}, "scene": {"xaxis": {"backgroundcolor": "rgb(237,237,237)", "gridcolor": "white", "gridwidth": 2, "linecolor": "white", "showbackground": true, "showgrid": true, "tickcolor": "rgb(51,51,51)", "ticks": "outside", "zerolinecolor": "white"}, "yaxis": {"backgroundcolor": "rgb(237,237,237)", "gridcolor": "white", "gridwidth": 2, "linecolor": "white", "showbackground": true, "showgrid": true, "tickcolor": "rgb(51,51,51)", "ticks": "outside", "zerolinecolor": "white"}, "zaxis": {"backgroundcolor": "rgb(237,237,237)", "gridcolor": "white", "gridwidth": 2, "linecolor": "white", "showbackground": true, "showgrid": true, "tickcolor": "rgb(51,51,51)", "ticks": "outside", "zerolinecolor": "white"}}, "shapedefaults": {"fillcolor": "black", "line": {"width": 0}, "opacity": 0.3}, "ternary": {"aaxis": {"gridcolor": "white", "linecolor": "white", "showgrid": true, "tickcolor": "rgb(51,51,51)", "ticks": "outside"}, "baxis": {"gridcolor": "white", "linecolor": "white", "showgrid": true, "tickcolor": "rgb(51,51,51)", "ticks": "outside"}, "bgcolor": "rgb(237,237,237)", "caxis": {"gridcolor": "white", "linecolor": "white", "showgrid": true, "tickcolor": "rgb(51,51,51)", "ticks": "outside"}}, "xaxis": {"automargin": true, "gridcolor": "white", "linecolor": "white", "showgrid": true, "tickcolor": "rgb(51,51,51)", "ticks": "outside", "zerolinecolor": "white"}, "yaxis": {"automargin": true, "gridcolor": "white", "linecolor": "white", "showgrid": true, "tickcolor": "rgb(51,51,51)", "ticks": "outside", "zerolinecolor": "white"}}}, "title": {"text": "category"}, "xaxis": {"range": [0, 159.6]}}, {"showLink": false, "linkText": "Export to plot.ly", "plotlyServerURL": "https://plot.ly"});
-}
-</script><script type="text/javascript">window.addEventListener("resize", function(){if (document.getElementById("6bb2d77e-aa50-4250-b67f-ba536407bb48")) {Plotly.Plots.resize(document.getElementById("6bb2d77e-aa50-4250-b67f-ba536407bb48"));};})</script></div></div>
+<div>
+
+
+            <div id="bc22bedd-9ce1-413a-bf73-af1fa39c94cc" class="plotly-graph-div"></div>
+            <script type="text/javascript">
+                require(["plotly"], function(Plotly) {
+                    window.PLOTLYENV=window.PLOTLYENV || {};
+                    window.PLOTLYENV.BASE_URL='https://plot.ly';
+
+                if (document.getElementById("bc22bedd-9ce1-413a-bf73-af1fa39c94cc")) {
+                    Plotly.newPlot(
+                        'bc22bedd-9ce1-413a-bf73-af1fa39c94cc',
+                        [{"orientation": "h", "type": "bar", "uid": "184b9d7f-39bd-44b2-b44d-7c60d30ba1a3", "x": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 3, 3, 3, 4, 5, 5, 5, 6, 6, 6, 7, 7, 8, 9, 10, 11, 11, 11, 12, 13, 14, 16, 17, 17, 18, 19, 19, 26, 29, 30, 32, 35, 48, 54, 65, 67, 75, 110, 152], "y": ["Adult Fiction", "Crime", "Parenting", "Paranormal", "Suspense", "Academic", "Erotica", "Short Stories", "Cultural", "Novels", "Historical", "Politics", "Christian", "Contemporary", "Health", "Biography", "Self Help", "Sports and Games", "Spirituality", "Christian Fiction", "New Adult", "Religion", "Psychology", "Art", "Autobiography", "Humor", "Travel", "Thriller", "Philosophy", "Business", "Music", "Science", "Science Fiction", "Horror", "Womens Fiction", "History", "Poetry", "Classics", "Historical Fiction", "Childrens", "Food and Drink", "Mystery", "Romance", "Fantasy", "Young Adult", "Fiction", "Add a comment", "Sequential Art", "Nonfiction", "Default"]}],
+                        {"bargap": 0.1, "height": 900, "hovermode": "y", "margin": {"l": 200, "t": 35}, "template": {"data": {"bar": [{"marker": {"line": {"color": "rgb(237,237,237)", "width": 0.5}}, "type": "bar"}], "barpolar": [{"marker": {"line": {"color": "rgb(237,237,237)", "width": 0.5}}, "type": "barpolar"}], "carpet": [{"aaxis": {"endlinecolor": "rgb(51,51,51)", "gridcolor": "white", "linecolor": "white", "minorgridcolor": "white", "startlinecolor": "rgb(51,51,51)"}, "baxis": {"endlinecolor": "rgb(51,51,51)", "gridcolor": "white", "linecolor": "white", "minorgridcolor": "white", "startlinecolor": "rgb(51,51,51)"}, "type": "carpet"}], "choropleth": [{"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}, "type": "choropleth"}], "contour": [{"autocolorscale": true, "colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}, "type": "contour"}], "contourcarpet": [{"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}, "type": "contourcarpet"}], "heatmap": [{"autocolorscale": true, "colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}, "type": "heatmap"}], "heatmapgl": [{"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}, "type": "heatmapgl"}], "histogram": [{"marker": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "histogram"}], "histogram2d": [{"autocolorscale": true, "colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}, "type": "histogram2d"}], "histogram2dcontour": [{"autocolorscale": true, "colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}, "type": "histogram2dcontour"}], "mesh3d": [{"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}, "type": "mesh3d"}], "parcoords": [{"line": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "parcoords"}], "scatter": [{"marker": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "scatter"}], "scatter3d": [{"marker": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "scatter3d"}], "scattercarpet": [{"marker": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "scattercarpet"}], "scattergeo": [{"marker": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "scattergeo"}], "scattergl": [{"marker": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "scattergl"}], "scattermapbox": [{"marker": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "scattermapbox"}], "scatterpolar": [{"marker": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "scatterpolar"}], "scatterpolargl": [{"marker": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "scatterpolargl"}], "scatterternary": [{"marker": {"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}}, "type": "scatterternary"}], "surface": [{"colorbar": {"outlinewidth": 0, "tickcolor": "rgb(237,237,237)", "ticklen": 6, "ticks": "inside"}, "type": "surface"}], "table": [{"cells": {"fill": {"color": "rgb(237,237,237)"}, "line": {"color": "white"}}, "header": {"fill": {"color": "rgb(217,217,217)"}, "line": {"color": "white"}}, "type": "table"}]}, "layout": {"annotationdefaults": {"arrowhead": 0, "arrowwidth": 1}, "colorscale": {"sequential": [[0, "rgb(20,44,66)"], [1, "rgb(90,179,244)"]], "sequentialminus": [[0, "rgb(20,44,66)"], [1, "rgb(90,179,244)"]]}, "colorway": ["#F8766D", "#A3A500", "#00BF7D", "#00B0F6", "#E76BF3"], "font": {"color": "rgb(51,51,51)"}, "geo": {"bgcolor": "white", "lakecolor": "white", "landcolor": "rgb(237,237,237)", "showlakes": true, "showland": true, "subunitcolor": "white"}, "hoverlabel": {"align": "left"}, "hovermode": "closest", "legend": {"itemsizing": "constant"}, "paper_bgcolor": "white", "plot_bgcolor": "rgb(237,237,237)", "polar": {"angularaxis": {"gridcolor": "white", "linecolor": "white", "showgrid": true, "tickcolor": "rgb(51,51,51)", "ticks": "outside"}, "bgcolor": "rgb(237,237,237)", "radialaxis": {"gridcolor": "white", "linecolor": "white", "showgrid": true, "tickcolor": "rgb(51,51,51)", "ticks": "outside"}}, "scene": {"xaxis": {"backgroundcolor": "rgb(237,237,237)", "gridcolor": "white", "gridwidth": 2, "linecolor": "white", "showbackground": true, "showgrid": true, "tickcolor": "rgb(51,51,51)", "ticks": "outside", "zerolinecolor": "white"}, "yaxis": {"backgroundcolor": "rgb(237,237,237)", "gridcolor": "white", "gridwidth": 2, "linecolor": "white", "showbackground": true, "showgrid": true, "tickcolor": "rgb(51,51,51)", "ticks": "outside", "zerolinecolor": "white"}, "zaxis": {"backgroundcolor": "rgb(237,237,237)", "gridcolor": "white", "gridwidth": 2, "linecolor": "white", "showbackground": true, "showgrid": true, "tickcolor": "rgb(51,51,51)", "ticks": "outside", "zerolinecolor": "white"}}, "shapedefaults": {"fillcolor": "black", "line": {"width": 0}, "opacity": 0.3}, "ternary": {"aaxis": {"gridcolor": "white", "linecolor": "white", "showgrid": true, "tickcolor": "rgb(51,51,51)", "ticks": "outside"}, "baxis": {"gridcolor": "white", "linecolor": "white", "showgrid": true, "tickcolor": "rgb(51,51,51)", "ticks": "outside"}, "bgcolor": "rgb(237,237,237)", "caxis": {"gridcolor": "white", "linecolor": "white", "showgrid": true, "tickcolor": "rgb(51,51,51)", "ticks": "outside"}}, "xaxis": {"automargin": true, "gridcolor": "white", "linecolor": "white", "showgrid": true, "tickcolor": "rgb(51,51,51)", "ticks": "outside", "zerolinecolor": "white"}, "yaxis": {"automargin": true, "gridcolor": "white", "linecolor": "white", "showgrid": true, "tickcolor": "rgb(51,51,51)", "ticks": "outside", "zerolinecolor": "white"}}}, "title": {"text": "category"}, "xaxis": {"range": [0, 159.6]}},
+                        {"plotlyServerURL": "https://plot.ly", "responsive": true}
+                    )
+                };
+                });
+            </script>
+        </div></div>
 </div>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
@@ -748,9 +791,12 @@ if (document.getElementById("6bb2d77e-aa50-4250-b67f-ba536407bb48")) {
 <li class="toctree-l1"><a class="reference internal" href="../Strategy.html">Strategy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api/source.html">src</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="notebooks.html">Notebooks</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="in-short.html">In Short</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compare.html">Compare jobs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="API.html">API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="schema.html">Schema</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DQR.html">Data Quality Report</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks.html#indices-and-tables">Indices and tables</a></li>
@@ -761,7 +807,7 @@ if (document.getElementById("6bb2d77e-aa50-4250-b67f-ba536407bb48")) {
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
   <li><a href="notebooks.html">Notebooks</a><ul>
-      <li>Previous: <a href="notebooks.html" title="previous chapter">Notebooks</a></li>
+      <li>Previous: <a href="in-short.html" title="previous chapter">In Short</a></li>
       <li>Next: <a href="compare.html" title="next chapter">Compare jobs</a></li>
   </ul></li>
   </ul></li>
@@ -793,7 +839,7 @@ if (document.getElementById("6bb2d77e-aa50-4250-b67f-ba536407bb48")) {
       &copy;2018-2019, Arche developers.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

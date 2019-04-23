@@ -9,19 +9,11 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 1,
+   "execution_count": 2,
    "metadata": {},
-   "outputs": [
-    {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "/Users/valery/Documents/_code/arche/src\n"
-     ]
-    }
-   ],
+   "outputs": [],
    "source": [
-    "%cd ../../../src"
+    "%cd -q ../../../src"
    ]
   },
   {
