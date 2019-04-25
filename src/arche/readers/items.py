@@ -7,8 +7,6 @@ import pandas as pd
 from scrapinghub import ScrapinghubClient
 from scrapinghub.client.jobs import Job
 
-# Job = scrapinghub.client.jobs.Job
-
 
 class Items(ABC):
     def __init__(

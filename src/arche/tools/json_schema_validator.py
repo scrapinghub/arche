@@ -2,7 +2,7 @@ from collections import defaultdict
 from typing import Deque
 
 from arche.readers.schema import Schema
-from arche.tools.api import Item, Items
+from arche.tools.api import Item, ItemsDicts
 import fastjsonschema
 from jsonschema import FormatChecker, validators
 from tqdm import tqdm_notebook
@@ -13,13 +13,13 @@ class JsonSchemaValidator:
         self.errors = defaultdict(set)
         self.schema = schema
 
-    def run(self, items: Items, fast: bool):
+    def run(self, items: ItemsDicts, fast: bool) -> None:
         if fast:
             self.fast_validate(items)
         else:
             self.validate(items)
 
-    def fast_validate(self, items: Items):
+    def fast_validate(self, items: ItemsDicts) -> None:
         """Verify items one by one. It stops after the first error in an item in most cases.
         Faster than jsonschema validation"""
         validate = fastjsonschema.compile(self.schema)
@@ -29,13 +29,13 @@ class JsonSchemaValidator:
             except fastjsonschema.JsonSchemaException as error:
                 self.errors[str(error)].add(item["_key"])
 
-    def validate(self, items: Items):
+    def validate(self, items: ItemsDicts) -> None:
         validator = validators.validator_for(self.schema)(self.schema)
         validator.format_checker = FormatChecker()
         for item in tqdm_notebook(items, desc="JSON Schema Validation"):
             self.validate_item(item, validator)
 
-    def validate_item(self, item: Item, validator):
+    def validate_item(self, item: Item, validator) -> None:
         """Check a single item against jsonschema
 
         Args:

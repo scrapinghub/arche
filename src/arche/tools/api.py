@@ -14,7 +14,7 @@ from tqdm import tqdm, tqdm_notebook
 
 Filters = List[Tuple[str, str, str]]
 Item = Dict[str, Any]
-Items = List[Item]
+ItemsDicts = List[Item]
 
 
 def get_collection(key):
@@ -170,7 +170,7 @@ def get_source(source_key):
 
 def get_items_with_pool(
     source_key: str, count: int, start_index: int = 0, workers: int = 4
-) -> Items:
+) -> ItemsDicts:
     """Concurrently reads items from API using Pool
 
     Args:
@@ -203,7 +203,7 @@ def get_items(
     start_index: int,
     filters: Optional[Filters] = None,
     p_bar: Union[tqdm, tqdm_notebook] = tqdm_notebook,
-) -> Items:
+) -> ItemsDicts:
     items = []
     source = get_source(key)
     items_iter = source.iter(

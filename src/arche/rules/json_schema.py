@@ -1,12 +1,12 @@
 from arche.readers.schema import Schema, Tag, TaggedFields
 from arche.rules.result import Result
-from arche.tools.api import Items
+from arche.tools.api import ItemsDicts
 from arche.tools.json_schema_validator import JsonSchemaValidator
 import numpy as np
 
 
-def validate(schema: Schema, items_dicts: Items, fast: bool = False) -> Result:
-    """Run JSON schema validation against Items.
+def validate(schema: Schema, items_dicts: ItemsDicts, fast: bool = False) -> Result:
+    """Run JSON schema validation against ItemsDicts.
 
     Args:
         fast: defines if we use fastjsonschema or jsonschema validation
