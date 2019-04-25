@@ -1,10 +1,9 @@
-from typing import Dict, List
+from typing import Dict
 
-from arche.rules.result import Level, Result, Stat
+from arche.rules.result import Level, Result
 from colorama import Fore, Style
 from IPython.display import display, HTML
 import pandas as pd
-import plotly.graph_objs as go
 import plotly.io as pio
 
 
