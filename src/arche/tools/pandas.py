@@ -2,15 +2,118 @@ from typing import Dict, Optional, Tuple
 import uuid
 
 import pandas as pd
+import json
 from tqdm import tqdm_notebook
 
 
-def flatten_df(
-    df: pd.DataFrame,
-    i: int = 0,
-    columns_map: Optional[Dict[str, str]] = None,
-    p_bar: Optional[tqdm_notebook] = None,
-) -> Tuple[pd.DataFrame, Dict[str, str]]:
+# check is the column containing lists
+def is_list(df, column):
+    for cell in df[column]:
+        if isinstance(cell, list):
+            return True
+            break
+    return False
+
+
+# check is the column containing maps
+def is_map(df, column):
+    for cell in df[column]:
+        if isinstance(cell, dict):
+            return True
+            break
+    return False
+
+
+# list columns by type
+def listColumns(df):
+    list_col = []
+    map_col = []
+    for col in df.columns:
+        if is_map(df, col):
+            map_col.append(col)
+        if is_list(df, col):
+            list_col.append(col)
+    normal = set(df.columns) - set(list_col) - set(map_col)
+    return normal, list_col, map_col
+
+
+# flatten map columns one level
+def flat_map_columns(df, map_cols):
+    json_struct = json.loads(df.to_json(orient="records"))
+    flat_df = pd.io.json.json_normalize(json_struct, sep="_")
+    flat_df = flat_df.drop(map_cols, axis=1)
+    return flat_df
+
+
+# flatten map columns one level with apply - slower
+def flat_map_list(df, col):
+    return df[col].apply(pd.Series)
+
+
+# flatten list columns one level
+def flat_list_columns(df, col):
+    s = df[col].dropna().index
+    col_flat_df = pd.DataFrame(df[col].dropna().values.tolist(), index=s)
+    col_flat_df.columns = [str(col) + "_" + str(coln) for coln in col_flat_df.columns]
+    return col_flat_df
+
+
+def df_column_uniquify(df):
+    if isinstance(df, tuple):
+        return df
+    else:
+        df_columns = df.columns
+        new_columns = []
+        for item in df_columns:
+            counter = 0
+            newitem = item
+            while newitem in new_columns:
+                counter += 1
+                newitem = f"{item}_{uuid.uuid1().hex[:5]}" #"{}_{}".format(item, counter)
+
+            new_columns.append(newitem)
+        df.columns = new_columns
+        return df
+
+# flatten one level
+def flatten_one(df):
+    [cols, lists, maps] = listColumns(df)
+    df_cols = df[cols]
+    frames = [df_cols]
+    for l in lists:
+        frames.append(flat_list_columns(df, l))
+
+    df_maps = flat_map_columns(df[maps], maps)
+    frames.append(df_maps)
+    result = pd.concat(frames, axis=1, sort=False)
+    return result
+
+
+# flatten all levels
+def flatten_all(df):
+    res = flatten_one(df)
+    print(res.shape)
+    [cols, lists, maps] = listColumns(res)
+    if not lists and not maps:
+        return res
+    else:
+        res = flatten_df(res)
+        return res
+
+
+# return map of derived columns of the flatten df
+def get_columns(df, flat_df):
+    cm = {}
+    df_columns = df.columns
+    flat_df_columns = set(flat_df.columns) - set(df_columns)
+    for col_flat in flat_df_columns:
+        for col in df_columns:
+            if col in col_flat:
+                cm[col_flat] = col
+    return cm
+
+
+def flatten_df(df: pd.DataFrame,) -> Tuple[pd.DataFrame, Dict[str, str]]:
     """Expand lists and dicts to new columns named after list element number
     or dict key and containing respective cell values. If new name conflicts
     with an existing column, a short hash is used.
@@ -40,40 +143,7 @@ def flatten_df(
     >>> cols_map
     {'links_0_im': 'links', 'links_1_ITW website': 'links'}
     """
-    if not columns_map:
-        columns_map = {}
-    if not p_bar:
-        p_bar = tqdm_notebook(
-            total=len(df.columns), desc="Flattening df", unit="columns"
-        )
-
-    for c in df.columns[i:]:
-        flattened_columns = expand_column(df, c)
-        if flattened_columns.empty:
-            i += 1
-            p_bar.update(1)
-            continue
-
-        def name_column(x):
-            new_name = f"{c}_{x}"
-            if new_name in df.columns:
-                new_name = f"{c}_{uuid.uuid1().hex[:5]}"
-
-            if c in columns_map:
-                columns_map[new_name] = columns_map[c]
-            else:
-                columns_map[new_name] = c
-            return new_name
-
-        flattened_columns = flattened_columns.rename(columns=name_column)
-        df = pd.concat([df[:], flattened_columns[:]], axis=1).drop(c, axis=1)
-        columns_map.pop(c, None)
-        p_bar.total = len(df.columns)
-        return flatten_df(df, i, columns_map, p_bar)
-    return df, columns_map
-
-
-def expand_column(df: pd.DataFrame, column: str) -> pd.DataFrame:
-    mask = df[column].map(lambda x: (isinstance(x, list) or isinstance(x, dict)))
-    collection_column = df[mask][column]
-    return collection_column.apply(pd.Series)
+    flat_df = flatten_all(df)
+    df_column_uniquify(flat_df)
+    column_map = get_columns(df, flat_df)
+    return flat_df, column_map
