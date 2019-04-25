@@ -25,14 +25,20 @@ import pytest
                 "\nother result there (1 message(s)):\nother detailed message\n"
             ),
         ),
-        ([("everything fine", {Level.INFO: [("summary",)]})], ""),
+        (
+            [("everything is fine", {Level.INFO: [("summary",)]})],
+            "\neverything is fine (1 message(s)):\n",
+        ),
     ],
 )
-def test_write_details(capsys, messages, expected_details):
+def test_write_details(mocker, get_df, capsys, messages, expected_details):
+    mock_pio_show = mocker.patch("plotly.io.show", autospec=True)
     r = Report()
     for m in messages:
-        r.save(create_result(*m))
+        result = create_result(*m, stats=[get_df])
+        r.save(result)
     r.write_details()
+    mock_pio_show.assert_called_with(result.figures[0])
     assert capsys.readouterr().out == expected_details
 
 

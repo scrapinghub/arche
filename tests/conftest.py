@@ -15,6 +15,13 @@ default_items = [
 ]
 
 
+@pytest.fixture(scope="function")
+def get_df():
+    df = pd.DataFrame({"first": [0.25, 0.75], "second": [0.0, 1.0]})
+    df.name = "df from default_items"
+    return df
+
+
 class Job:
     def __init__(self, items=None, metadata=None, stats=None, key="112358/13/21"):
         self.items = Source(items, stats)
