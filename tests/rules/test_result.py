@@ -1,5 +1,5 @@
 from arche.rules.result import Level, Message, Result
-from conftest import create_result
+from conftest import create_named_df, create_result
 import pandas as pd
 import pytest
 
@@ -55,18 +55,29 @@ def test_tensors_not_equal(source, target):
 
 
 @pytest.mark.parametrize(
-    "message, expected_details",
+    "message, stats, expected_details",
     [
         (
             {Level.INFO: [("summary", "very detailed message")]},
+            [pd.Series([1, 2], name="Fields coverage")],
             "\nrule name here:\n\tsummary\nvery detailed message\n",
         ),
-        ({Level.INFO: [("summary",)]}, "\nrule name here:\n\tsummary\n"),
+        (
+            {Level.INFO: [("summary",)]},
+            [
+                create_named_df(
+                    {"s": [0.25]}, index=["us"], name="Coverage for boolean fields"
+                )
+            ],
+            "\nrule name here:\n\tsummary\n",
+        ),
     ],
 )
-def test_show(capsys, message, expected_details):
-    r = create_result("rule name here", message)
+def test_show(mocker, capsys, message, stats, expected_details):
+    mock_pio_show = mocker.patch("plotly.io.show", autospec=True)
+    r = create_result("rule name here", message, stats=stats)
     r.show()
+    mock_pio_show.assert_called_once_with(r.figures[0])
     assert capsys.readouterr().out == expected_details
 
 

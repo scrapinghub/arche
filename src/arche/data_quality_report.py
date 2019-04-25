@@ -3,18 +3,19 @@ import json
 from typing import Optional
 
 
-from arche.figures import graphs
 from arche.figures import tables
 from arche.quality_estimation_algorithm import generate_quality_estimation
 from arche.readers.items import Items
 from arche.readers.schema import Schema, Tags
 from arche.report import Report
+import arche.rules.coverage as coverage_rules
 import arche.rules.duplicates as duplicate_rules
 from arche.rules.others import garbage_symbols
 import arche.rules.price as price_rules
 from arche.tools import api
 from arche.tools.s3 import upload_str_stream
 import IPython
+import pandas as pd
 import plotly.io as pio
 
 
@@ -22,7 +23,7 @@ class DataQualityReport:
     def __init__(
         self, items: Items, schema: Schema, report: Report, bucket: Optional[str] = None
     ):
-        """Prints a data quality report
+        """Print a data quality report
 
         Args:
             items: an Items instance containing items data
@@ -98,7 +99,7 @@ class DataQualityReport:
             no_of_price_warns,
             garbage_symbols=garbage_symbols_result,
         )
-        self.scraped_fields_coverage(items.job.key, cleaned_df)
+        self.scraped_fields_coverage(cleaned_df)
         self.coverage_by_categories(cleaned_df, tagged_fields)
 
     def plot_to_notebook(self) -> None:
@@ -176,9 +177,11 @@ class DataQualityReport:
         )
         self.figures.append(table)
 
-    def scraped_fields_coverage(self, job, df):
-        sfc = graphs.scraped_fields_coverage(job, df)
-        self.figures.append(sfc)
+    def scraped_fields_coverage(self, df: pd.DataFrame) -> None:
+        coverage_res = self.report.results.get(
+            "Fields Coverage", coverage_rules.check_fields_coverage(df)
+        )
+        self.figures.extend(coverage_res.figures)
 
     def coverage_by_categories(self, df, tagged_fields):
         """Make tables which show the number of items per category,

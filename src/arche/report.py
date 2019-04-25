@@ -1,10 +1,9 @@
-from typing import Dict, List
+from typing import Dict
 
-from arche.rules.result import Level, Result, Stat
+from arche.rules.result import Level, Result
 from colorama import Fore, Style
 from IPython.display import display, HTML
 import pandas as pd
-import plotly.graph_objs as go
 import plotly.io as pio
 
 
@@ -59,6 +58,8 @@ class Report:
                     f"{result.name} ({result.detailed_messages_count} message(s))"
                 )
                 self.write_rule_details(result, short, keys_limit)
+            for f in result.figures:
+                pio.show(f)
 
     @classmethod
     def write_rule_details(
@@ -70,53 +71,6 @@ class Report:
                     cls.write_detailed_errors(rule_msg.errors, short, keys_limit)
                 elif rule_msg.detailed:
                     cls.write(rule_msg.detailed)
-        for stat in result.stats:
-            cls.plot(stat)
-
-    @staticmethod
-    def plot(stat: Stat) -> None:
-        if isinstance(stat, pd.Series):
-            data = [go.Bar(x=stat.values, y=stat.index.values, orientation="h")]
-        else:
-            data = [
-                go.Bar(x=stat[c].values, y=stat.index.values, orientation="h", name=c)
-                for c in stat.columns
-            ]
-
-        layout = go.Layout(
-            title=stat.name,
-            bargap=0.1,
-            template="ggplot2",
-            height=max(min(len(stat) * 20, 900), 450),
-            hovermode="y",
-            margin=dict(l=200, t=35),
-            xaxis=go.layout.XAxis(range=[0, max(stat.values.max(), 1) * 1.05]),
-        )
-        if stat.name.startswith("Coverage"):
-            layout.xaxis.tickformat = ".2p"
-        if stat.name == "Coverage for boolean fields":
-            layout.barmode = "stack"
-        if stat.name.startswith("Fields coverage"):
-            layout.annotations = Report.make_annotations(stat)
-
-        f = go.FigureWidget(data, layout)
-        pio.show(f)
-
-    @staticmethod
-    def make_annotations(stat: Stat) -> List[Dict]:
-        annotations = []
-        for value, group in stat.groupby(stat):
-            annotations.append(
-                dict(
-                    xref="paper",
-                    yref="y",
-                    x=0,
-                    y=group.index.values[-1],
-                    text=f"{value/max(stat.values) * 100:.2f}%",
-                    showarrow=False,
-                )
-            )
-        return annotations
 
     @classmethod
     def write_detailed_errors(cls, errors: Dict, short: bool, keys_limit: int) -> None:

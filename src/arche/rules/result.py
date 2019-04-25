@@ -3,6 +3,8 @@ from enum import Enum
 from typing import Dict, List, Optional, Union
 
 import pandas as pd
+import plotly.graph_objs as go
+import plotly.io as pio
 
 Stat = Union[pd.Series, pd.DataFrame]
 
@@ -33,18 +35,20 @@ class Result:
     Args:
         name: a rule name
         messages: messages separated by severity
-        stats: pandas data to plot
+        _stats: pandas data to plot
         items_count: the count of verified items
         checked_fields: the names of verified fields
         err_items_count: the number of error items
+        _figures: a list of graphs created from stats
     """
 
     name: str
     messages: Dict[Level, List[Message]] = field(default_factory=dict)
-    stats: Optional[List[Stat]] = field(default_factory=list)
+    _stats: Optional[List[Stat]] = field(default_factory=list)
     items_count: Optional[int] = 0
     checked_fields: Optional[List[str]] = field(default_factory=list)
     err_items_count: Optional[int] = 0
+    _figures: Optional[List[go.FigureWidget]] = field(default_factory=list)
 
     def __eq__(self, other):
         for left, right in zip(self.stats, other.stats):
@@ -82,6 +86,20 @@ class Result:
     @property
     def errors(self):
         return self.messages.get(Level.ERROR)
+
+    @property
+    def stats(self):
+        return self._stats
+
+    @stats.setter
+    def stats(self, value):
+        self._stats = value
+
+    @property
+    def figures(self):
+        if not self._figures:
+            self._figures = Result.create_figures(self.stats)
+        return self._figures
 
     def add_info(self, summary, detailed=None, errors=None):
         self.add_message(Level.INFO, summary, detailed, errors)
@@ -138,3 +156,54 @@ class Result:
 
         Report.write_summary(self)
         Report.write_rule_details(self, short=short, keys_limit=keys_limit)
+        for f in self.figures:
+            pio.show(f)
+
+    @staticmethod
+    def create_figures(stats: List[Stat]) -> List[go.FigureWidget]:
+        figures = []
+        for stat in stats:
+            if isinstance(stat, pd.Series):
+                data = [go.Bar(x=stat.values, y=stat.index.values, orientation="h")]
+            else:
+                data = [
+                    go.Bar(
+                        x=stat[c].values, y=stat.index.values, orientation="h", name=c
+                    )
+                    for c in stat.columns
+                ]
+
+            layout = go.Layout(
+                title=stat.name,
+                bargap=0.1,
+                template="ggplot2",
+                height=max(min(len(stat) * 20, 900), 450),
+                hovermode="y",
+                margin=dict(l=200, t=35),
+                xaxis=go.layout.XAxis(range=[0, max(stat.values.max(), 1) * 1.05]),
+            )
+            if stat.name.startswith("Coverage"):
+                layout.xaxis.tickformat = ".2p"
+            if stat.name == "Coverage for boolean fields":
+                layout.barmode = "stack"
+            if stat.name.startswith("Fields coverage"):
+                layout.annotations = Result.make_annotations(stat)
+
+            figures.append(go.FigureWidget(data, layout))
+        return figures
+
+    @staticmethod
+    def make_annotations(stat: pd.Series) -> List[Dict]:
+        annotations = []
+        for value, group in stat.groupby(stat):
+            annotations.append(
+                dict(
+                    xref="paper",
+                    yref="y",
+                    x=0,
+                    y=group.index.values[-1],
+                    text=f"{value/max(stat.values) * 100:.2f}%",
+                    showarrow=False,
+                )
+            )
+        return annotations
