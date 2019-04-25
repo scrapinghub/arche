@@ -176,7 +176,7 @@ class Result:
             layout = go.Layout(
                 title=stat.name,
                 bargap=0.1,
-                template="ggplot2",
+                template="seaborn",
                 height=max(min(len(stat) * 20, 900), 450),
                 hovermode="y",
                 margin=dict(l=200, t=35),

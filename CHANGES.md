@@ -14,6 +14,7 @@ Note that the top-most release is changes in the unreleased master branch on Git
 ### Added
 ### Changed
 - data_quality_report plots the same "Fields Coverage" instead of green "Scraped Fields Coverage"
+- Plot theme changed from ggplot2 to seaborn, #62
 ### Fixed
 ### Removed
 
