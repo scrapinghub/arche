@@ -15,7 +15,7 @@ def validate(schema: Schema, df: pd.DataFrame, fast: bool = False) -> Result:
         Schema errors if any
     """
     validator = JsonSchemaValidator(schema)
-    validator.run(df.copy(), fast)
+    validator.run(df, fast)
     result = Result("JSON Schema Validation")
 
     errors = validator.errors

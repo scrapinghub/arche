@@ -15,6 +15,7 @@ class JsonSchemaValidator:
 
     def run(self, df: pd.DataFrame, fast: bool) -> None:
         # itertuples renames columns starting with `_`
+        df = df.copy()
         df.columns = df.columns.str.replace("^_+", "ud")
         if fast:
             self.fast_validate(df)
