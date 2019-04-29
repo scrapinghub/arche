@@ -1,10 +1,10 @@
 from collections import defaultdict
-from typing import Deque
+from typing import Any, Dict, Deque
 
 from arche.readers.schema import Schema
-from arche.tools.api import Item, ItemsDicts
 import fastjsonschema
 from jsonschema import FormatChecker, validators
+import pandas as pd
 from tqdm import tqdm_notebook
 
 
@@ -13,29 +13,36 @@ class JsonSchemaValidator:
         self.errors = defaultdict(set)
         self.schema = schema
 
-    def run(self, items: ItemsDicts, fast: bool) -> None:
+    def run(self, df: pd.DataFrame, fast: bool) -> None:
+        # itertuples renames columns starting with `_`
+        df.columns = df.columns.str.replace("^_+", "ud")
         if fast:
-            self.fast_validate(items)
+            self.fast_validate(df)
         else:
-            self.validate(items)
+            self.validate(df)
 
-    def fast_validate(self, items: ItemsDicts) -> None:
+    def fast_validate(self, df: pd.DataFrame) -> None:
         """Verify items one by one. It stops after the first error in an item in most cases.
         Faster than jsonschema validation"""
         validate = fastjsonschema.compile(self.schema)
-        for item in tqdm_notebook(items, desc="JSON Schema Validation"):
+        for row in tqdm_notebook(
+            df.itertuples(index=False), desc="JSON Schema Validation"
+        ):
+            item = row._asdict()
             try:
                 validate(item)
             except fastjsonschema.JsonSchemaException as error:
-                self.errors[str(error)].add(item["_key"])
+                self.errors[str(error)].add(item["udkey"])
 
-    def validate(self, items: ItemsDicts) -> None:
+    def validate(self, df: pd.DataFrame) -> None:
         validator = validators.validator_for(self.schema)(self.schema)
         validator.format_checker = FormatChecker()
-        for item in tqdm_notebook(items, desc="JSON Schema Validation"):
-            self.validate_item(item, validator)
+        for item in tqdm_notebook(
+            df.itertuples(index=False), desc="JSON Schema Validation"
+        ):
+            self.validate_item(item._asdict(), validator)
 
-    def validate_item(self, item: Item, validator) -> None:
+    def validate_item(self, item: Dict[str, Any], validator) -> None:
         """Check a single item against jsonschema
 
         Args:
@@ -46,7 +53,7 @@ class JsonSchemaValidator:
             error = self.format_validation_message(
                 e.message, e.path, e.schema_path, e.validator
             )
-            self.errors[error].add(item["_key"])
+            self.errors[error].add(item["udkey"])
 
     @staticmethod
     def format_validation_message(

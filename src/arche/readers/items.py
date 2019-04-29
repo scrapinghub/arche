@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 import numbers
 from typing import Optional
 
+from arche import SH_URL
 from arche.tools import pandas, api
 import pandas as pd
 from scrapinghub import ScrapinghubClient
@@ -20,7 +21,6 @@ class Items(ABC):
         self._count = count
         self._limit = None
         self.filters = filters
-        self._dicts = None
         self._df = None
         self._flat_df = None
         self.expand = expand
@@ -42,16 +42,9 @@ class Items(ABC):
         raise NotImplementedError
 
     @property
-    def dicts(self):
-        "Raw dicts of items downloaded from Scrapy Cloud"
-        if not self._dicts:
-            self._dicts = self.fetch_data()
-        return self._dicts
-
-    @property
     def df(self):
         if self._df is None:
-            self._df = self.create_df_from_items()
+            self._df = self.process_df(self.fetch_data())
         return self._df
 
     @property
@@ -66,16 +59,18 @@ class Items(ABC):
             else:
                 self._flat_df = self.df
                 self._columns_map = {}
-
         return self._flat_df
 
-    def create_df_from_items(self):
-        df = pd.DataFrame(self.dicts)
-        # clean empty objects, but keep everything else
+    def process_df(self, df: pd.DataFrame) -> pd.DataFrame:
+        # clean empty objects - mainly lists and dicts, but keep everything else
         df = df.applymap(lambda x: x if x or isinstance(x, numbers.Real) else None)
+        df["_key"] = self.format_keys(df["_key"])
         return df
 
-    def get_origin_column_name(self, column_name):
+    def format_keys(self, keys: pd.Series) -> pd.Series:
+        raise NotImplementedError
+
+    def get_origin_column_name(self, column_name: str) -> str:
         return self._columns_map.get(column_name, column_name)
 
 
@@ -86,45 +81,58 @@ class JobItems(Items):
         super().__init__(*args, **kwargs)
 
     @property
-    def limit(self):
+    def limit(self) -> int:
         if not self._limit:
             self._limit = api.get_items_count(self.job)
         return self._limit
 
     @property
-    def count(self):
+    def count(self) -> int:
         if not self._count:
             self._count = self.limit - self.start_index
         return self._count
 
     @property
-    def job(self):
+    def job(self) -> Job:
         if not self._job:
-            self._job = ScrapinghubClient().get_job(self.key)
-        if self._job.metadata.get("state") == "deleted":
-            raise ValueError(f"{self.key} has 'deleted' state")
-
+            job = ScrapinghubClient().get_job(self.key)
+            if job.metadata.get("state") == "deleted":
+                raise ValueError(f"{self.key} has 'deleted' state")
+            self._job = job
         return self._job
 
-    def fetch_data(self):
+    def fetch_data(self) -> pd.DataFrame:
         if self.filters or self.count < 200_000:
             return api.get_items(self.key, self.count, self.start_index, self.filters)
         else:
             return api.get_items_with_pool(self.key, self.count, self.start_index)
 
+    def format_keys(self, keys: pd.Series) -> pd.Series:
+        """Get Scrapy Cloud url to an item
+        E.g. 112358/13/21/0 to https://app.scrapinghub.com/p/112358/13/21/item/0"""
+        return (
+            SH_URL + "/" + self.key + "/item/" + keys.str.rsplit("/", 1, expand=True)[1]
+        )
+
 
 class CollectionItems(Items):
     @property
-    def limit(self):
+    def limit(self) -> int:
         if not self._limit:
             self._limit = api.get_collection(self.key).count()
         return self._limit
 
     @property
-    def count(self):
+    def count(self) -> int:
         if not self._count:
             self._count = self.limit
         return self._count
 
-    def fetch_data(self):
+    def fetch_data(self) -> pd.DataFrame:
         return api.get_items(self.key, self.count, 0, self.filters)
+
+    def format_keys(self, keys: pd.Series) -> pd.Series:
+        """Get full Scrapy Cloud url from `_key`
+        E.g. be-006 to https://app.scrapinghub.com/p/collections/s/pages/be-006"""
+
+        return f"{SH_URL}/{self.key}/" + keys

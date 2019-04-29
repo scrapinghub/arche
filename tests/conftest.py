@@ -1,6 +1,5 @@
 from typing import Dict, List, Optional
 
-
 from arche.readers.items import CollectionItems, JobItems
 from arche.rules.result import Result
 import pandas as pd
@@ -13,12 +12,13 @@ default_items = [
     {"_key": "112358/13/21/2", "_type": "NameItem", "name": "Yulia"},
     {"_key": "112358/13/21/3", "_type": "NameItem", "name": "Vivien"},
 ]
+default_source = pd.DataFrame(default_items)
 
 
 @pytest.fixture(scope="function")
 def get_df():
     df = pd.DataFrame({"first": [0.25, 0.75], "second": [0.0, 1.0]})
-    df.name = "df from default_items"
+    df.name = "a df"
     return df
 
 
@@ -33,11 +33,10 @@ class Job:
 
 
 class Collection:
-    def __init__(self, items=None):
-        self.items = Source(items)
-        self._count = len(items) if items else 0
+    def __init__(self, count: Optional[int] = None):
+        self._count = count
 
-    def count(self):
+    def count(self) -> Optional[int]:
         return self._count
 
 
@@ -128,7 +127,9 @@ def get_job_items_mock(mocker, items=default_items, key="a_key"):
         autospec=False,
     )
     mocker.patch(
-        "arche.readers.items.JobItems.fetch_data", return_value=items, autospec=False
+        "arche.readers.items.JobItems.fetch_data",
+        return_value=pd.DataFrame(items),
+        autospec=False,
     )
     job_items = JobItems(key=key, count=len(items))
     return job_items
@@ -137,7 +138,7 @@ def get_job_items_mock(mocker, items=default_items, key="a_key"):
 def get_collection_items_mock(mocker, items=default_items, **kwargs):
     mocker.patch(
         "arche.readers.items.CollectionItems.fetch_data",
-        return_value=items,
+        return_value=pd.DataFrame(items),
         autospec=True,
     )
     collection_items = CollectionItems(
@@ -157,7 +158,7 @@ def get_job_items(request, mocker):
     )
     mocker.patch(
         "arche.readers.items.JobItems.fetch_data",
-        return_value=request.param,
+        return_value=pd.DataFrame(request.param),
         autospec=True,
     )
 

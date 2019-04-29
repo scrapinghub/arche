@@ -1,24 +1,25 @@
 from arche.readers.schema import Schema, Tag, TaggedFields
 from arche.rules.result import Result
-from arche.tools.api import ItemsDicts
 from arche.tools.json_schema_validator import JsonSchemaValidator
 import numpy as np
+import pandas as pd
 
 
-def validate(schema: Schema, items_dicts: ItemsDicts, fast: bool = False) -> Result:
-    """Run JSON schema validation against ItemsDicts.
+def validate(schema: Schema, df: pd.DataFrame, fast: bool = False) -> Result:
+    """Run JSON schema validation against data.
 
     Args:
         fast: defines if we use fastjsonschema or jsonschema validation
+
+    Returns:
+        Schema errors if any
     """
     validator = JsonSchemaValidator(schema)
-    validator.run(items_dicts, fast)
+    validator.run(df.copy(), fast)
     result = Result("JSON Schema Validation")
 
     errors = validator.errors
-    schema_result_message = (
-        f"{len(items_dicts)} items were checked, {len(errors)} error(s)"
-    )
+    schema_result_message = f"{len(df)} items were checked, {len(errors)} error(s)"
 
     if errors:
         result.add_error(schema_result_message, errors=errors)
@@ -30,6 +31,11 @@ def validate(schema: Schema, items_dicts: ItemsDicts, fast: bool = False) -> Res
 def check_tags(
     source_columns: np.ndarray, target_columns: np.ndarray, tags: TaggedFields
 ) -> Result:
+    """Check tags from schema.
+
+    Returns:
+        Used tags. Errors if tagged fields are not in source or target columns.
+    """
     result = Result("Tags")
 
     found_tags = sorted(list(tags))

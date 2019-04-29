@@ -38,22 +38,23 @@ class Arche:
             start: an item number to start reading from
             count: the amount of items to read from start
             filters: Scrapinghub filtering
-            expand: if enabled, use flattened data in garbage rules, affects performance, see flatten_df # noqa
+            expand: if True, use flattened data in garbage rules, affects performance
+            see flatten_df
         """
+        if target == source:
+            raise ValueError(
+                "'target' is equal to 'source'. Data to compare should have different sources."
+            )
         self.source = source
-        if target == self.source:
-            logger.warning("'target' is the same as 'source', and will be ignored")
-            self.target = None
-        else:
-            self.target = target
+        self._schema = None
+        self.schema_source = None
+        if schema:
+            self.schema = sr.get_schema(schema)
+        self.target = target
         self.start = start
         self.count = count
         self.filters = filters
         self.expand = expand
-        self.schema_source = None
-        self._schema = None
-        if schema:
-            self.schema = sr.get_schema(schema)
         self._source_items = None
         self._target_items = None
 
@@ -147,12 +148,6 @@ class Arche:
             raise ValueError("Collections are not supported")
         if not self.schema:
             raise ValueError("Schema is empty")
-        if not self.report.results:
-            self.save_result(
-                schema_rules.validate(
-                    self.schema, items_dicts=self.source_items.dicts, fast=False
-                )
-            )
         IPython.display.clear_output()
         DataQualityReport(self.source_items, self.schema, self.report, bucket)
 
@@ -169,20 +164,16 @@ class Arche:
         """Run JSON schema check and output results. It will try to find all errors, but
         there are no guarantees. Slower than `check_with_json_schema()`
         """
-        res = schema_rules.validate(
-            self.schema, items_dicts=self.source_items.dicts, fast=False
-        )
+        res = schema_rules.validate(self.schema, df=self.source_items.df, fast=False)
         self.save_result(res)
         res.show()
 
     def glance(self):
-        """Run JSON schema check and output results. In most cases it will stop after
-        the first error per item. Usable for big jobs as it's about 100x faster than
+        """Run JSON schema check and output results. In most cases it will return
+        only the first error per item. Usable for big jobs as it's about 100x faster than
         `validate_with_json_schema()`.
         """
-        res = schema_rules.validate(
-            self.schema, items_dicts=self.source_items.dicts, fast=True
-        )
+        res = schema_rules.validate(self.schema, df=self.source_items.df, fast=True)
         self.save_result(res)
         res.show()
 
@@ -190,7 +181,7 @@ class Arche:
         if not self.schema:
             return
 
-        self.save_result(schema_rules.validate(self.schema, self.source_items.dicts))
+        self.save_result(schema_rules.validate(self.schema, self.source_items.df))
 
         tagged_fields = sr.Tags().get(self.schema)
         target_columns = (

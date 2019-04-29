@@ -10,6 +10,7 @@ from arche.readers.schema import Schema, Tags
 from arche.report import Report
 import arche.rules.coverage as coverage_rules
 import arche.rules.duplicates as duplicate_rules
+import arche.rules.json_schema as schema_rules
 from arche.rules.others import garbage_symbols
 import arche.rules.price as price_rules
 from arche.tools import api
@@ -33,7 +34,7 @@ class DataQualityReport:
         self.report = report
         self.figures = []
         self.appendix = self.create_appendix(self.schema)
-        self.create_figures(items, items.dicts)
+        self.create_figures(items)
         self.plot_to_notebook()
 
         if bucket:
@@ -43,9 +44,8 @@ class DataQualityReport:
                 bucket=bucket,
             )
 
-    def create_figures(self, items, items_dicts):
+    def create_figures(self, items):
         tagged_fields = Tags().get(self.schema)
-        no_of_validated_items = len(items.df.index)
 
         dup_items_result = duplicate_rules.check_items(items.df, tagged_fields)
         no_of_checked_duplicated_items = dup_items_result.items_count
@@ -59,22 +59,27 @@ class DataQualityReport:
         no_of_price_warns = price_was_now_result.err_items_count
         no_of_checked_price_items = price_was_now_result.items_count
 
-        garbage_symbols_result = garbage_symbols(items)
-
         crawlera_user = api.get_crawlera_user(items.job)
-        no_of_validation_warnings = self.report.results.get(
-            "JSON Schema Validation"
+
+        validation_errors = self.report.results.get(
+            "JSON Schema Validation",
+            schema_rules.validate(self.schema, df=items.df, fast=False),
         ).get_errors_count()
+
+        garbage_symbols_result = self.report.results.get(
+            "Garbage Symbols", garbage_symbols(items)
+        )
+
         quality_estimation, field_accuracy = generate_quality_estimation(
             items.job,
             crawlera_user,
-            no_of_validation_warnings,
+            validation_errors,
             no_of_duplicated_items,
             no_of_checked_duplicated_items,
             no_of_duplicated_skus,
             no_of_checked_skus_items,
             no_of_price_warns,
-            no_of_validated_items,
+            no_of_checked_price_items,
             tested=True,
             garbage_symbols=garbage_symbols_result,
         )
@@ -85,7 +90,7 @@ class DataQualityReport:
         self.job_summary_table(items.job)
         self.rules_summary_table(
             cleaned_df,
-            no_of_validation_warnings,
+            validation_errors,
             tagged_fields.get("name_field", ""),
             tagged_fields.get("product_url_field", ""),
             no_of_checked_duplicated_items,

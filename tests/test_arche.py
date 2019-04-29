@@ -6,8 +6,12 @@ import pytest
 
 
 def test_target_equals_source():
-    arche = Arche(source="0/0/1", target="0/0/1")
-    assert arche.target is None
+    with pytest.raises(ValueError) as excinfo:
+        Arche(source="0/0/1", target="0/0/1")
+    assert (
+        str(excinfo.value)
+        == "'target' is equal to 'source'. Data to compare should have different sources."
+    )
 
 
 def test_target_items(mocker, get_job_items):
@@ -178,7 +182,7 @@ def test_run_all_rules_collection(mocker, source_key):
     mocked_run_schema_rules.assert_called_once_with(arche)
 
 
-def test_validate_with_json_schema(mocker):
+def test_validate_with_json_schema(mocker, get_job_items):
     mocked_save_result = mocker.patch("arche.Arche.save_result", autospec=True)
     res = Result("fine")
     mocked_validate = mocker.patch(
@@ -189,12 +193,10 @@ def test_validate_with_json_schema(mocker):
     arche = Arche(
         "source", schema={"$schema": "http://json-schema.org/draft-07/schema"}
     )
-    arche._source_items = get_job_items_mock(mocker)
+    arche._source_items = get_job_items
     arche.validate_with_json_schema()
 
-    mocked_validate.assert_called_once_with(
-        arche.schema, arche.source_items.dicts, False
-    )
+    mocked_validate.assert_called_once_with(arche.schema, arche.source_items.df, False)
     mocked_save_result.assert_called_once_with(arche, res)
     mocked_show.assert_called_once_with(res)
 
@@ -212,37 +214,15 @@ def test_data_quality_report_fails(source, expected_message):
     assert str(excinfo.value) == expected_message
 
 
-def test_data_quality_report_no_results(mocker):
-    mocked_save_result = mocker.patch("arche.Arche.save_result", autospec=True)
-    mocked_validate = mocker.patch(
-        "arche.rules.json_schema.validate", autospec=True, return_value=None
-    )
+def test_data_quality_report(mocker, get_job_items):
     mocked_dqr = mocker.patch.object(
         arche, "DataQualityReport", autospec=True, return_value=None
     )
 
     g = Arche("source", schema={"$schema": "http://json-schema.org/draft-07/schema"})
-    g._source_items = get_job_items_mock(mocker)
-    g.data_quality_report()
-
-    mocked_validate.assert_called_once_with(g.schema, g.source_items.dicts, False)
-    mocked_save_result.assert_called_once_with(g, None)
-    mocked_dqr.assert_called_once_with(g.source_items, g.schema, g.report, None)
-
-
-def test_data_quality_report(mocker):
-    mocked_validate = mocker.patch(
-        "arche.rules.json_schema.validate", autospec=True, return_value=None
-    )
-    mocked_dqr = mocker.patch.object(
-        arche, "DataQualityReport", autospec=True, return_value=None
-    )
-
-    g = Arche("source", schema={"$schema": "http://json-schema.org/draft-07/schema"})
-    g._source_items = get_job_items_mock(mocker)
+    g._source_items = get_job_items
     g.report.results = "some_res"
     g.data_quality_report("s3")
-    mocked_validate.assert_not_called()
     mocked_dqr.assert_called_with(g.source_items, g.schema, g.report, "s3")
 
 
@@ -259,8 +239,8 @@ def test_compare_with_customized_rules(mocker, get_job_items):
         "arche.rules.price.compare_prices_for_same_names", autospec=True
     )
 
-    source_items = get_job_items_mock(mocker)
-    target_items = get_job_items_mock(mocker)
+    source_items = get_job_items
+    target_items = get_job_items
     arche = Arche("source")
     arche.compare_with_customized_rules(source_items, target_items, {})
 
