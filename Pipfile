@@ -35,6 +35,7 @@ recommonmark = "*"
 sphinxcontrib-apidoc = "*"
 jupyter-console = "*"
 nbsphinx = "*"
+memory-profiler = "*"
 
 [requires]
 python_version = "3.7"
