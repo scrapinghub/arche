@@ -1,9 +1,10 @@
 from arche import SH_URL
 from arche.rules.result import Result
 from arche.tools import api, helpers
+from scrapinghub.client.jobs import Job
 
 
-def check_errors(job):
+def check_errors(job: Job) -> Result:
     errors_count = api.get_errors_count(job)
     result = Result("Job Errors")
     if errors_count:
@@ -16,7 +17,7 @@ def check_errors(job):
     return result
 
 
-def check_outcome(job):
+def check_outcome(job: Job) -> Result:
     state = api.get_job_state(job)
     reason = api.get_job_close_reason(job)
     result = Result("Job Outcome")
@@ -27,7 +28,7 @@ def check_outcome(job):
     return result
 
 
-def check_response_ratio(job):
+def check_response_ratio(job: Job) -> Result:
     requests_number = api.get_requests_count(job)
     items_count = api.get_items_count(job)
     result = Result("Responses Per Item Ratio")
@@ -38,7 +39,7 @@ def check_response_ratio(job):
     return result
 
 
-def compare_response_ratio(source_job, target_job):
+def compare_response_ratio(source_job: Job, target_job: Job) -> Result:
     """Compare request with response per item ratio"""
     items_count1 = api.get_items_count(source_job)
     items_count2 = api.get_items_count(target_job)
@@ -59,7 +60,7 @@ def compare_response_ratio(source_job, target_job):
     return result
 
 
-def compare_errors(source_job, target_job):
+def compare_errors(source_job: Job, target_job: Job) -> Result:
     errors_count1 = api.get_errors_count(source_job)
     errors_count2 = api.get_errors_count(target_job)
 
@@ -76,7 +77,7 @@ def compare_errors(source_job, target_job):
     return result
 
 
-def compare_number_of_scraped_items(source_job, target_job):
+def compare_number_of_scraped_items(source_job: Job, target_job: Job) -> Result:
     items_count1 = api.get_items_count(source_job)
     items_count2 = api.get_items_count(target_job)
     diff = helpers.ratio_diff(items_count1, items_count2)
@@ -96,7 +97,7 @@ def compare_number_of_scraped_items(source_job, target_job):
     return result
 
 
-def compare_spider_names(source_job, target_job):
+def compare_spider_names(source_job: Job, target_job: Job) -> Result:
     name1 = source_job.metadata.get("spider")
     name2 = target_job.metadata.get("spider")
 
@@ -108,7 +109,7 @@ def compare_spider_names(source_job, target_job):
     return result
 
 
-def compare_runtime(source_job, target_job):
+def compare_runtime(source_job: Job, target_job: Job) -> Result:
     source_runtime = api.get_runtime(source_job)
     target_runtime = api.get_runtime(target_job)
 
@@ -136,7 +137,7 @@ def compare_runtime(source_job, target_job):
     return result
 
 
-def compare_finish_time(source_job, target_job):
+def compare_finish_time(source_job: Job, target_job: Job) -> Result:
     diff_in_days = api.get_finish_time_difference_in_days(source_job, target_job)
 
     result = Result("Finish Time")

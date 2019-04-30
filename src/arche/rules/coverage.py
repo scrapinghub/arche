@@ -1,7 +1,7 @@
-from arche.readers.items import Job
 from arche.rules.result import Result
 from arche.tools.api import get_items_count
 import pandas as pd
+from scrapinghub.client.jobs import Job
 
 
 def check_fields_coverage(df: pd.DataFrame) -> Result:
