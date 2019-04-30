@@ -10,7 +10,7 @@ import pytest
     [
         (
             pd.DataFrame({"_key": [n for n in range(1000)]}),
-            {Level.INFO: [("PASSED",)]},
+            {},
             [pd.Series([1000], index=["_key"], name="Fields coverage for 1_000 items")],
         ),
         (
@@ -24,7 +24,7 @@ import pytest
         ),
         (
             pd.DataFrame([(0, "")], columns=["Name", "Field"]),
-            {Level.INFO: [("PASSED",)]},
+            {},
             [
                 pd.Series(
                     [1, 1], index=["Field", "Name"], name="Fields coverage for 1 items"

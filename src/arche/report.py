@@ -15,10 +15,8 @@ class Report:
         self.results[result.name] = result
 
     @staticmethod
-    def write_color_text(
-        text: str, color: Fore = Fore.RED, style: Style = Style.RESET_ALL
-    ) -> None:
-        print(color + style + text + Style.RESET_ALL)
+    def write_color_text(text: str, color: Fore = Fore.RED) -> None:
+        print(color + text + Style.RESET_ALL)
 
     @staticmethod
     def write_rule_name(rule_name: str) -> None:
@@ -34,20 +32,22 @@ class Report:
 
     @classmethod
     def write_summary(cls, result: Result) -> None:
-        if not result.messages:
-            return
         cls.write_rule_name(result.name)
+        if not result.messages:
+            cls.write_rule_outcome("PASSED", Level.INFO)
         for level, rule_msgs in result.messages.items():
             for rule_msg in rule_msgs:
                 cls.write_rule_outcome(rule_msg.summary, level)
 
     @classmethod
-    def write_rule_outcome(cls, result: Result, level: Level = Level.INFO) -> None:
-        msg = f"\t{result}"
+    def write_rule_outcome(cls, outcome: str, level: Level = Level.INFO) -> None:
+        msg = f"\t{outcome}"
         if level == Level.ERROR:
             cls.write_color_text(msg)
         elif level == Level.WARNING:
             cls.write_color_text(msg, color=Fore.YELLOW)
+        elif outcome == "PASSED":
+            cls.write_color_text(msg, color=Fore.GREEN)
         else:
             cls.write(msg)
 

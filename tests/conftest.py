@@ -201,7 +201,7 @@ def pytest_assertrepr_compare(op, left, right):
         for (left_n, left_v), (_, right_v) in zip(
             left.__dict__.items(), right.__dict__.items()
         ):
-            if left_n == "stats":
+            if left_n == "_stats":
                 for left_stat, right_stat in zip(left_v, right_v):
                     if not Result.tensors_equal(left_stat, right_stat):
                         assert_msgs.extend([f"{left_stat}", "!=", f"{right_stat}"])
