@@ -245,7 +245,7 @@ def test_compare_with_customized_rules(mocker, get_job_items):
     arche.compare_with_customized_rules(source_items, target_items, {})
 
     mocked_coverage.assert_called_once_with(
-        source_items.key, target_items.key, source_items.df, target_items.df, []
+        source_items.df, target_items.df, [], source_items.key, target_items.key
     )
     mocked_price_url.assert_called_once_with(source_items.df, target_items.df, {})
     mocked_name_url.assert_called_once_with(source_items.df, target_items.df, {})

@@ -77,7 +77,7 @@ def test_get_coverage_per_category(data, cat_names, expected_messages, expected_
 )
 def test_get_difference(source, target, categories, expected_messages, expected_stats):
     assert c.get_difference(
-        "s", "t", pd.DataFrame(source), pd.DataFrame(target), categories
+        pd.DataFrame(source), pd.DataFrame(target), categories, "s", "t"
     ) == create_result(
         "Category Coverage Difference", expected_messages, stats=expected_stats
     )

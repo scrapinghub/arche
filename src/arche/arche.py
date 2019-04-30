@@ -246,11 +246,11 @@ class Arche:
             return
         self.save_result(
             category_rules.get_difference(
-                source_items.key,
-                target_items.key,
                 source_items.df,
                 target_items.df,
                 tagged_fields.get("category", []),
+                source_items.key,
+                target_items.key,
             )
         )
         self.save_result(
