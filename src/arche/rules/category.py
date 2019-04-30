@@ -54,6 +54,8 @@ def get_difference(
                 f"The difference is greater than {err_thr:.0%} for {len(errs)} value(s) of {c}"
             )
 
+    if not category_names:
+        result.add_info("SKIPPED")
     return result
 
 
@@ -73,4 +75,6 @@ def get_coverage_per_category(df: pd.DataFrame, category_names: List[str]) -> Re
         value_counts = df[c].value_counts(ascending=True)
         result.add_info(f"{len(value_counts)} categories in '{c}'")
         result.stats.append(value_counts)
+    if not category_names:
+        result.add_info("SKIPPED")
     return result
