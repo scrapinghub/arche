@@ -84,12 +84,10 @@ class DataQualityReport:
             garbage_symbols=garbage_symbols_result,
         )
 
-        cleaned_df = self.drop_service_columns(items.df)
-
         self.score_table(quality_estimation, field_accuracy)
         self.job_summary_table(items.job)
         self.rules_summary_table(
-            cleaned_df,
+            items.df,
             validation_errors,
             tagged_fields.get("name_field", ""),
             tagged_fields.get("product_url_field", ""),
@@ -104,8 +102,8 @@ class DataQualityReport:
             no_of_price_warns,
             garbage_symbols=garbage_symbols_result,
         )
-        self.scraped_fields_coverage(cleaned_df)
-        self.coverage_by_categories(cleaned_df, tagged_fields)
+        self.scraped_fields_coverage(items.df)
+        self.coverage_by_categories(items.df, tagged_fields)
 
     def plot_to_notebook(self) -> None:
         IPython.display.clear_output()
@@ -205,8 +203,3 @@ class DataQualityReport:
             )
             if cat_table:
                 self.figures.append(cat_table)
-
-    def drop_service_columns(self, df):
-        service_columns = ["_key", "_type", "_cached_page_id", "_validation"]
-        found_columns = [cl for cl in service_columns if cl in df.columns]
-        return df.drop(columns=found_columns)
