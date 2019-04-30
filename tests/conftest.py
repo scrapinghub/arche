@@ -135,22 +135,6 @@ def get_job_items_mock(mocker, items=default_items, key="a_key"):
     return job_items
 
 
-def get_collection_items_mock(mocker, items=default_items, **kwargs):
-    mocker.patch(
-        "arche.readers.items.CollectionItems.fetch_data",
-        return_value=pd.DataFrame(items),
-        autospec=True,
-    )
-    collection_items = CollectionItems(
-        key=kwargs.get("key", "112358/collections/s/pages"),
-        count=kwargs.get("count", len(items)),
-        filters=kwargs.get("filters", None),
-        expand=kwargs.get("expand", True),
-        **kwargs,
-    )
-    return collection_items
-
-
 @pytest.fixture(scope="function", params=[default_items])
 def get_job_items(request, mocker):
     mocker.patch(
@@ -167,6 +151,23 @@ def get_job_items(request, mocker):
 
 
 @pytest.fixture(scope="function", params=[default_items])
+def get_collection_items(request, mocker):
+    mocker.patch(
+        "arche.tools.api.get_collection", return_value=get_collection, autospec=True
+    )
+    mocker.patch(
+        "arche.readers.items.CollectionItems.fetch_data",
+        return_value=pd.DataFrame(request.param),
+        autospec=True,
+    )
+
+    collection_items = CollectionItems(
+        key="112358/collections/s/pages", count=len(request.param)
+    )
+    return collection_items
+
+
+@pytest.fixture(scope="function", params=[default_source])
 def get_items(request):
     return request.param
 

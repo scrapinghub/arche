@@ -1,5 +1,5 @@
 from arche import SH_URL
-from arche.readers.items import CollectionItems, JobItems
+from arche.readers.items import Items, CollectionItems, JobItems
 from conftest import Collection, Job
 import pandas as pd
 import pytest
@@ -33,6 +33,15 @@ expected_col_items = pd.DataFrame(
 
 
 @pytest.mark.parametrize(
+    "df, expected_df",
+    [(pd.DataFrame({"0": [0]}), pd.DataFrame({"0": [0], "_key": ["0"]}))],
+)
+def test_items_from_df(df, expected_df):
+    items = Items.from_df(df)
+    pd.testing.assert_frame_equal(items.df, expected_df)
+
+
+@pytest.mark.parametrize(
     "count, filters, expand, expected_count",
     [(1, None, False, 1), (None, None, True, 4)],
 )
@@ -44,12 +53,11 @@ def test_collection_items(mocker, count, filters, expand, expected_count):
     )
     get_items_mock = mocker.patch(
         "arche.tools.api.get_items",
-        return_value=collection_items.iloc[:expected_count],
+        return_value=collection_items.copy().iloc[:expected_count],
         autospec=True,
     )
     items = CollectionItems("key", count, filters, expand)
     assert items.key == "key"
-    assert items._count == count
     assert items.filters == filters
     assert items.expand == expand
     pd.testing.assert_frame_equal(items.df, expected_col_items.iloc[:expected_count])
@@ -88,7 +96,9 @@ def test_job_items(mocker, start, count, expected_count):
         return_value=job_items.iloc[start:expected_count].reset_index(drop=True),
         autospec=True,
     )
-    items = JobItems(start, key="112358/13/21", count=count, filters=None, expand=False)
+    items = JobItems(
+        key="112358/13/21", start=start, count=count, filters=None, expand=False
+    )
     pd.testing.assert_frame_equal(
         items.df, expected_job_items.iloc[start:count].reset_index(drop=True)
     )

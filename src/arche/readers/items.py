@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 import numbers
 from typing import Optional
 
@@ -9,42 +9,14 @@ from scrapinghub import ScrapinghubClient
 from scrapinghub.client.jobs import Job
 
 
-class Items(ABC):
-    def __init__(
-        self,
-        key: str,
-        count: Optional[int] = None,
-        filters: Optional[api.Filters] = None,
-        expand: bool = True,
-    ):
-        self.key = key
-        self._count = count
-        self._limit = None
-        self.filters = filters
-        self._df = None
+class Items:
+    def __init__(self, df: pd.DataFrame, expand: bool = False):
+        self._df = self.process_df(df)
         self._flat_df = None
         self.expand = expand
 
     @property
-    @abstractmethod
-    def limit(self):
-        "The maximum number of items in source"
-        raise NotImplementedError
-
-    @property
-    @abstractmethod
-    def count(self):
-        "The number of items users wants to retrieve"
-        raise NotImplementedError
-
-    @abstractmethod
-    def fetch_data(self):
-        raise NotImplementedError
-
-    @property
     def df(self):
-        if self._df is None:
-            self._df = self.process_df(self.fetch_data())
         return self._df
 
     @property
@@ -63,22 +35,68 @@ class Items(ABC):
 
     def process_df(self, df: pd.DataFrame) -> pd.DataFrame:
         # clean empty objects - mainly lists and dicts, but keep everything else
-        df = df.applymap(lambda x: x if x or isinstance(x, numbers.Real) else None)
-        df["_key"] = self.format_keys(df["_key"])
-        return df
-
-    def format_keys(self, keys: pd.Series) -> pd.Series:
-        raise NotImplementedError
+        return df.applymap(lambda x: x if x or isinstance(x, numbers.Real) else None)
 
     def get_origin_column_name(self, column_name: str) -> str:
         return self._columns_map.get(column_name, column_name)
 
+    @classmethod
+    def from_df(cls, df: pd.DataFrame, expand: bool = True):
+        if "_key" not in df.columns:
+            df["_key"] = df.index
+            df["_key"] = df["_key"].apply(str)
+        return cls(df, expand)
 
-class JobItems(Items):
-    def __init__(self, start: int = 0, *args, **kwargs):
-        self.start_index = start
+
+class CloudItems(Items):
+    def __init__(
+        self,
+        key: str,
+        count: Optional[int] = None,
+        filters: Optional[api.Filters] = None,
+        expand: bool = True,
+    ):
+        self.key = key
+        self._count = count
+        self._limit = None
+        self.filters = filters
+        self.expand = expand
+        df = self.fetch_data()
+        df["_key"] = self.format_keys(df["_key"])
+        super().__init__(df=df, expand=expand)
+
+    @property
+    @abstractmethod
+    def limit(self):
+        "The maximum number of items in source"
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def count(self):
+        "The number of items users wants to retrieve"
+        raise NotImplementedError
+
+    @abstractmethod
+    def fetch_data(self):
+        raise NotImplementedError
+
+    def format_keys(self, keys: pd.Series) -> pd.Series:
+        raise NotImplementedError
+
+
+class JobItems(CloudItems):
+    def __init__(
+        self,
+        key: str,
+        start: int = 0,
+        count: Optional[int] = None,
+        filters: Optional[api.Filters] = None,
+        expand: bool = True,
+    ):
+        self.start_index: int = start
         self._job: Job = None
-        super().__init__(*args, **kwargs)
+        super().__init__(key, count, filters, expand)
 
     @property
     def limit(self) -> int:
@@ -115,7 +133,7 @@ class JobItems(Items):
         )
 
 
-class CollectionItems(Items):
+class CollectionItems(CloudItems):
     @property
     def limit(self) -> int:
         if not self._limit:
