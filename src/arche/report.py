@@ -3,6 +3,7 @@ from typing import Dict
 from arche.rules.result import Level, Result
 from colorama import Fore, Style
 from IPython.display import display, HTML
+import numpy as np
 import pandas as pd
 import plotly.io as pio
 
@@ -85,19 +86,20 @@ class Report:
             if isinstance(keys, set):
                 keys = pd.Series(list(keys))
 
-            sample = cls.sample_keys(keys, keys_limit)
+            sample = Report.sample_keys(keys, keys_limit)
             msg = f"{len(keys)} items affected - {attribute}: {sample}"
             display(HTML(msg))
 
         display(HTML(f"<br>"))
 
-    @classmethod
-    def sample_keys(cls, keys: pd.Series, limit: int) -> str:
+    @staticmethod
+    def sample_keys(keys: pd.Series, limit: int) -> str:
         if len(keys) > limit:
             sample = keys.sample(limit)
         else:
             sample = keys
-
-        sample = [f"<a href='{k}'>{k.split('/')[-1]}</a>" for k in sample]
-        sample = " ".join(sample)
+        # make links only for Cloud data
+        if keys.dtype == np.dtype("object") and "/" in keys.iloc[0]:
+            sample = [f"<a href='{k}'>{k.split('/')[-1]}</a>" for k in sample]
+        sample = ", ".join(sample)
         return sample
