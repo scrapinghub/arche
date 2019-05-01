@@ -16,7 +16,7 @@ import os
 import sys
 
 
-sys.path.insert(0, os.path.abspath("../../src"))
+# sys.path.insert(0, os.path.abspath("../../src"))
 
 
 # -- Project information -----------------------------------------------------
@@ -44,7 +44,6 @@ release = version
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    "sphinx.ext.autodoc",
     "sphinx.ext.doctest",
     "sphinx.ext.intersphinx",
     "sphinx.ext.todo",
@@ -52,15 +51,17 @@ extensions = [
     "sphinx.ext.mathjax",
     "sphinx.ext.ifconfig",
     "sphinx.ext.githubpages",
+    "autoapi.extension",
     "sphinx.ext.napoleon",
-    "sphinxcontrib.apidoc",
     "nbsphinx",
 ]
-apidoc_module_dir = "../../src"
-apidoc_output_dir = "api"
-apidoc_separate_modules = True
-apidoc_toc_file = "source"
-apidoc_module_first = True
+# apidoc_module_dir = "../../src"
+# apidoc_output_dir = "api"
+# apidoc_separate_modules = True
+# apidoc_toc_file = "source"
+# apidoc_module_first = True
+autoapi_type = "python"
+autoapi_dirs = ["../../src"]
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
 
