@@ -34,7 +34,7 @@ sphinx = "*"
 recommonmark = "*"
 # avoid pre at any costs
 sphinxcontrib-golangdomain = {git = "https://bitbucket.org/ymotongpoo/sphinxcontrib-golangdomain"}
-sphinx-autoapi = "*"
+sphinx-autoapi = {git = "https://github.com/rtfd/sphinx-autoapi"}
 nbsphinx = "*"
 jupyter-console = "*"
 

@@ -10,7 +10,6 @@ Welcome to Arche's documentation!
 
    Quickstart
    Handling-items-of-different-types
-   api/source
    nbs/notebooks
 
 Indices and tables
