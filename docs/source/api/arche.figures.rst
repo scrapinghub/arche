@@ -11,6 +11,5 @@ Submodules
 
 .. toctree::
 
-   arche.figures.graphs
    arche.figures.tables
 

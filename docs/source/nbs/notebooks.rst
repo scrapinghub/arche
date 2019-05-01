@@ -9,9 +9,9 @@ This section contains real notebooks with real output from a real project
 
    in-short
    basics
-   compare
+   Compare
    API
-   schema
+   Schema
    DQR
 
 Indices and tables
