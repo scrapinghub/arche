@@ -12,6 +12,7 @@ Note that the top-most release is changes in the unreleased master branch on Git
 
 ## [0.4.0] (Work In Progress)
 ### Added
+- Accept dataframes as source or target, #69
 ### Changed
 - data_quality_report plots the same "Fields Coverage" instead of green "Scraped Fields Coverage"
 - Plot theme changed from ggplot2 to seaborn, #62
