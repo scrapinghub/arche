@@ -11,7 +11,7 @@ import os
 import sys
 
 # sys.path.insert(0, os.path.abspath("../../src"))
-
+# nbsphinx_allow_errors = True
 
 # -- Project information -----------------------------------------------------
 
@@ -47,6 +47,13 @@ extensions = [
 ]
 autoapi_type = "python"
 autoapi_dirs = ["../../src"]
+nbsphinx_execute = "always"
+
+
+def setup(app):
+    app.add_javascript(
+        "https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"
+    )
 
 
 from recommonmark.parser import CommonMarkParser
