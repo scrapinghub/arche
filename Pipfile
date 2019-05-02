@@ -32,9 +32,11 @@ flake8-import-order = "*"
 black = {git = "https://github.com/ambv/black"}
 sphinx = "*"
 recommonmark = "*"
-sphinxcontrib-apidoc = "*"
-jupyter-console = "*"
+# avoid pre at any costs
+sphinxcontrib-golangdomain = {git = "https://bitbucket.org/ymotongpoo/sphinxcontrib-golangdomain"}
+sphinx-autoapi = {git = "https://github.com/rtfd/sphinx-autoapi"}
 nbsphinx = "*"
+jupyter-console = "*"
 
 [requires]
 python_version = "3.7"
