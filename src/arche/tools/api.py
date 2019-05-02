@@ -3,18 +3,16 @@ from functools import partial
 import math
 from multiprocessing import Pool
 import time
-from typing import Any, Dict, List, Tuple, Optional, Union
+from typing import List, Tuple, Optional, Union
 
-from arche import SH_URL
 from arche.tools import helpers
 from dateutil.relativedelta import relativedelta
+import pandas as pd
 from scrapinghub import ScrapinghubClient
 from tqdm import tqdm, tqdm_notebook
 
 
 Filters = List[Tuple[str, str, str]]
-Item = Dict[str, Any]
-ItemsDicts = List[Item]
 
 
 def get_collection(key):
@@ -170,7 +168,7 @@ def get_source(source_key):
 
 def get_items_with_pool(
     source_key: str, count: int, start_index: int = 0, workers: int = 4
-) -> ItemsDicts:
+) -> pd.DataFrame:
     """Concurrently reads items from API using Pool
 
     Args:
@@ -180,21 +178,21 @@ def get_items_with_pool(
         workers: the number of separate processors to get data in
 
     Returns:
-        A list of items
+        A dataframe of items
     """
     active_connections_limit = 10
     processes_count = min(max(helpers.cpus_count(), workers), active_connections_limit)
     batch_size = math.ceil(count / processes_count)
 
-    items = []
+    batches = []
     with Pool(processes_count) as p:
         results = p.starmap(
             partial(get_items, source_key, batch_size, p_bar=tqdm),
             zip([i for i in range(start_index, start_index + count, batch_size)]),
         )
         for items_batch in results:
-            items.extend(items_batch)
-    return items
+            batches.append(items_batch)
+    return pd.concat(batches, ignore_index=True, sort=True)
 
 
 def get_items(
@@ -203,8 +201,7 @@ def get_items(
     start_index: int,
     filters: Optional[Filters] = None,
     p_bar: Union[tqdm, tqdm_notebook] = tqdm_notebook,
-) -> ItemsDicts:
-    items = []
+) -> pd.DataFrame:
     source = get_source(key)
     items_iter = source.iter(
         start=f"{key}/{start_index}", count=count, filter=filters, meta="_key"
@@ -216,28 +213,5 @@ def get_items(
             total=count,
             unit_scale=1,
         )
-    for item in items_iter:
-        item.update({"_key": key_to_url(item["_key"], key)})
-        items.append(item)
-    return items
 
-
-def key_to_url(key: str, source_key: str) -> str:
-    """Get full Scrapy Cloud url from `_key`
-    E.g. 112358/13/21/0 to https://app.scrapinghub.com/
-    p/112358/13/21/item/0
-
-    Args:
-        key: a meta `_key`
-        source_key: a job or collection key
-
-    Returns:
-        A full url to an item in a Scrapy Cloud
-    """
-    if "/" in key:
-        item_number = key.rsplit("/")[-1]
-        item_url = f"{SH_URL}/{source_key}/item/{item_number}"
-    else:
-        item_url = f"{SH_URL}/{source_key}/{key}"
-
-    return item_url
+    return pd.DataFrame(items_iter)
