@@ -17,6 +17,7 @@ Note that the top-most release is changes in the unreleased master branch on Git
 - Plot theme changed from ggplot2 to seaborn, #62
 - Same target and source raise an error
 ### Fixed
+- Online documentation now renders graphs https://arche.readthedocs.io/en/latest/, #41
 ### Removed
 
 
