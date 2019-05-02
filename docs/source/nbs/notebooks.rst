@@ -7,7 +7,7 @@ This section contains real notebooks with real output from a real project
    :maxdepth: 2
    :caption: Contents:
 
-   In Short
+   In-Short
    Basics
    Compare
    API
