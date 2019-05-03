@@ -1,9 +1,8 @@
 from functools import lru_cache
-import logging
 from typing import List, Optional, Union
 
 from arche.data_quality_report import DataQualityReport
-from arche.readers.items import CollectionItems, JobItems
+from arche.readers.items import Items, CollectionItems, JobItems
 import arche.readers.schema as sr
 from arche.report import Report
 import arche.rules.category as category_rules
@@ -15,16 +14,15 @@ from arche.rules.others import compare_boolean_fields, garbage_symbols
 import arche.rules.price as price_rules
 from arche.tools import api, helpers, maintenance, schema
 import IPython
-
-logger = logging.getLogger(__name__)
+import pandas as pd
 
 
 class Arche:
     def __init__(
         self,
-        source: str,
+        source: Union[str, pd.DataFrame],
         schema: Optional[sr.SchemaSource] = None,
-        target: Optional[str] = None,
+        target: Optional[Union[str, pd.DataFrame]] = None,
         start: int = 0,
         count: Optional[int] = None,
         filters: Optional[api.Filters] = None,
@@ -32,7 +30,7 @@ class Arche:
     ):
         """
         Args:
-            source: a data source to validate. Supports job or collection keys
+            source: a data source to validate. Supports a job/collection key or a dataframe
             schema: a JSON schema source used to run validation
             target: a data source to compare with
             start: an item number to start reading from
@@ -41,7 +39,7 @@ class Arche:
             expand: if True, use flattened data in garbage rules, affects performance
             see flatten_df
         """
-        if target == source:
+        if isinstance(source, str) and target == source:
             raise ValueError(
                 "'target' is equal to 'source'. Data to compare should have different sources."
             )
@@ -70,7 +68,7 @@ class Arche:
 
     @property
     def target_items(self):
-        if not self.target:
+        if self.target is None:
             return None
         if not self._target_items:
             self._target_items = self.get_items(
@@ -91,7 +89,7 @@ class Arche:
 
     @staticmethod
     def get_items(
-        source: str,
+        source: Union[str, pd.DataFrame],
         start: int,
         count: Optional[int],
         filters: Optional[api.Filters],
@@ -107,6 +105,8 @@ class Arche:
             return CollectionItems(
                 key=source, count=count, filters=filters, expand=expand
             )
+        elif isinstance(source, pd.DataFrame):
+            return Items.from_df(source, expand=expand)
         else:
             raise ValueError(f"'{source}' is not a valid job or collection key")
 
@@ -135,7 +135,7 @@ class Arche:
         self.report.write_details(short=True)
 
     def run_all_rules(self):
-        if helpers.is_job_key(self.source_items.key):
+        if isinstance(self.source_items, JobItems):
             self.check_metadata(self.source_items.job)
             if self.target_items:
                 self.compare_metadata(self.source_items.job, self.target_items.job)
@@ -154,9 +154,10 @@ class Arche:
     @lru_cache(maxsize=32)
     def run_general_rules(self):
         self.save_result(garbage_symbols(self.source_items))
+        df = self.source_items.df
         self.save_result(
             coverage_rules.check_fields_coverage(
-                self.source_items.df.drop(columns=["_type", "_key"])
+                df.drop(columns=df.columns[df.columns.str.startswith("_")])
             )
         )
 
@@ -246,11 +247,7 @@ class Arche:
             return
         self.save_result(
             category_rules.get_difference(
-                source_items.key,
-                target_items.key,
-                source_items.df,
-                target_items.df,
-                tagged_fields.get("category", []),
+                source_items.df, target_items.df, tagged_fields.get("category", [])
             )
         )
         self.save_result(

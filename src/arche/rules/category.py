@@ -1,25 +1,25 @@
 from typing import List
 
-from arche.rules.result import Result
+from arche.rules.result import Outcome, Result
 import pandas as pd
 
 
 def get_difference(
-    source_key: str,
-    target_key: str,
     source_df: pd.DataFrame,
     target_df: pd.DataFrame,
     category_names: List[str],
+    source_key: str = "source",
+    target_key: str = "target",
 ) -> Result:
     """Find and show differences between categories coverage, including nan values.
     Coverage means value counts divided on total size.
 
     Args:
-        source_key: name of data you want to compare
-        target_key: name of data you want to compare source with
         source_df: a data you want to compare
         target_df: a data you want to compare with
         category_names: list of columns which values to compare
+        source_key: label for `source_df`
+        target_key: label for `target_df`
 
     Returns:
         A result instance with messages containing significant difference defined by
@@ -54,10 +54,12 @@ def get_difference(
                 f"The difference is greater than {err_thr:.0%} for {len(errs)} value(s) of {c}"
             )
 
+    if not category_names:
+        result.add_info(Outcome.SKIPPED)
     return result
 
 
-def get_coverage_per_category(df: pd.DataFrame, category_names: List) -> Result:
+def get_coverage_per_category(df: pd.DataFrame, category_names: List[str]) -> Result:
     """Get value counts per column, excluding nan.
 
     Args:
@@ -73,4 +75,6 @@ def get_coverage_per_category(df: pd.DataFrame, category_names: List) -> Result:
         value_counts = df[c].value_counts(ascending=True)
         result.add_info(f"{len(value_counts)} categories in '{c}'")
         result.stats.append(value_counts)
+    if not category_names:
+        result.add_info(Outcome.SKIPPED)
     return result

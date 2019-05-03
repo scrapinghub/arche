@@ -2,6 +2,7 @@ from arche import arche
 from arche.arche import Arche
 from arche.rules.result import Result
 from conftest import get_job_items_mock
+import pandas as pd
 import pytest
 
 
@@ -22,9 +23,15 @@ def test_target_items(mocker, get_job_items):
     assert arche.target_items is get_job_items
 
 
-def test_target_items_none(mocker, get_job_items):
+def test_target_items_none(mocker):
     arche = Arche("source")
     assert arche.target_items is None
+
+
+def test_arche_df(get_df):
+    a = Arche(source=get_df, target=get_df)
+    pd.testing.assert_frame_equal(a.source_items.df, get_df)
+    pd.testing.assert_frame_equal(a.target_items.df, get_df)
 
 
 schema_dummies = [
@@ -105,6 +112,26 @@ def test_get_items_from_bad_source():
     assert str(excinfo.value) == f"'bad_key' is not a valid job or collection key"
 
 
+def test_arche_dataframe():
+    a = Arche(
+        pd.DataFrame({"c": [0, 1]}), schema={"properties": {"c": {"type": "string"}}}
+    )
+    a.report_all()
+    assert a.report.results.get("JSON Schema Validation").detailed_messages_count == 1
+    assert not a.report.results.get("Garbage Symbols").detailed_messages_count
+    assert a.report.results.get("Fields Coverage").detailed_messages_count == 1
+    assert not a.report.results.get("Tags").detailed_messages_count
+    assert not a.report.results.get("Compare Price Was And Now").detailed_messages_count
+    assert not a.report.results.get("Duplicated Items").detailed_messages_count
+    assert not a.report.results.get(
+        "Coverage For Scraped Categories"
+    ).detailed_messages_count
+    Arche(
+        pd.DataFrame({"_key": ["0", "1"], "c": [0, 1]}),
+        schema={"properties": {"c": {"type": "string"}}},
+    ).report_all()
+
+
 def test_report_all(mocker):
     mocked_run_all = mocker.patch("arche.Arche.run_all_rules", autospec=True)
     mocked_write_summary = mocker.patch(
@@ -155,8 +182,7 @@ def test_run_all_rules_job(mocker, source_key, target_key):
     mocked_run_schema_rules.assert_called_once_with(arche)
 
 
-@pytest.mark.parametrize("source_key", [("collection_key")])
-def test_run_all_rules_collection(mocker, source_key):
+def test_run_all_rules_collection(mocker, get_collection_items):
     mocked_check_metadata = mocker.patch("arche.Arche.check_metadata", autospec=True)
     mocked_compare_metadata = mocker.patch(
         "arche.Arche.compare_metadata", autospec=True
@@ -171,8 +197,8 @@ def test_run_all_rules_collection(mocker, source_key):
     mocked_run_schema_rules = mocker.patch(
         "arche.Arche.run_schema_rules", autospec=True
     )
-    arche = Arche(source=source_key)
-    arche._source_items = get_job_items_mock(mocker, key=source_key)
+    arche = Arche(source="collection_key")
+    arche._source_items = get_collection_items
     arche.run_all_rules()
 
     mocked_check_metadata.assert_not_called()
@@ -244,9 +270,7 @@ def test_compare_with_customized_rules(mocker, get_job_items):
     arche = Arche("source")
     arche.compare_with_customized_rules(source_items, target_items, {})
 
-    mocked_coverage.assert_called_once_with(
-        source_items.key, target_items.key, source_items.df, target_items.df, []
-    )
+    mocked_coverage.assert_called_once_with(source_items.df, target_items.df, [])
     mocked_price_url.assert_called_once_with(source_items.df, target_items.df, {})
     mocked_name_url.assert_called_once_with(source_items.df, target_items.df, {})
     mocked_price_name.assert_called_once_with(source_items.df, target_items.df, {})

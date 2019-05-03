@@ -47,7 +47,7 @@ extensions = [
 ]
 autoapi_type = "python"
 autoapi_dirs = ["../../src"]
-nbsphinx_execute = "always"
+nbsphinx_execute = "auto"
 
 
 def setup(app):

@@ -1,8 +1,9 @@
 from typing import Dict
 
-from arche.rules.result import Level, Result
+from arche.rules.result import Level, Outcome, Result
 from colorama import Fore, Style
 from IPython.display import display, HTML
+import numpy as np
 import pandas as pd
 import plotly.io as pio
 
@@ -15,10 +16,8 @@ class Report:
         self.results[result.name] = result
 
     @staticmethod
-    def write_color_text(
-        text: str, color: Fore = Fore.RED, style: Style = Style.RESET_ALL
-    ) -> None:
-        print(color + style + text + Style.RESET_ALL)
+    def write_color_text(text: str, color: Fore = Fore.RED) -> None:
+        print(color + text + Style.RESET_ALL)
 
     @staticmethod
     def write_rule_name(rule_name: str) -> None:
@@ -34,20 +33,22 @@ class Report:
 
     @classmethod
     def write_summary(cls, result: Result) -> None:
-        if not result.messages:
-            return
         cls.write_rule_name(result.name)
+        if not result.messages:
+            cls.write_rule_outcome(Outcome.PASSED.name, Level.INFO)
         for level, rule_msgs in result.messages.items():
             for rule_msg in rule_msgs:
                 cls.write_rule_outcome(rule_msg.summary, level)
 
     @classmethod
-    def write_rule_outcome(cls, result: Result, level: Level = Level.INFO) -> None:
-        msg = f"\t{result}"
+    def write_rule_outcome(cls, outcome: str, level: Level = Level.INFO) -> None:
+        msg = f"\t{outcome}"
         if level == Level.ERROR:
             cls.write_color_text(msg)
         elif level == Level.WARNING:
             cls.write_color_text(msg, color=Fore.YELLOW)
+        elif outcome == Outcome.PASSED:
+            cls.write_color_text(msg, color=Fore.GREEN)
         else:
             cls.write(msg)
 
@@ -85,19 +86,20 @@ class Report:
             if isinstance(keys, set):
                 keys = pd.Series(list(keys))
 
-            sample = cls.sample_keys(keys, keys_limit)
+            sample = Report.sample_keys(keys, keys_limit)
             msg = f"{len(keys)} items affected - {attribute}: {sample}"
             display(HTML(msg))
 
         display(HTML(f"<br>"))
 
-    @classmethod
-    def sample_keys(cls, keys: pd.Series, limit: int) -> str:
+    @staticmethod
+    def sample_keys(keys: pd.Series, limit: int) -> str:
         if len(keys) > limit:
             sample = keys.sample(limit)
         else:
             sample = keys
-
-        sample = [f"<a href='{k}'>{k.split('/')[-1]}</a>" for k in sample]
-        sample = " ".join(sample)
+        # make links only for Cloud data
+        if keys.dtype == np.dtype("object") and "/" in keys.iloc[0]:
+            sample = [f"<a href='{k}'>{k.split('/')[-1]}</a>" for k in sample]
+        sample = ", ".join(sample)
         return sample

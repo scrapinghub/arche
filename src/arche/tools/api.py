@@ -9,10 +9,15 @@ from arche.tools import helpers
 from dateutil.relativedelta import relativedelta
 import pandas as pd
 from scrapinghub import ScrapinghubClient
+from scrapinghub.client.jobs import Job
 from tqdm import tqdm, tqdm_notebook
 
 
 Filters = List[Tuple[str, str, str]]
+
+
+def get_job(key: str) -> Job:
+    return ScrapinghubClient().get_job(key)
 
 
 def get_collection(key):

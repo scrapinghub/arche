@@ -2,7 +2,7 @@ from functools import partial
 
 from arche import SH_URL
 from arche.rules.others import compare_boolean_fields, garbage_symbols
-from arche.rules.result import Level
+from arche.rules.result import Level, Outcome
 from conftest import create_named_df, create_result
 import pandas as pd
 import pytest
@@ -23,15 +23,20 @@ compare_bool_data = [
     (
         {"bool_f": [True], "bool_f2": [False]},
         {"diff_bool_field": [False]},
-        {Level.INFO: [("SKIPPED",)]},
+        {Level.INFO: [(Outcome.SKIPPED,)]},
         [],
     ),
-    ({"bool_f": [True]}, {"str_f": ["True", "True"]}, {Level.INFO: [("SKIPPED",)]}, []),
-    ({"str_f": ["True"]}, {"bool_f": [True]}, {Level.INFO: [("SKIPPED",)]}, []),
+    (
+        {"bool_f": [True]},
+        {"str_f": ["True", "True"]},
+        {Level.INFO: [(Outcome.SKIPPED,)]},
+        [],
+    ),
+    ({"str_f": ["True"]}, {"bool_f": [True]}, {Level.INFO: [(Outcome.SKIPPED,)]}, []),
     (
         {"b": [True, True, True]},
         {"b": [True]},
-        {Level.INFO: [("PASSED",)]},
+        {},
         [
             create_df(
                 {True: [1.0, 1.0], False: [0.0, 0.0]}, index=["b_source", "b_target"]
