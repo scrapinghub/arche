@@ -8,7 +8,6 @@ Welcome to Arche's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   Quickstart
    Handling-items-of-different-types
    nbs/notebooks
 
