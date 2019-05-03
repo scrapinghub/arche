@@ -1,6 +1,6 @@
 from typing import Dict
 
-from arche.rules.result import Level, Result
+from arche.rules.result import Level, Outcome, Result
 from colorama import Fore, Style
 from IPython.display import display, HTML
 import numpy as np
@@ -35,7 +35,7 @@ class Report:
     def write_summary(cls, result: Result) -> None:
         cls.write_rule_name(result.name)
         if not result.messages:
-            cls.write_rule_outcome("PASSED", Level.INFO)
+            cls.write_rule_outcome(Outcome.PASSED.name, Level.INFO)
         for level, rule_msgs in result.messages.items():
             for rule_msg in rule_msgs:
                 cls.write_rule_outcome(rule_msg.summary, level)
@@ -47,7 +47,7 @@ class Report:
             cls.write_color_text(msg)
         elif level == Level.WARNING:
             cls.write_color_text(msg, color=Fore.YELLOW)
-        elif outcome == "PASSED":
+        elif outcome == Outcome.PASSED:
             cls.write_color_text(msg, color=Fore.GREEN)
         else:
             cls.write(msg)

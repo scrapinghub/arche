@@ -15,6 +15,11 @@ class Level(Enum):
     INFO = 0
 
 
+class Outcome(Enum):
+    SKIPPED = 0
+    PASSED = 1
+
+
 @dataclass
 class Message:
     """

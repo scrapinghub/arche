@@ -1,6 +1,6 @@
 from typing import List
 
-from arche.rules.result import Result
+from arche.rules.result import Outcome, Result
 import pandas as pd
 
 
@@ -55,7 +55,7 @@ def get_difference(
             )
 
     if not category_names:
-        result.add_info("SKIPPED")
+        result.add_info(Outcome.SKIPPED)
     return result
 
 
@@ -76,5 +76,5 @@ def get_coverage_per_category(df: pd.DataFrame, category_names: List[str]) -> Re
         result.add_info(f"{len(value_counts)} categories in '{c}'")
         result.stats.append(value_counts)
     if not category_names:
-        result.add_info("SKIPPED")
+        result.add_info(Outcome.SKIPPED)
     return result
