@@ -68,7 +68,7 @@ class Arche:
 
     @property
     def target_items(self):
-        if not self.target:
+        if self.target is None:
             return None
         if not self._target_items:
             self._target_items = self.get_items(
@@ -247,11 +247,7 @@ class Arche:
             return
         self.save_result(
             category_rules.get_difference(
-                source_items.df,
-                target_items.df,
-                tagged_fields.get("category", []),
-                source_items.key,
-                target_items.key,
+                source_items.df, target_items.df, tagged_fields.get("category", [])
             )
         )
         self.save_result(

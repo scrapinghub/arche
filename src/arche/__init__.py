@@ -8,6 +8,7 @@ from arche.arche import Arche
 from arche.readers.items import CollectionItems, JobItems
 from arche.rules.duplicates import find_by as find_duplicates_by
 from arche.tools.schema import basic_json_schema
+import pandas as pd
 import plotly.io as pio
 
 pio.renderers.default = "notebook_connected+plotly_mimetype"
@@ -18,6 +19,7 @@ __all__ = [
     "find_duplicates_by",
     "CollectionItems",
     "JobItems",
+    "pd",
 ]
 
 logging.getLogger("urllib3").setLevel(logging.CRITICAL)

@@ -23,9 +23,15 @@ def test_target_items(mocker, get_job_items):
     assert arche.target_items is get_job_items
 
 
-def test_target_items_none(mocker, get_job_items):
+def test_target_items_none(mocker):
     arche = Arche("source")
     assert arche.target_items is None
+
+
+def test_arche_df(get_df):
+    a = Arche(source=get_df, target=get_df)
+    pd.testing.assert_frame_equal(a.source_items.df, get_df)
+    pd.testing.assert_frame_equal(a.target_items.df, get_df)
 
 
 schema_dummies = [
@@ -264,9 +270,7 @@ def test_compare_with_customized_rules(mocker, get_job_items):
     arche = Arche("source")
     arche.compare_with_customized_rules(source_items, target_items, {})
 
-    mocked_coverage.assert_called_once_with(
-        source_items.df, target_items.df, [], source_items.key, target_items.key
-    )
+    mocked_coverage.assert_called_once_with(source_items.df, target_items.df, [])
     mocked_price_url.assert_called_once_with(source_items.df, target_items.df, {})
     mocked_name_url.assert_called_once_with(source_items.df, target_items.df, {})
     mocked_price_name.assert_called_once_with(source_items.df, target_items.df, {})
