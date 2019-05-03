@@ -11,16 +11,11 @@ from scrapinghub.client.jobs import Job
 
 class Items:
     def __init__(self, df: pd.DataFrame, expand: bool = False):
-        self._df = self.process_df(df)
+        self.df = self.process_df(df)
         self._flat_df = None
         self.expand = expand
 
-    @property
-    def df(self):
-        return self._df
-
-    @property
-    def size(self):
+    def __len__(self):
         return len(self.df)
 
     @property

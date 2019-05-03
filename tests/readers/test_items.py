@@ -63,7 +63,7 @@ def test_collection_items(mocker, count, filters, expand, expected_count):
     pd.testing.assert_frame_equal(items.df, expected_col_items.iloc[:expected_count])
     pd.testing.assert_frame_equal(items.flat_df, items.df)
 
-    assert items.size == len(expected_col_items.iloc[:expected_count])
+    assert len(items) == len(expected_col_items.iloc[:expected_count])
 
     assert items.limit == len(collection_items)
     assert items.count == expected_count
