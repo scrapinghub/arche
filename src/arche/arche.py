@@ -1,5 +1,5 @@
 from functools import lru_cache
-from typing import List, Optional, Union
+from typing import Optional, Union
 
 from arche.data_quality_report import DataQualityReport
 from arche.readers.items import Items, CollectionItems, JobItems
@@ -12,7 +12,7 @@ import arche.rules.json_schema as schema_rules
 import arche.rules.metadata as metadata_rules
 from arche.rules.others import compare_boolean_fields, garbage_symbols
 import arche.rules.price as price_rules
-from arche.tools import api, helpers, maintenance, schema
+from arche.tools import api, helpers
 import IPython
 import pandas as pd
 
@@ -112,20 +112,6 @@ class Arche:
 
     def save_result(self, rule_result):
         self.report.save(rule_result)
-
-    def basic_json_schema(self, items_numbers: List[int] = None):
-        """Prints a json schema based on data from `self.source`
-
-        Args:
-            items_numbers: array of item numbers to create a schema from
-        """
-        maintenance.deprecate(
-            "'Arche.basic_json_schema()' was deprecated in 2019.03.25 and "
-            "will be removed in 2019.04.22.",
-            replacement="Use 'basic_json_schema()' instead",
-            gone_in="0.4.0",
-        )
-        schema.basic_json_schema(self.source, items_numbers)
 
     def report_all(self):
         self.run_all_rules()

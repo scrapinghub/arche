@@ -10,46 +10,50 @@ Note that the top-most release is changes in the unreleased master branch on Git
 [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## [0.4.0] (Work In Progress)
+## [0.3.4dev] (Work In Progress)
+### Added
+### Changed
+### Fixed
+### Removed
+
+
+## [0.3.3]
 ### Added
 - Accept dataframes as source or target, #69
 ### Changed
 - data_quality_report plots the same "Fields Coverage" instead of green "Scraped Fields Coverage"
 - Plot theme changed from ggplot2 to seaborn, #62
-- Same target and source raise an error
-- Brought back error colours in `report_all()`. Also passed rules marked with green PASSED.
+- Same target and source raise an error, was a warning before
+- Passed rules marked with green PASSED.
 ### Fixed
 - Online documentation now renders graphs https://arche.readthedocs.io/en/latest/, #41
+- Error colours are back in `report_all()`. 
 ### Removed
+- Deprecated `Arche.basic_json_schema()`, use `basic_json_schema()`
+- Removed Quickstart.md as redundant - documentation lives in notebooks
 
 
 ## [0.3.2] (2019-04-18)
 ### Added
 - Allow reading private raw schemas directly from bitbucket, #58
-
 ### Changed
 - Progress widgets are removed before printing graphs
 - New plotly v4 API
-
 ### Fixed
 - Failing `Compare Prices For Same Urls` when url is `nan`, #67
 - Empty graphs in Jupyter Notebook, #63
-
 ### Removed
 - Scraped Items History graphs
 
 
 ## [0.3.1] (2019-04-12)
-
 ### Fixed
 - Empty graphs due to lack of plotlyjs, #61
 
 
 ## [0.3.0] (2019-04-12)
-
 ### Fixed
 - Big notebook size, replaced cufflinks with plotly and ipython, #39
-
 ### Changed
 - *Fields Coverage* now is printed as a bar plot, #9
 - *Fields Counts* renamed to *Coverage Difference* and results in 2 bar plots, #9, #51:
@@ -59,7 +63,6 @@ Note that the top-most release is changes in the unreleased master branch on Git
    * *Coverage for `field`* which reflects value counts (categories) coverage for the field for both jobs
    * *Coverage difference more than 10% for `field`* which shows >10% differences between the category coverages
 - *Boolean Fields* plots *Coverage for boolean fields* graph which reflects normalized value counts for boolean fields for both jobs, #53
-
 ### Removed
 - `cufflinks` dependency
 - Deprecated `category_field` tag
@@ -84,11 +87,9 @@ items = JobItems(0, "235801/1/15")
 garbage_symbols(items).show()
 ```
 - notebooks to documentation
-
 ### Changed
 - Tags rule returns unused tags, #2
 - `basic_json_schema()` prints a schema as a python dict
-
 ### Deprecated
 - `Arche().basic_json_schema()` deprecated in favor of `arche.basic_json_schema()`
 ### Removed
@@ -97,5 +98,4 @@ garbage_symbols(items).show()
 
 
 ## 2019.03.18
-
 - Last release without CHANGES updates
