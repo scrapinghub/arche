@@ -7,10 +7,10 @@ import pytest
 
 
 default_items = [
-    {"_key": "112358/13/21/0", "_type": "NameItem", "name": "Elizabeth"},
-    {"_key": "112358/13/21/1", "_type": "NameItem", "name": "Margaret"},
-    {"_key": "112358/13/21/2", "_type": "NameItem", "name": "Yulia"},
-    {"_key": "112358/13/21/3", "_type": "NameItem", "name": "Vivien"},
+    {"_key": "112358/13/21/0", "price": 0.0, "name": "Elizabeth"},
+    {"_key": "112358/13/21/1", "name": "Margaret"},
+    {"_key": "112358/13/21/2", "price": 10.0, "name": "Yulia"},
+    {"_key": "112358/13/21/3", "price": 11.0, "name": "Vivien"},
 ]
 default_source = pd.DataFrame(default_items)
 

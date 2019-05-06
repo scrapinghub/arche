@@ -45,14 +45,15 @@ def test_basic_json_schema(mocker):
 def test_create_json_schema(mocker, get_job, get_items):
     mocker.patch("arche.tools.api.get_job", return_value=get_job, autospec=True)
     mocker.patch("arche.tools.api.get_items", return_value=get_items, autospec=True)
+    schema_tools.create_json_schema(get_job.key, [2])
     assert schema_tools.create_json_schema(get_job.key, [2, 3]) == {
         "$schema": "http://json-schema.org/draft-07/schema#",
         "definitions": {
-            "float": {"pattern": "^-?[0-9]+\\.[0-9]{2}$"},
+            "float": {"pattern": r"^-?[0-9]+\.[0-9]{2}$"},
             "url": {
                 "pattern": (
-                    "^https?://(www\\.)?[a-z0-9.-]*\\.[a-z]{2,}"
-                    "([^<>%\\x20\\x00-\\x1f\\x7F]|%[0-9a-fA-F]{2})*$"
+                    r"^https?://(www\.)?[a-z0-9.-]*\.[a-z]{2,}"
+                    r"([^<>%\x20\x00-\x1f\x7F]|%[0-9a-fA-F]{2})*$"
                 )
             },
         },
@@ -60,10 +61,10 @@ def test_create_json_schema(mocker, get_job, get_items):
         "type": "object",
         "properties": {
             "_key": {"type": "string"},
-            "_type": {"type": "string"},
             "name": {"type": "string"},
+            "price": {"type": "number"},
         },
-        "required": ["_key", "_type", "name"],
+        "required": ["_key", "name", "price"],
     }
 
 

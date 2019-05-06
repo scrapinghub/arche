@@ -10,14 +10,18 @@ Note that the top-most release is changes in the unreleased master branch on Git
 [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## [0.3.4dev] (Work In Progress)
+## [0.3.5dev] (Work In Progress)
 ### Added
 ### Changed
 ### Fixed
 ### Removed
 
+## [0.3.4] (2019-05-06)
+### Fixed
+- basic_json_schema() fails with long `1.0` types, #80
 
-## [0.3.3]
+
+## [0.3.3] (2019-05-03)
 ### Added
 - Accept dataframes as source or target, #69
 ### Changed

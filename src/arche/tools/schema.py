@@ -57,15 +57,15 @@ def create_json_schema(
     samples = []
     for n in item_numbers:
         items = api.get_items(source_key, start_index=n, count=1, p_bar=None)
-        samples.append(items.iloc[0].to_dict())
+        samples.extend(items.to_dict("records"))
 
     return infer_schema(samples)
 
 
 def infer_schema(samples: List[Dict[str, Any]]) -> Schema:
     builder = SchemaBuilder("http://json-schema.org/draft-07/schema#")
-    for s in samples:
-        builder.add_object(s)
+    for sample in samples:
+        builder.add_object(sample)
     builder.add_schema(extension)
 
     return builder.to_schema()
