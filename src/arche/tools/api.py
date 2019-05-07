@@ -27,12 +27,6 @@ def get_collection(key):
     return collections.get_store(key.split("/")[3])
 
 
-def get_spider_name(job_key):
-    client = ScrapinghubClient()
-    job = client.get_job(job_key)
-    return job.metadata.get("spider")
-
-
 def get_errors_count(job):
     if "log_count/ERROR" in job.metadata.get("scrapystats"):
         return job.metadata.get("scrapystats")["log_count/ERROR"]
