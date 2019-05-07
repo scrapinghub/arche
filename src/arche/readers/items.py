@@ -4,6 +4,7 @@ from typing import Optional
 
 from arche import SH_URL
 from arche.tools import pandas, api
+import numpy as np
 import pandas as pd
 from scrapinghub import ScrapinghubClient
 from scrapinghub.client.jobs import Job
@@ -28,9 +29,13 @@ class Items:
                 self._columns_map = {}
         return self._flat_df
 
-    def process_df(self, df: pd.DataFrame) -> pd.DataFrame:
+    @staticmethod
+    def process_df(df: pd.DataFrame) -> pd.DataFrame:
         # clean empty objects - mainly lists and dicts, but keep everything else
-        return df.applymap(lambda x: x if x or isinstance(x, numbers.Real) else None)
+        df = df.applymap(lambda x: x if x or isinstance(x, numbers.Real) else np.nan)
+        if "_type" in df.columns:
+            df["_type"] = df["_type"].astype("category")
+        return df
 
     def get_origin_column_name(self, column_name: str) -> str:
         return self._columns_map.get(column_name, column_name)

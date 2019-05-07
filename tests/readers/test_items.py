@@ -1,6 +1,7 @@
 from arche import SH_URL
 from arche.readers.items import Items, CollectionItems, JobItems
 from conftest import Collection, Job
+import numpy as np
 import pandas as pd
 import pytest
 
@@ -103,3 +104,12 @@ def test_job_items(mocker, start, count, expected_count):
         items.df, expected_job_items.iloc[start:count].reset_index(drop=True)
     )
     assert items.count == count
+
+
+def test_process_df():
+    df = Items.process_df(
+        pd.DataFrame([[dict(), list(), "NameItem"]], columns=["a", "b", "_type"])
+    )
+    exp_df = pd.DataFrame([[np.nan, np.nan, "NameItem"]], columns=["a", "b", "_type"])
+    exp_df["_type"] = exp_df["_type"].astype("category")
+    pd.testing.assert_frame_equal(df, exp_df)
