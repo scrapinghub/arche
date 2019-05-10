@@ -7,12 +7,27 @@ import pytest
 
 
 default_items = [
-    {"_key": "112358/13/21/0", "price": 0.0, "name": "Elizabeth"},
+    {"_key": "112358/13/21/0", "price": 0, "name": "Elizabeth"},
     {"_key": "112358/13/21/1", "name": "Margaret"},
-    {"_key": "112358/13/21/2", "price": 10.0, "name": "Yulia"},
-    {"_key": "112358/13/21/3", "price": 11.0, "name": "Vivien"},
+    {"_key": "112358/13/21/2", "price": 10, "name": "Yulia"},
+    {"_key": "112358/13/21/3", "price": 11, "name": "Vivien"},
 ]
 default_source = pd.DataFrame(default_items)
+default_schema = {
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "required": ["_key", "name"],
+    "properties": {
+        "_key": {"type": "string"},
+        "price": {"type": "integer"},
+        "name": {"type": "string"},
+    },
+    "additionalProperties": False,
+}
+
+
+@pytest.fixture(scope="session")
+def get_schema():
+    return default_schema
 
 
 @pytest.fixture(scope="function")

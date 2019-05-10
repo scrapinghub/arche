@@ -1,7 +1,7 @@
 from arche import arche
 from arche.arche import Arche
-from arche.rules.result import Result
-from conftest import get_job_items_mock
+from arche.rules.result import Level
+from conftest import create_result, get_job_items_mock
 import pandas as pd
 import pytest
 
@@ -208,23 +208,19 @@ def test_run_all_rules_collection(mocker, get_collection_items):
     mocked_run_schema_rules.assert_called_once_with(arche)
 
 
-def test_validate_with_json_schema(mocker, get_job_items):
-    mocked_save_result = mocker.patch("arche.Arche.save_result", autospec=True)
-    res = Result("fine")
-    mocked_validate = mocker.patch(
-        "arche.rules.json_schema.validate", autospec=True, return_value=res
+def test_validate_with_json_schema(mocker, get_job_items, get_schema):
+    res = create_result(
+        "JSON Schema Validation", {Level.INFO: [("4 items were checked, 0 error(s)",)]}
     )
     mocked_show = mocker.patch("arche.rules.result.Result.show", autospec=True)
 
-    arche = Arche(
-        "source", schema={"$schema": "http://json-schema.org/draft-07/schema"}
-    )
-    arche._source_items = get_job_items
-    arche.validate_with_json_schema()
+    a = Arche("source", schema=get_schema)
+    a._source_items = get_job_items
+    a.validate_with_json_schema()
 
-    mocked_validate.assert_called_once_with(arche.schema, arche.source_items.df, False)
-    mocked_save_result.assert_called_once_with(arche, res)
     mocked_show.assert_called_once_with(res)
+    assert len(a.report.results) == 1
+    assert a.report.results.get("JSON Schema Validation") == res
 
 
 @pytest.mark.parametrize(

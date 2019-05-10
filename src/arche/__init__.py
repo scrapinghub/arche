@@ -8,6 +8,7 @@ from arche.arche import Arche
 from arche.readers.items import CollectionItems, JobItems
 from arche.rules.duplicates import find_by as find_duplicates_by
 from arche.tools.schema import basic_json_schema
+import numpy as np
 import pandas as pd
 import plotly.io as pio
 
@@ -19,6 +20,7 @@ __all__ = [
     "find_duplicates_by",
     "CollectionItems",
     "JobItems",
+    "np",
     "pd",
 ]
 
