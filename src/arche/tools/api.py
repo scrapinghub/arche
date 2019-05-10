@@ -49,40 +49,6 @@ def get_items_count(job):
     return job.items.stats().get("totals", {}).get("input_values", 0)
 
 
-def get_job_arguments(job):
-    return job.metadata.get("spider_args")
-
-
-def get_batch_id(job):
-    if "batch_id" in get_job_arguments(job):
-        return job.metadata.get("spider_args")["batch_id"]
-    else:
-        return None
-
-
-def get_store_id(job):
-    if "store_id" in get_job_arguments(job):
-        return job.metadata.get("spider_args")["store_id"]
-    else:
-        return None
-
-
-def get_store_details(job):
-    if "store_id" in get_job_arguments(job):
-        for line in get_warnings(job, "INFO"):
-            if "Selected store:" in line["message"]:
-                return line["message"]
-
-
-def get_warnings(job, level):
-    return job.logs.list(level=level)
-
-
-def get_keywords(job):
-    if "keywords" in get_job_arguments(job):
-        return job.metadata.get("spider_args")["keywords"]
-
-
 def get_finish_time_difference_in_days(job1, job2):
     finished_time1 = job1.metadata.get("finished_time")
     finished_time2 = job2.metadata.get("finished_time")
@@ -116,13 +82,6 @@ def get_runtime_s(job):
         return finished_time - start_time
 
     return int(round(time.time() * 1000)) - start_time
-
-
-def get_scraped_fields(job):
-    if "counts" in job.items.stats():
-        return job.items.stats()["counts"].keys()
-    else:
-        return None
 
 
 def get_max_memusage(job):
