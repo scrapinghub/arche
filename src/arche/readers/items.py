@@ -61,7 +61,8 @@ class CloudItems(Items):
         self._limit = None
         self.filters = filters
         self.expand = expand
-        df = self.fetch_data()
+        self.raw = self.fetch_data()
+        df = pd.DataFrame(list(self.raw))
         df["_key"] = self.format_keys(df["_key"])
         super().__init__(df=df, expand=expand)
 
@@ -119,7 +120,7 @@ class JobItems(CloudItems):
             self._job = job
         return self._job
 
-    def fetch_data(self) -> pd.DataFrame:
+    def fetch_data(self) -> np.ndarray:
         if self.filters or self.count < 200_000:
             return api.get_items(self.key, self.count, self.start_index, self.filters)
         else:
@@ -146,7 +147,7 @@ class CollectionItems(CloudItems):
             self._count = self.limit
         return self._count
 
-    def fetch_data(self) -> pd.DataFrame:
+    def fetch_data(self) -> np.ndarray:
         return api.get_items(self.key, self.count, 0, self.filters)
 
     def format_keys(self, keys: pd.Series) -> pd.Series:

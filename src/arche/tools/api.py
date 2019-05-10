@@ -7,7 +7,7 @@ from typing import List, Tuple, Optional, Union
 
 from arche.tools import helpers
 from dateutil.relativedelta import relativedelta
-import pandas as pd
+import numpy as np
 from scrapinghub import ScrapinghubClient
 from scrapinghub.client.jobs import Job
 from tqdm import tqdm, tqdm_notebook
@@ -167,7 +167,7 @@ def get_source(source_key):
 
 def get_items_with_pool(
     source_key: str, count: int, start_index: int = 0, workers: int = 4
-) -> pd.DataFrame:
+) -> np.ndarray:
     """Concurrently reads items from API using Pool
 
     Args:
@@ -177,21 +177,18 @@ def get_items_with_pool(
         workers: the number of separate processors to get data in
 
     Returns:
-        A dataframe of items
+        A numpy array of items
     """
     active_connections_limit = 10
     processes_count = min(max(helpers.cpus_count(), workers), active_connections_limit)
     batch_size = math.ceil(count / processes_count)
 
-    batches = []
     with Pool(processes_count) as p:
         results = p.starmap(
             partial(get_items, source_key, batch_size, p_bar=tqdm),
             zip([i for i in range(start_index, start_index + count, batch_size)]),
         )
-        for items_batch in results:
-            batches.append(items_batch)
-    return pd.concat(batches, ignore_index=True, sort=True)
+        return np.concatenate(results)
 
 
 def get_items(
@@ -200,7 +197,7 @@ def get_items(
     start_index: int,
     filters: Optional[Filters] = None,
     p_bar: Union[tqdm, tqdm_notebook] = tqdm_notebook,
-) -> pd.DataFrame:
+) -> np.ndarray:
     source = get_source(key)
     items_iter = source.iter(
         start=f"{key}/{start_index}", count=count, filter=filters, meta="_key"
@@ -212,5 +209,4 @@ def get_items(
             total=count,
             unit_scale=1,
         )
-
-    return pd.DataFrame(items_iter)
+    return np.asarray(list(items_iter))

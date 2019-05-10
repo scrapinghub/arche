@@ -141,34 +141,35 @@ class Arche:
     def run_general_rules(self):
         self.save_result(garbage_symbols(self.source_items))
         df = self.source_items.df
+
         self.save_result(
             coverage_rules.check_fields_coverage(
                 df.drop(columns=df.columns[df.columns.str.startswith("_")])
             )
         )
 
-    def validate_with_json_schema(self):
+    def validate_with_json_schema(self) -> None:
         """Run JSON schema check and output results. It will try to find all errors, but
         there are no guarantees. Slower than `check_with_json_schema()`
         """
-        res = schema_rules.validate(self.schema, df=self.source_items.df, fast=False)
+        res = schema_rules.validate(self.schema, self.source_items.raw)
         self.save_result(res)
         res.show()
 
-    def glance(self):
+    def glance(self) -> None:
         """Run JSON schema check and output results. In most cases it will return
         only the first error per item. Usable for big jobs as it's about 100x faster than
         `validate_with_json_schema()`.
         """
-        res = schema_rules.validate(self.schema, df=self.source_items.df, fast=True)
+        res = schema_rules.validate(self.schema, self.source_items.raw, fast=True)
         self.save_result(res)
         res.show()
 
-    def run_schema_rules(self):
+    def run_schema_rules(self) -> None:
         if not self.schema:
             return
 
-        self.save_result(schema_rules.validate(self.schema, self.source_items.df))
+        self.save_result(schema_rules.validate(self.schema, self.source_items.raw))
 
         tagged_fields = sr.Tags().get(self.schema)
         target_columns = (
