@@ -2,17 +2,17 @@ from typing import Dict, List, Optional
 
 from arche.readers.items import CollectionItems, JobItems
 from arche.rules.result import Result
+import numpy as np
 import pandas as pd
 import pytest
 
 
-default_items = [
+cloud_items = [
     {"_key": "112358/13/21/0", "price": 0, "name": "Elizabeth"},
     {"_key": "112358/13/21/1", "name": "Margaret"},
     {"_key": "112358/13/21/2", "price": 10, "name": "Yulia"},
     {"_key": "112358/13/21/3", "price": 11, "name": "Vivien"},
 ]
-default_source = pd.DataFrame(default_items)
 default_schema = {
     "$schema": "http://json-schema.org/draft-07/schema",
     "required": ["_key", "name"],
@@ -23,6 +23,16 @@ default_schema = {
     },
     "additionalProperties": False,
 }
+
+
+@pytest.fixture(scope="session")
+def get_cloud_items(request):
+    return cloud_items
+
+
+@pytest.fixture(scope="session")
+def get_raw_items(request):
+    return np.array(cloud_items)
 
 
 @pytest.fixture(scope="session")
@@ -104,15 +114,15 @@ class Source:
 
 @pytest.fixture(scope="function")
 def get_source():
-    return Source(items=default_items)
+    return Source(items=cloud_items)
 
 
-@pytest.fixture(scope="function", params=[(default_items, None, None)])
+@pytest.fixture(scope="function", params=[(cloud_items, None, None)])
 def get_job(request):
     return Job(*request.param)
 
 
-@pytest.fixture(scope="function", params=[(default_items)])
+@pytest.fixture(scope="function", params=[(cloud_items)])
 def get_collection(request):
     return Collection(*request.param)
 
@@ -135,29 +145,14 @@ def get_client():
     return ScrapinghubClient()
 
 
-def get_job_items_mock(mocker, items=default_items, key="a_key"):
-    mocker.patch(
-        "arche.readers.items.JobItems.job",
-        return_value=Job(items=items),
-        autospec=False,
-    )
-    mocker.patch(
-        "arche.readers.items.JobItems.fetch_data",
-        return_value=pd.DataFrame(items),
-        autospec=False,
-    )
-    job_items = JobItems(key=key, count=len(items))
-    return job_items
-
-
-@pytest.fixture(scope="function", params=[default_items])
+@pytest.fixture(scope="function", params=[cloud_items])
 def get_job_items(request, mocker):
     mocker.patch(
         "arche.readers.items.JobItems.job", return_value=get_job, autospec=True
     )
     mocker.patch(
         "arche.readers.items.JobItems.fetch_data",
-        return_value=pd.DataFrame(request.param),
+        return_value=np.array(request.param),
         autospec=True,
     )
 
@@ -165,14 +160,14 @@ def get_job_items(request, mocker):
     return job_items
 
 
-@pytest.fixture(scope="function", params=[default_items])
+@pytest.fixture(scope="function", params=[cloud_items])
 def get_collection_items(request, mocker):
     mocker.patch(
         "arche.tools.api.get_collection", return_value=get_collection, autospec=True
     )
     mocker.patch(
         "arche.readers.items.CollectionItems.fetch_data",
-        return_value=pd.DataFrame(request.param),
+        return_value=np.array(request.param),
         autospec=True,
     )
 
@@ -180,11 +175,6 @@ def get_collection_items(request, mocker):
         key="112358/collections/s/pages", count=len(request.param)
     )
     return collection_items
-
-
-@pytest.fixture(scope="function", params=[default_source])
-def get_items(request):
-    return request.param
 
 
 def create_result(

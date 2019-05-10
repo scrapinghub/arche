@@ -1,7 +1,7 @@
 from arche import arche
 from arche.arche import Arche
 from arche.rules.result import Level
-from conftest import create_result, get_job_items_mock
+from conftest import create_result
 import pandas as pd
 import pytest
 
@@ -62,9 +62,11 @@ def test_schema(passed_schema_source, set_schema_source, expected_schema):
 @pytest.mark.parametrize(
     "source, start, count, filters, expand", [("112358/13/21", 1, 50, None, False)]
 )
-def test_get_items(mocker, get_items, source, start, count, filters, expand):
+def test_get_items(mocker, get_raw_items, source, start, count, filters, expand):
     mocker.patch(
-        "arche.readers.items.JobItems.fetch_data", return_value=get_items, autospec=True
+        "arche.readers.items.JobItems.fetch_data",
+        return_value=get_raw_items,
+        autospec=True,
     )
     items = Arche.get_items(
         source=source, start=start, count=count, filters=filters, expand=expand
@@ -79,10 +81,12 @@ def test_get_items(mocker, get_items, source, start, count, filters, expand):
 @pytest.mark.parametrize(
     "source, count, filters, expand", [("112358/collections/s/pages", 5, None, True)]
 )
-def test_get_items_from_collection(mocker, get_items, source, count, filters, expand):
+def test_get_items_from_collection(
+    mocker, get_raw_items, source, count, filters, expand
+):
     mocker.patch(
         "arche.readers.items.CollectionItems.fetch_data",
-        return_value=get_items,
+        return_value=get_raw_items,
         autospec=True,
     )
     items = Arche.get_items(
@@ -112,21 +116,25 @@ def test_get_items_from_bad_source():
     assert str(excinfo.value) == f"'bad_key' is not a valid job or collection key"
 
 
+@pytest.mark.skip(reason="#84")
 def test_arche_dataframe():
     a = Arche(
         pd.DataFrame({"c": [0, 1]}), schema={"properties": {"c": {"type": "string"}}}
     )
     a.report_all()
+    not_executed = [
+        "Garbage Symbols",
+        "Tags",
+        "Compare Price Was And Now",
+        "Duplicated Items",
+        "Coverage For Scraped Categories",
+    ]
+    for ne in not_executed:
+        assert not a.report.results.get(ne)
     assert a.report.results.get("JSON Schema Validation").detailed_messages_count == 1
-    assert not a.report.results.get("Garbage Symbols").detailed_messages_count
     assert a.report.results.get("Fields Coverage").detailed_messages_count == 1
-    assert not a.report.results.get("Tags").detailed_messages_count
-    assert not a.report.results.get("Compare Price Was And Now").detailed_messages_count
-    assert not a.report.results.get("Duplicated Items").detailed_messages_count
-    assert not a.report.results.get(
-        "Coverage For Scraped Categories"
-    ).detailed_messages_count
-    Arche(
+
+    assert Arche(
         pd.DataFrame({"_key": ["0", "1"], "c": [0, 1]}),
         schema={"properties": {"c": {"type": "string"}}},
     ).report_all()
@@ -152,34 +160,20 @@ def test_report_all(mocker):
     mocked_write_details.assert_called_once_with(arche.report, short=True)
 
 
-@pytest.mark.parametrize("source_key, target_key", [("112358/13/21", "112358/13/20")])
-def test_run_all_rules_job(mocker, source_key, target_key):
-    mocked_check_metadata = mocker.patch("arche.Arche.check_metadata", autospec=True)
-    mocked_compare_metadata = mocker.patch(
-        "arche.Arche.compare_metadata", autospec=True
+def test_run_all_rules_job(mocker, get_cloud_items):
+    a = Arche(
+        source=pd.DataFrame(get_cloud_items), target=pd.DataFrame(get_cloud_items[:2])
     )
-
-    mocked_run_general_rules = mocker.patch(
-        "arche.Arche.run_general_rules", autospec=True
-    )
-    mocked_run_comparison_rules = mocker.patch(
-        "arche.Arche.run_comparison_rules", autospec=True
-    )
-    mocked_run_schema_rules = mocker.patch(
-        "arche.Arche.run_schema_rules", autospec=True
-    )
-    arche = Arche(source=source_key, target=target_key)
-    arche._source_items = get_job_items_mock(mocker, key=source_key)
-    arche._target_items = get_job_items_mock(mocker, key=target_key)
-    arche.run_all_rules()
-
-    mocked_check_metadata.assert_called_once_with(arche.source_items.job)
-    mocked_compare_metadata.assert_called_once_with(
-        arche.source_items.job, arche.target_items.job
-    )
-    mocked_run_general_rules.assert_called_once_with()
-    mocked_run_comparison_rules.assert_called_once_with()
-    mocked_run_schema_rules.assert_called_once_with(arche)
+    a.run_all_rules()
+    executed = [
+        "Garbage Symbols",
+        "Fields Coverage",
+        "Scraped Fields",
+        "Boolean Fields",
+    ]
+    for e in executed:
+        assert e in a.report.results
+    assert len(a.report.results) == len(executed)
 
 
 def test_run_all_rules_collection(mocker, get_collection_items):
