@@ -141,7 +141,6 @@ class Arche:
     def run_general_rules(self):
         self.save_result(garbage_symbols(self.source_items))
         df = self.source_items.df
-
         self.save_result(
             coverage_rules.check_fields_coverage(
                 df.drop(columns=df.columns[df.columns.str.startswith("_")])
