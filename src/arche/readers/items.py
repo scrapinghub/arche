@@ -1,6 +1,6 @@
 from abc import abstractmethod
 import numbers
-from typing import Optional
+from typing import Any, Dict, Iterable, Optional
 
 from arche import SH_URL
 from arche.tools import pandas, api
@@ -9,9 +9,12 @@ import pandas as pd
 from scrapinghub import ScrapinghubClient
 from scrapinghub.client.jobs import Job
 
+RawItems = Iterable[Dict[str, Any]]
+
 
 class Items:
-    def __init__(self, df: pd.DataFrame, expand: bool = False):
+    def __init__(self, raw: RawItems, df: pd.DataFrame, expand: bool = False):
+        self.raw = raw
         self.df = self.process_df(df)
         self._flat_df = None
         self.expand = expand
@@ -45,7 +48,11 @@ class Items:
         if "_key" not in df.columns:
             df["_key"] = df.index
             df["_key"] = df["_key"].apply(str)
-        return cls(df, expand)
+        return cls(raw=df.to_numpy(), df=df, expand=expand)
+
+    @classmethod
+    def from_array(cls, iterable: RawItems, expand: bool = True):
+        return cls(raw=iterable, df=pd.DataFrame(list(iterable)), expand=expand)
 
 
 class CloudItems(Items):
@@ -61,10 +68,10 @@ class CloudItems(Items):
         self._limit = None
         self.filters = filters
         self.expand = expand
-        self.raw = self.fetch_data()
-        df = pd.DataFrame(list(self.raw))
+        raw = self.fetch_data()
+        df = pd.DataFrame(list(raw))
         df["_key"] = self.format_keys(df["_key"])
-        super().__init__(df=df, expand=expand)
+        super().__init__(raw=raw, df=df, expand=expand)
 
     @property
     @abstractmethod

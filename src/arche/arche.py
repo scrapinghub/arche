@@ -1,8 +1,8 @@
 from functools import lru_cache
-from typing import Optional, Union
+from typing import Iterable, Optional, Union
 
 from arche.data_quality_report import DataQualityReport
-from arche.readers.items import Items, CollectionItems, JobItems
+from arche.readers.items import Items, CollectionItems, JobItems, RawItems
 import arche.readers.schema as sr
 from arche.report import Report
 import arche.rules.category as category_rules
@@ -20,7 +20,7 @@ import pandas as pd
 class Arche:
     def __init__(
         self,
-        source: Union[str, pd.DataFrame],
+        source: Union[str, pd.DataFrame, RawItems],
         schema: Optional[sr.SchemaSource] = None,
         target: Optional[Union[str, pd.DataFrame]] = None,
         start: int = 0,
@@ -30,7 +30,7 @@ class Arche:
     ):
         """
         Args:
-            source: a data source to validate. Supports a job/collection key or a dataframe
+            source: a data source to validate, accepts job keys, pandas df, lists
             schema: a JSON schema source used to run validation
             target: a data source to compare with
             start: an item number to start reading from
@@ -89,13 +89,17 @@ class Arche:
 
     @staticmethod
     def get_items(
-        source: Union[str, pd.DataFrame],
+        source: Union[str, pd.DataFrame, RawItems],
         start: int,
         count: Optional[int],
         filters: Optional[api.Filters],
         expand: bool,
     ) -> Union[JobItems, CollectionItems]:
-        if helpers.is_job_key(source):
+        if isinstance(source, pd.DataFrame):
+            return Items.from_df(source, expand=expand)
+        elif isinstance(source, Iterable) and not isinstance(source, str):
+            return Items.from_array(source, expand=expand)
+        elif helpers.is_job_key(source):
             return JobItems(
                 key=source, start=start, count=count, filters=filters, expand=expand
             )
@@ -105,8 +109,6 @@ class Arche:
             return CollectionItems(
                 key=source, count=count, filters=filters, expand=expand
             )
-        elif isinstance(source, pd.DataFrame):
-            return Items.from_df(source, expand=expand)
         else:
             raise ValueError(f"'{source}' is not a valid job or collection key")
 
@@ -219,14 +221,8 @@ class Arche:
     def run_comparison_rules(self):
         if not self.target_items:
             return
-        self.save_result(
-            coverage_rules.compare_scraped_fields(
-                self.source_items.df, self.target_items.df
-            )
-        )
-        self.save_result(
-            compare_boolean_fields(self.source_items.df, self.target_items.df)
-        )
+        for r in [coverage_rules.compare_scraped_fields, compare_boolean_fields]:
+            self.save_result(r(self.source_items.df, self.target_items.df))
 
     def compare_with_customized_rules(self, source_items, target_items, tagged_fields):
         if not target_items:
@@ -236,18 +232,9 @@ class Arche:
                 source_items.df, target_items.df, tagged_fields.get("category", [])
             )
         )
-        self.save_result(
-            price_rules.compare_prices_for_same_urls(
-                source_items.df, target_items.df, tagged_fields
-            )
-        )
-        self.save_result(
-            price_rules.compare_names_for_same_urls(
-                source_items.df, target_items.df, tagged_fields
-            )
-        )
-        self.save_result(
-            price_rules.compare_prices_for_same_names(
-                source_items.df, target_items.df, tagged_fields
-            )
-        )
+        for r in [
+            price_rules.compare_prices_for_same_urls,
+            price_rules.compare_names_for_same_urls,
+            price_rules.compare_prices_for_same_names,
+        ]:
+            self.save_result(r(source_items.df, target_items.df, tagged_fields))
