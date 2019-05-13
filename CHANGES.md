@@ -12,7 +12,10 @@ Note that the top-most release is changes in the unreleased master branch on Git
 
 ## [0.3.5dev] (Work In Progress)
 ### Added
+- `Arche()` supports any iterables with item dicts, fixing jsonschema consistency, #83
+- `Items.from_array` to read raw data from iterables, #83
 ### Changed
+- If reading from pandas df directly, store raw data in numpy array. See gotchas http://pandas.pydata.org/pandas-docs/stable/user_guide/gotchas.html#support-for-integer-na
 ### Fixed
 ### Removed
 
