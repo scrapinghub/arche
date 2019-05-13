@@ -1,7 +1,7 @@
 from collections import deque
 
 from arche.tools.json_schema_validator import JsonSchemaValidator as JSV
-import pandas as pd
+import numpy as np
 import pytest
 
 
@@ -67,13 +67,13 @@ def test_format_validation_message(
 
 def test_validate():
     jsv = JSV({"properties": {"NAME": {"type": "string"}}})
-    jsv.validate(pd.DataFrame([{"NAME": None, "udkey": "0"}]))
+    jsv.validate(np.array([{"NAME": None, "_key": "0"}]))
     assert jsv.errors == {"NAME is not of type 'string'": {"0"}}
 
 
 def test_fast_validate():
     jsv = JSV({"type": "number"})
-    jsv.fast_validate(pd.DataFrame([{"udkey": "0"}, {"udkey": "1"}]))
+    jsv.fast_validate(np.array([{"_key": "0"}, {"_key": "1"}]))
     assert jsv.errors == {"data must be number": {"0", "1"}}
 
 
@@ -81,6 +81,6 @@ def test_run():
     schema = {"properties": {"NAME": {"type": "string"}}}
     jsv = JSV(schema)
     assert jsv.schema == schema
-    jsv.run(pd.DataFrame([{"NAME": None, "_key": "0", "__DEBUG": None}]), fast=False)
+    jsv.run(np.array([{"NAME": None, "_key": "0", "__DEBUG": None}]), fast=False)
 
     assert jsv.errors == {"NAME is not of type 'string'": {"0"}}

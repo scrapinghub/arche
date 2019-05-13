@@ -42,9 +42,9 @@ def test_basic_json_schema(mocker):
     mocked_create_js.assert_called_once_with("235801/1/15", [0, 5])
 
 
-def test_create_json_schema(mocker, get_job, get_items):
+def test_create_json_schema(mocker, get_job, get_raw_items):
     mocker.patch("arche.tools.api.get_job", return_value=get_job, autospec=True)
-    mocker.patch("arche.tools.api.get_items", return_value=get_items, autospec=True)
+    mocker.patch("arche.tools.api.get_items", return_value=get_raw_items, autospec=True)
     schema_tools.create_json_schema(get_job.key, [2])
     assert schema_tools.create_json_schema(get_job.key, [2, 3]) == {
         "$schema": "http://json-schema.org/draft-07/schema#",
@@ -62,7 +62,7 @@ def test_create_json_schema(mocker, get_job, get_items):
         "properties": {
             "_key": {"type": "string"},
             "name": {"type": "string"},
-            "price": {"type": "number"},
+            "price": {"type": "integer"},
         },
         "required": ["_key", "name", "price"],
     }
