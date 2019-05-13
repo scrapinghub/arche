@@ -1,10 +1,10 @@
 from collections import defaultdict
 from typing import Any, Dict, Deque
 
+from arche.readers.items import RawItems
 from arche.readers.schema import Schema
 import fastjsonschema
 from jsonschema import FormatChecker, validators
-import numpy as np
 from tqdm import tqdm_notebook
 
 
@@ -13,13 +13,13 @@ class JsonSchemaValidator:
         self.errors = defaultdict(set)
         self.schema = schema
 
-    def run(self, raw_items: np.array, fast: bool) -> None:
+    def run(self, raw_items: RawItems, fast: bool) -> None:
         if fast:
             self.fast_validate(raw_items)
         else:
             self.validate(raw_items)
 
-    def fast_validate(self, raw_items: np.array) -> None:
+    def fast_validate(self, raw_items: RawItems) -> None:
         """Verify items one by one. It stops after the first error in an item in most cases.
         Faster than jsonschema validation"""
         validate = fastjsonschema.compile(self.schema)
@@ -29,7 +29,7 @@ class JsonSchemaValidator:
             except fastjsonschema.JsonSchemaException as error:
                 self.errors[str(error)].add(raw_item["_key"])
 
-    def validate(self, raw_items: np.array) -> None:
+    def validate(self, raw_items: RawItems) -> None:
         validator = validators.validator_for(self.schema)(self.schema)
         validator.format_checker = FormatChecker()
         for raw_item in tqdm_notebook(raw_items, desc="JSON Schema Validation"):
