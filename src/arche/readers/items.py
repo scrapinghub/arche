@@ -48,7 +48,7 @@ class Items:
         if "_key" not in df.columns:
             df["_key"] = df.index
             df["_key"] = df["_key"].apply(str)
-        return cls(raw=df.to_numpy(), df=df, expand=expand)
+        return cls(raw=np.array(df.to_dict("records")), df=df, expand=expand)
 
     @classmethod
     def from_array(cls, iterable: RawItems, expand: bool = True):

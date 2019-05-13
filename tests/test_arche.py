@@ -126,7 +126,7 @@ def test_get_items_from_bad_source():
 def test_arche_dataframe(mocker):
     a = Arche(
         source=pd.DataFrame({"c": [0, 1]}),
-        schema={"properties": {"c": {"type": "string"}}},
+        schema={"properties": {"c": {"type": "integer"}}},
         target=pd.DataFrame({"c": [1, 1]}),
     )
     mocker.patch("arche.report.Report.write_details", autospec=True)
@@ -149,7 +149,11 @@ def test_arche_dataframe(mocker):
     ]
     for e in executed:
         assert a.report.results.get(e)
-
+    assert a.report.results.get("JSON Schema Validation").errors is None
+    assert (
+        a.report.results.get("JSON Schema Validation").info[0].summary
+        == "2 items were checked, 0 error(s)"
+    )
     assert (
         Arche(
             pd.DataFrame({"_key": ["0", "1"], "c": [0, 1]}),
