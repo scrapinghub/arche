@@ -35,19 +35,21 @@ class Report:
     def write_summary(cls, result: Result) -> None:
         cls.write_rule_name(result.name)
         if not result.messages:
-            cls.write_rule_outcome(Outcome.PASSED.name, Level.INFO)
+            cls.write_rule_outcome(Outcome.PASSED, Level.INFO)
         for level, rule_msgs in result.messages.items():
             for rule_msg in rule_msgs:
                 cls.write_rule_outcome(rule_msg.summary, level)
 
     @classmethod
     def write_rule_outcome(cls, outcome: str, level: Level = Level.INFO) -> None:
+        if isinstance(outcome, Outcome):
+            outcome = outcome.name
         msg = f"\t{outcome}"
         if level == Level.ERROR:
             cls.write_color_text(msg)
         elif level == Level.WARNING:
             cls.write_color_text(msg, color=Fore.YELLOW)
-        elif outcome == Outcome.PASSED:
+        elif outcome == Outcome.PASSED.name:
             cls.write_color_text(msg, color=Fore.GREEN)
         else:
             cls.write(msg)
