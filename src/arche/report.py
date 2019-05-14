@@ -1,5 +1,6 @@
 from typing import Dict
 
+from arche import SH_URL
 from arche.rules.result import Level, Outcome, Result
 from colorama import Fore, Style
 from IPython.display import display, HTML
@@ -100,8 +101,15 @@ class Report:
             sample = keys.sample(limit)
         else:
             sample = keys
+
+        def url(x: str) -> str:
+            if SH_URL in x:
+                return f"<a href='{x}'>{x.split('/')[-1]}</a>"
+            key, number = x.rsplit("/", 1)
+            return f"<a href='{SH_URL}/{key}/item/{number}'>{number}</a>"
+
         # make links only for Cloud data
         if keys.dtype == np.dtype("object") and "/" in keys.iloc[0]:
-            sample = [f"<a href='{k}'>{k.split('/')[-1]}</a>" for k in sample]
-        sample = ", ".join(sample)
-        return sample
+            sample = sample.apply(url)
+
+        return ", ".join(sample)

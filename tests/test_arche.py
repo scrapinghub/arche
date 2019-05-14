@@ -1,4 +1,4 @@
-from arche import arche, SH_URL
+from arche import arche
 from arche.arche import Arche
 from arche.rules.result import Level
 from conftest import create_result
@@ -246,7 +246,7 @@ def test_validate_with_json_schema(mocker, get_job_items, get_schema):
 
 
 def test_validate_with_json_schema_fails(mocker, get_job_items, get_schema):
-    url_base = f"{SH_URL}/112358/13/21/item/"
+    url_base = f"112358/13/21"
     res = create_result(
         "JSON Schema Validation",
         {
