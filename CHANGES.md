@@ -13,6 +13,7 @@ Note that the top-most release is changes in the unreleased master branch on Git
 ### Added
 ### Changed
 ### Fixed
+- Broken `Arche.glance()`, #88
 ### Removed
 
 
