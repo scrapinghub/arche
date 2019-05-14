@@ -10,7 +10,7 @@ This section contains real notebooks with real output from a real project
    In-Short
    Basics
    Compare
-   API
+   Rules
    Items
    Schema
    DQR

@@ -27,4 +27,4 @@ __all__ = [
 logging.getLogger("urllib3").setLevel(logging.CRITICAL)
 logging.getLogger("botocore").setLevel(logging.CRITICAL)
 logging.getLogger("HubstorageClient").setLevel(logging.CRITICAL)
-logging.getLogger().setLevel(logging.DEBUG)
+logging.basicConfig(level=logging.DEBUG, format="%(levelname)-8s\n%(message)s")

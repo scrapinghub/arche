@@ -78,6 +78,13 @@ def test_get_items(mocker, get_raw_items, source, start, count, filters, expand)
     assert items.start_index == start
 
 
+def test_get_items_from_iterable(get_cloud_items):
+    items = Arche.get_items(
+        get_cloud_items, start=None, count=None, filters=None, expand=True
+    )
+    assert items.raw == get_cloud_items
+
+
 @pytest.mark.parametrize(
     "source, count, filters, expand", [("112358/collections/s/pages", 5, None, True)]
 )
@@ -116,28 +123,49 @@ def test_get_items_from_bad_source():
     assert str(excinfo.value) == f"'bad_key' is not a valid job or collection key"
 
 
-@pytest.mark.skip(reason="#84")
-def test_arche_dataframe():
+def test_arche_dataframe(mocker):
     a = Arche(
-        pd.DataFrame({"c": [0, 1]}), schema={"properties": {"c": {"type": "string"}}}
+        source=pd.DataFrame({"c": [0, 1]}),
+        schema={"properties": {"c": {"type": "integer"}}},
+        target=pd.DataFrame({"c": [1, 1]}),
     )
+    mocker.patch("arche.report.Report.write_details", autospec=True)
     a.report_all()
-    not_executed = [
+    executed = [
         "Garbage Symbols",
+        "Fields Coverage",
+        "Scraped Fields",
+        "Boolean Fields",
+        "JSON Schema Validation",
         "Tags",
         "Compare Price Was And Now",
+        "Uniqueness",
         "Duplicated Items",
         "Coverage For Scraped Categories",
+        "Category Coverage Difference",
+        "Compare Prices For Same Urls",
+        "Compare Names Per Url",
+        "Compare Prices For Same Names",
     ]
-    for ne in not_executed:
-        assert not a.report.results.get(ne)
-    assert a.report.results.get("JSON Schema Validation").detailed_messages_count == 1
-    assert a.report.results.get("Fields Coverage").detailed_messages_count == 1
+    for e in executed:
+        assert a.report.results.get(e)
+    assert a.report.results.get("JSON Schema Validation").errors is None
+    assert (
+        a.report.results.get("JSON Schema Validation").info[0].summary
+        == "2 items were checked, 0 error(s)"
+    )
+    assert (
+        Arche(
+            pd.DataFrame({"_key": ["0", "1"], "c": [0, 1]}),
+            schema={"properties": {"c": {"type": "string"}}},
+        ).report_all()
+        is None
+    )
 
-    assert Arche(
-        pd.DataFrame({"_key": ["0", "1"], "c": [0, 1]}),
-        schema={"properties": {"c": {"type": "string"}}},
-    ).report_all()
+
+def test_arche_dataframe_data_warning(caplog):
+    Arche(pd.DataFrame())
+    assert "Pandas stores `NA` (missing)" in caplog.text
 
 
 def test_report_all(mocker):

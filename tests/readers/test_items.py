@@ -16,12 +16,32 @@ def test_get_origin_column_name(get_cloud_items, name, expected_name):
 
 
 @pytest.mark.parametrize(
-    "df, expected_df",
-    [(pd.DataFrame({"0": [0]}), pd.DataFrame({"0": [0], "_key": ["0"]}))],
+    "df, expected_raw, expected_df",
+    [
+        (
+            pd.DataFrame({"0": [0]}),
+            [{"0": 0, "_key": "0"}],
+            pd.DataFrame({"0": [0], "_key": ["0"]}),
+        )
+    ],
 )
-def test_items_from_df(df, expected_df):
+def test_items_from_df(df, expected_raw, expected_df):
     items = Items.from_df(df)
+    np.testing.assert_array_equal(items.raw, expected_raw)
     pd.testing.assert_frame_equal(items.df, expected_df)
+
+
+@pytest.mark.parametrize(
+    "raw",
+    [
+        ([{"0": 0, "_key": "0"}, {"_key": "1"}]),
+        (np.array([{"0": 0, "_key": "0"}, {"_key": "1"}])),
+    ],
+)
+def test_items_from_array(raw):
+    items = Items.from_array(raw)
+    np.testing.assert_array_equal(items.raw, np.array(raw))
+    pd.testing.assert_frame_equal(items.df, pd.DataFrame(list(raw)))
 
 
 collection_items = np.array(
