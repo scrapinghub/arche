@@ -9,8 +9,14 @@ Note that the top-most release is changes in the unreleased master branch on Git
 
 [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.6dev] (Work In Progress)
+### Added
+### Changed
+### Fixed
+### Removed
 
-## [0.3.5dev] (Work In Progress)
+
+## [0.3.5] (2019-05-14)
 ### Added
 - `Arche()` supports any iterables with item dicts, fixing jsonschema consistency, #83
 - `Items.from_array` to read raw data from iterables, #83
@@ -18,6 +24,7 @@ Note that the top-most release is changes in the unreleased master branch on Git
 - If reading from pandas df directly, store raw data in numpy array. See gotchas http://pandas.pydata.org/pandas-docs/stable/user_guide/gotchas.html#support-for-integer-na
 ### Fixed
 ### Removed
+
 
 ## [0.3.4] (2019-05-06)
 ### Fixed
