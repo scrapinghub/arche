@@ -1,4 +1,5 @@
 from functools import lru_cache
+import logging
 from typing import Iterable, Optional, Union
 
 from arche.data_quality_report import DataQualityReport
@@ -42,6 +43,14 @@ class Arche:
         if isinstance(source, str) and target == source:
             raise ValueError(
                 "'target' is equal to 'source'. Data to compare should have different sources."
+            )
+        if isinstance(source, pd.DataFrame):
+            logging.warning(
+                "Pandas stores `NA` (missing) data differently, "
+                "which might affect schema validation. "
+                "Should you care, consider passing raw data in array-like types.\n"
+                "For more details, see https://pandas.pydata.org/pandas-docs/"
+                "stable/user_guide/gotchas.html#nan-integer-na-values-and-na-type-promotions"
             )
         self.source = source
         self._schema = None
@@ -169,7 +178,6 @@ class Arche:
     def run_schema_rules(self) -> None:
         if not self.schema:
             return
-
         self.save_result(schema_rules.validate(self.schema, self.source_items.raw))
 
         tagged_fields = sr.Tags().get(self.schema)

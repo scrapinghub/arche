@@ -163,6 +163,11 @@ def test_arche_dataframe(mocker):
     )
 
 
+def test_arche_dataframe_data_warning(caplog):
+    Arche(pd.DataFrame())
+    assert "Pandas stores `NA` (missing)" in caplog.text
+
+
 def test_report_all(mocker):
     mocked_run_all = mocker.patch("arche.Arche.run_all_rules", autospec=True)
     mocked_write_summary = mocker.patch(
