@@ -13,7 +13,8 @@ Note that the top-most release is changes in the unreleased master branch on Git
 ### Added
 ### Changed
 ### Fixed
-- Broken `Arche.glance()`, #88
+- `Arche.glance()`, #88
+- Item links in Schema validation errors, #89
 ### Removed
 
 
