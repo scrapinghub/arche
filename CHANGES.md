@@ -12,6 +12,7 @@ Note that the top-most release is changes in the unreleased master branch on Git
 ## [0.3.6dev] (Work In Progress)
 ### Added
 ### Changed
+- `Arche.report_all()` does not shorten report by default, added `short` parameter.
 ### Fixed
 ### Removed
 

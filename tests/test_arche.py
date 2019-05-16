@@ -185,7 +185,7 @@ def test_report_all(mocker):
     mocked_run_all.assert_called_once_with(arche)
     mocked_write_summary.assert_called_once_with(arche.report)
     mocked_write.assert_called_once_with("\n" * 2)
-    mocked_write_details.assert_called_once_with(arche.report, short=True)
+    mocked_write_details.assert_called_once_with(arche.report, short=False)
 
 
 def test_run_all_rules_job(mocker, get_cloud_items):
