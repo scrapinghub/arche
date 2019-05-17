@@ -1,9 +1,8 @@
-from typing import Dict, Optional, Tuple
+import json
+from typing import Dict, Tuple
 import uuid
 
 import pandas as pd
-import json
-from tqdm import tqdm_notebook
 
 
 # check is the column containing lists
@@ -41,7 +40,7 @@ def listColumns(df):
 def flat_map_columns(df, map_cols):
     json_struct = json.loads(df.to_json(orient="records"))
     flat_df = pd.io.json.json_normalize(json_struct, sep="_")
-    flat_df = flat_df.drop(map_cols, axis=1)
+    # flat_df = flat_df.drop(map_cols, axis=1)
     return flat_df
 
 
@@ -69,11 +68,14 @@ def df_column_uniquify(df):
             newitem = item
             while newitem in new_columns:
                 counter += 1
-                newitem = f"{item}_{uuid.uuid1().hex[:5]}" #"{}_{}".format(item, counter)
+                newitem = (
+                    f"{item}_{uuid.uuid1().hex[:5]}"
+                )  # "{}_{}".format(item, counter)
 
             new_columns.append(newitem)
         df.columns = new_columns
         return df
+
 
 # flatten one level
 def flatten_one(df):
@@ -92,12 +94,11 @@ def flatten_one(df):
 # flatten all levels
 def flatten_all(df):
     res = flatten_one(df)
-    print(res.shape)
     [cols, lists, maps] = listColumns(res)
     if not lists and not maps:
         return res
     else:
-        res = flatten_df(res)
+        res = flatten_all(res)
         return res
 
 
@@ -105,6 +106,10 @@ def flatten_all(df):
 def get_columns(df, flat_df):
     cm = {}
     df_columns = df.columns
+
+    if type(flat_df) is tuple:
+        return df.columns
+
     flat_df_columns = set(flat_df.columns) - set(df_columns)
     for col_flat in flat_df_columns:
         for col in df_columns:
