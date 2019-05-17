@@ -25,7 +25,7 @@ class JsonSchemaValidator:
         validate = fastjsonschema.compile(self.schema)
         for raw_item in tqdm_notebook(raw_items, desc="JSON Schema Validation"):
             try:
-                validate(raw_items)
+                validate(raw_item)
             except fastjsonschema.JsonSchemaException as error:
                 self.errors[str(error)].add(raw_item["_key"])
 
