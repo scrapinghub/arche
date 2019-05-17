@@ -1,9 +1,9 @@
 from functools import lru_cache
 import logging
-from typing import List, Optional, Union
+from typing import Iterable, Optional, Union
 
 from arche.data_quality_report import DataQualityReport
-from arche.readers.items import CollectionItems, JobItems
+from arche.readers.items import Items, CollectionItems, JobItems, RawItems
 import arche.readers.schema as sr
 from arche.report import Report
 import arche.rules.category as category_rules
@@ -13,18 +13,17 @@ import arche.rules.json_schema as schema_rules
 import arche.rules.metadata as metadata_rules
 from arche.rules.others import compare_boolean_fields, garbage_symbols
 import arche.rules.price as price_rules
-from arche.tools import api, helpers, maintenance, schema
+from arche.tools import api, helpers
 import IPython
-
-logger = logging.getLogger(__name__)
+import pandas as pd
 
 
 class Arche:
     def __init__(
         self,
-        source: str,
+        source: Union[str, pd.DataFrame, RawItems],
         schema: Optional[sr.SchemaSource] = None,
-        target: Optional[str] = None,
+        target: Optional[Union[str, pd.DataFrame]] = None,
         start: int = 0,
         count: Optional[int] = None,
         filters: Optional[api.Filters] = None,
@@ -32,28 +31,37 @@ class Arche:
     ):
         """
         Args:
-            source: a data source to validate. Supports job or collection keys
+            source: a data source to validate, accepts job keys, pandas df, lists
             schema: a JSON schema source used to run validation
             target: a data source to compare with
             start: an item number to start reading from
             count: the amount of items to read from start
             filters: Scrapinghub filtering
-            expand: if enabled, use flattened data in garbage rules, affects performance, see flatten_df # noqa
+            expand: if True, use flattened data in garbage rules, affects performance
+            see flatten_df
         """
+        if isinstance(source, str) and target == source:
+            raise ValueError(
+                "'target' is equal to 'source'. Data to compare should have different sources."
+            )
+        if isinstance(source, pd.DataFrame):
+            logging.warning(
+                "Pandas stores `NA` (missing) data differently, "
+                "which might affect schema validation. "
+                "Should you care, consider passing raw data in array-like types.\n"
+                "For more details, see https://pandas.pydata.org/pandas-docs/"
+                "stable/user_guide/gotchas.html#nan-integer-na-values-and-na-type-promotions"
+            )
         self.source = source
-        if target == self.source:
-            logger.warning("'target' is the same as 'source', and will be ignored")
-            self.target = None
-        else:
-            self.target = target
+        self._schema = None
+        self.schema_source = None
+        if schema:
+            self.schema = sr.get_schema(schema)
+        self.target = target
         self.start = start
         self.count = count
         self.filters = filters
         self.expand = expand
-        self.schema_source = None
-        self._schema = None
-        if schema:
-            self.schema = sr.get_schema(schema)
         self._source_items = None
         self._target_items = None
 
@@ -69,7 +77,7 @@ class Arche:
 
     @property
     def target_items(self):
-        if not self.target:
+        if self.target is None:
             return None
         if not self._target_items:
             self._target_items = self.get_items(
@@ -90,13 +98,17 @@ class Arche:
 
     @staticmethod
     def get_items(
-        source: str,
+        source: Union[str, pd.DataFrame, RawItems],
         start: int,
         count: Optional[int],
         filters: Optional[api.Filters],
         expand: bool,
     ) -> Union[JobItems, CollectionItems]:
-        if helpers.is_job_key(source):
+        if isinstance(source, pd.DataFrame):
+            return Items.from_df(source, expand=expand)
+        elif isinstance(source, Iterable) and not isinstance(source, str):
+            return Items.from_array(source, expand=expand)
+        elif helpers.is_job_key(source):
             return JobItems(
                 key=source, start=start, count=count, filters=filters, expand=expand
             )
@@ -112,20 +124,6 @@ class Arche:
     def save_result(self, rule_result):
         self.report.save(rule_result)
 
-    def basic_json_schema(self, items_numbers: List[int] = None):
-        """Prints a json schema based on data from `self.source`
-
-        Args:
-            items_numbers: array of item numbers to create a schema from
-        """
-        maintenance.deprecate(
-            "'Arche.basic_json_schema()' was deprecated in 2019.03.25 and "
-            "will be removed in 2019.04.22.",
-            replacement="Use 'basic_json_schema()' instead",
-            gone_in="0.4.0",
-        )
-        schema.basic_json_schema(self.source, items_numbers)
-
     def report_all(self):
         self.run_all_rules()
         IPython.display.clear_output()
@@ -134,7 +132,7 @@ class Arche:
         self.report.write_details(short=True)
 
     def run_all_rules(self):
-        if helpers.is_job_key(self.source_items.key):
+        if isinstance(self.source_items, JobItems):
             self.check_metadata(self.source_items.job)
             if self.target_items:
                 self.compare_metadata(self.source_items.job, self.target_items.job)
@@ -147,50 +145,40 @@ class Arche:
             raise ValueError("Collections are not supported")
         if not self.schema:
             raise ValueError("Schema is empty")
-        if not self.report.results:
-            self.save_result(
-                schema_rules.validate(
-                    self.schema, items_dicts=self.source_items.dicts, fast=False
-                )
-            )
         IPython.display.clear_output()
         DataQualityReport(self.source_items, self.schema, self.report, bucket)
 
     @lru_cache(maxsize=32)
     def run_general_rules(self):
         self.save_result(garbage_symbols(self.source_items))
+        df = self.source_items.df
         self.save_result(
             coverage_rules.check_fields_coverage(
-                self.source_items.df.drop(columns=["_type", "_key"])
+                df.drop(columns=df.columns[df.columns.str.startswith("_")])
             )
         )
 
-    def validate_with_json_schema(self):
+    def validate_with_json_schema(self) -> None:
         """Run JSON schema check and output results. It will try to find all errors, but
         there are no guarantees. Slower than `check_with_json_schema()`
         """
-        res = schema_rules.validate(
-            self.schema, items_dicts=self.source_items.dicts, fast=False
-        )
+        res = schema_rules.validate(self.schema, self.source_items.raw)
         self.save_result(res)
         res.show()
 
-    def glance(self):
-        """Run JSON schema check and output results. In most cases it will stop after
-        the first error per item. Usable for big jobs as it's about 100x faster than
+    def glance(self) -> None:
+        """Run JSON schema check and output results. In most cases it will return
+        only the first error per item. Usable for big jobs as it's about 100x faster than
         `validate_with_json_schema()`.
         """
-        res = schema_rules.validate(
-            self.schema, items_dicts=self.source_items.dicts, fast=True
-        )
+        res = schema_rules.validate(self.schema, self.source_items.raw, fast=True)
         self.save_result(res)
         res.show()
 
-    def run_schema_rules(self):
+    def run_schema_rules(self) -> None:
         if not self.schema:
             return
-
-        self.save_result(schema_rules.validate(self.schema, self.source_items.dicts))
+        self.save_result(schema_rules.validate(self.schema, self.source_items.raw))
 
         tagged_fields = sr.Tags().get(self.schema)
         target_columns = (
@@ -241,39 +229,20 @@ class Arche:
     def run_comparison_rules(self):
         if not self.target_items:
             return
-        self.save_result(
-            coverage_rules.compare_scraped_fields(
-                self.source_items.df, self.target_items.df
-            )
-        )
-        self.save_result(
-            compare_boolean_fields(self.source_items.df, self.target_items.df)
-        )
+        for r in [coverage_rules.compare_scraped_fields, compare_boolean_fields]:
+            self.save_result(r(self.source_items.df, self.target_items.df))
 
     def compare_with_customized_rules(self, source_items, target_items, tagged_fields):
         if not target_items:
             return
         self.save_result(
             category_rules.get_difference(
-                source_items.key,
-                target_items.key,
-                source_items.df,
-                target_items.df,
-                tagged_fields.get("category", []),
+                source_items.df, target_items.df, tagged_fields.get("category", [])
             )
         )
-        self.save_result(
-            price_rules.compare_prices_for_same_urls(
-                source_items.df, target_items.df, tagged_fields
-            )
-        )
-        self.save_result(
-            price_rules.compare_names_for_same_urls(
-                source_items.df, target_items.df, tagged_fields
-            )
-        )
-        self.save_result(
-            price_rules.compare_prices_for_same_names(
-                source_items.df, target_items.df, tagged_fields
-            )
-        )
+        for r in [
+            price_rules.compare_prices_for_same_urls,
+            price_rules.compare_names_for_same_urls,
+            price_rules.compare_prices_for_same_names,
+        ]:
+            self.save_result(r(source_items.df, target_items.df, tagged_fields))

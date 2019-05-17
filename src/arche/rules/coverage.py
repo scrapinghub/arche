@@ -1,7 +1,7 @@
-from arche.readers.items import Job
 from arche.rules.result import Result
 from arche.tools.api import get_items_count
 import pandas as pd
+from scrapinghub.client.jobs import Job
 
 
 def check_fields_coverage(df: pd.DataFrame) -> Result:
@@ -22,9 +22,7 @@ def check_fields_coverage(df: pd.DataFrame) -> Result:
 
     result = Result("Fields Coverage")
     result.stats = [fields_coverage]
-    if empty_fields.empty:
-        result.add_info("PASSED")
-    else:
+    if not empty_fields.empty:
         result.add_error(f"{len(empty_fields)} empty field(s)")
     return result
 

@@ -65,15 +65,13 @@ def test_write_rule_details(capsys, message, expected_details):
             {"something happened": pd.Series(["1", "2"])},
             False,
             10,
-            [
-                "2 items affected - something happened: <a href='1'>1</a> <a href='2'>2</a>"
-            ],
+            ["2 items affected - something happened: 1, 2"],
         ),
         (
             {"something went bad": [i for i in range(10)]},
             False,
             1,
-            ["10 items affected - something went bad: <a href='5'>5</a>"],
+            ["10 items affected - something went bad: 5"],
         ),
         (
             {
@@ -86,7 +84,7 @@ def test_write_rule_details(capsys, message, expected_details):
             },
             False,
             1,
-            [f"15 items affected - err{i}: <a href='5'>5</a>" for i in range(1, 7)],
+            [f"15 items affected - err{i}: 5" for i in range(1, 7)],
         ),
         (
             {
@@ -100,18 +98,20 @@ def test_write_rule_details(capsys, message, expected_details):
             True,
             1,
             [
-                "1 items affected - err1: <a href='1'>1</a>",
-                "1 items affected - err2: <a href='2'>2</a>",
-                "1 items affected - err3: <a href='3'>3</a>",
-                "1 items affected - err4: <a href='4'>4</a>",
-                "2 items affected - err5: <a href='5'>5</a> <a href='7'>7</a>",
+                "1 items affected - err1: 1",
+                "1 items affected - err2: 2",
+                "1 items affected - err3: 3",
+                "1 items affected - err4: 4",
+                "2 items affected - err5: 5, 7",
             ],
         ),
         (
-            {"something happened": set(["1"])},
+            {"something happened": set(["https://app.scrapinghub.com/p/1/1/1/item/0"])},
             False,
             10,
-            ["1 items affected - something happened: <a href='1'>1</a>"],
+            [
+                f"1 items affected - something happened: <a href='{SH_URL}/1/1/1/item/0'>0</a>"
+            ],
         ),
     ],
 )
@@ -126,26 +126,25 @@ def test_write_detailed_errors(mocker, errors, short, keys_limit, expected_messa
 
 
 @pytest.mark.parametrize(
-    "keys, limit, expected_sample",
+    "keys, limit, sample_mock, expected_sample",
     [
         (
             pd.Series(f"{SH_URL}/112358/13/21/item/0"),
             5,
+            [f"{SH_URL}/112358/13/21/item/5"],
             f"<a href='{SH_URL}/112358/13/21/item/0'>0</a>",
         ),
         (
             pd.Series([f"{SH_URL}/112358/13/21/item/{i}" for i in range(20)]),
             10,
+            [f"{SH_URL}/112358/13/21/item/5"],
             f"<a href='{SH_URL}/112358/13/21/item/5'>5</a>",
         ),
+        (pd.Series([str(i) for i in range(5)]), 1, ["0"], "0"),
     ],
 )
-def test_sample_keys(mocker, keys, limit, expected_sample):
-    mocker.patch(
-        "pandas.Series.sample",
-        return_value=[f"{SH_URL}/112358/13/21/item/5"],
-        autospec=True,
-    )
+def test_sample_keys(mocker, keys, limit, sample_mock, expected_sample):
+    mocker.patch("pandas.Series.sample", return_value=sample_mock, autospec=True)
     assert Report.sample_keys(keys, limit) == expected_sample
 
 

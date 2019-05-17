@@ -3,7 +3,7 @@
 [![PyPI](https://img.shields.io/pypi/v/arche.svg)](https://pypi.org/project/arche)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/arche.svg)](https://pypi.org/project/arche)
 ![GitHub](https://img.shields.io/github/license/scrapinghub/arche.svg)
-[![Build Status](https://travis-ci.org/scrapinghub/arche.svg?branch=master)](https://travis-ci.org/scrapinghub/arche)
+[![Build Status](https://travis-ci.com/scrapinghub/arche.svg?branch=master)](https://travis-ci.com/scrapinghub/arche)
 [![Codecov](https://img.shields.io/codecov/c/github/scrapinghub/arche.svg)](https://codecov.io/gh/scrapinghub/arche)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
 [![GitHub commit activity](https://img.shields.io/github/commit-activity/m/scrapinghub/arche.svg)](https://github.com/scrapinghub/arche/commits/master)

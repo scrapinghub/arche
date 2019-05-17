@@ -10,6 +10,7 @@ from arche.readers.schema import Schema, Tags
 from arche.report import Report
 import arche.rules.coverage as coverage_rules
 import arche.rules.duplicates as duplicate_rules
+import arche.rules.json_schema as schema_rules
 from arche.rules.others import garbage_symbols
 import arche.rules.price as price_rules
 from arche.tools import api
@@ -33,7 +34,7 @@ class DataQualityReport:
         self.report = report
         self.figures = []
         self.appendix = self.create_appendix(self.schema)
-        self.create_figures(items, items.dicts)
+        self.create_figures(items)
         self.plot_to_notebook()
 
         if bucket:
@@ -43,9 +44,8 @@ class DataQualityReport:
                 bucket=bucket,
             )
 
-    def create_figures(self, items, items_dicts):
+    def create_figures(self, items):
         tagged_fields = Tags().get(self.schema)
-        no_of_validated_items = len(items.df.index)
 
         dup_items_result = duplicate_rules.check_items(items.df, tagged_fields)
         no_of_checked_duplicated_items = dup_items_result.items_count
@@ -59,33 +59,36 @@ class DataQualityReport:
         no_of_price_warns = price_was_now_result.err_items_count
         no_of_checked_price_items = price_was_now_result.items_count
 
-        garbage_symbols_result = garbage_symbols(items)
-
         crawlera_user = api.get_crawlera_user(items.job)
-        no_of_validation_warnings = self.report.results.get(
-            "JSON Schema Validation"
+
+        validation_errors = self.report.results.get(
+            "JSON Schema Validation",
+            schema_rules.validate(self.schema, df=items.df, fast=False),
         ).get_errors_count()
+
+        garbage_symbols_result = self.report.results.get(
+            "Garbage Symbols", garbage_symbols(items)
+        )
+
         quality_estimation, field_accuracy = generate_quality_estimation(
             items.job,
             crawlera_user,
-            no_of_validation_warnings,
+            validation_errors,
             no_of_duplicated_items,
             no_of_checked_duplicated_items,
             no_of_duplicated_skus,
             no_of_checked_skus_items,
             no_of_price_warns,
-            no_of_validated_items,
+            no_of_checked_price_items,
             tested=True,
             garbage_symbols=garbage_symbols_result,
         )
 
-        cleaned_df = self.drop_service_columns(items.df)
-
         self.score_table(quality_estimation, field_accuracy)
         self.job_summary_table(items.job)
         self.rules_summary_table(
-            cleaned_df,
-            no_of_validation_warnings,
+            items.df,
+            validation_errors,
             tagged_fields.get("name_field", ""),
             tagged_fields.get("product_url_field", ""),
             no_of_checked_duplicated_items,
@@ -99,8 +102,8 @@ class DataQualityReport:
             no_of_price_warns,
             garbage_symbols=garbage_symbols_result,
         )
-        self.scraped_fields_coverage(cleaned_df)
-        self.coverage_by_categories(cleaned_df, tagged_fields)
+        self.scraped_fields_coverage(items.df)
+        self.coverage_by_categories(items.df, tagged_fields)
 
     def plot_to_notebook(self) -> None:
         IPython.display.clear_output()
@@ -200,8 +203,3 @@ class DataQualityReport:
             )
             if cat_table:
                 self.figures.append(cat_table)
-
-    def drop_service_columns(self, df):
-        service_columns = ["_key", "_type", "_cached_page_id", "_validation"]
-        found_columns = [cl for cl in service_columns if cl in df.columns]
-        return df.drop(columns=found_columns)

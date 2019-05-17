@@ -1,13 +1,18 @@
 from arche import arche
 from arche.arche import Arche
-from arche.rules.result import Result
-from conftest import get_job_items_mock
+from arche.rules.result import Level
+from conftest import create_result
+import pandas as pd
 import pytest
 
 
 def test_target_equals_source():
-    arche = Arche(source="0/0/1", target="0/0/1")
-    assert arche.target is None
+    with pytest.raises(ValueError) as excinfo:
+        Arche(source="0/0/1", target="0/0/1")
+    assert (
+        str(excinfo.value)
+        == "'target' is equal to 'source'. Data to compare should have different sources."
+    )
 
 
 def test_target_items(mocker, get_job_items):
@@ -18,9 +23,15 @@ def test_target_items(mocker, get_job_items):
     assert arche.target_items is get_job_items
 
 
-def test_target_items_none(mocker, get_job_items):
+def test_target_items_none(mocker):
     arche = Arche("source")
     assert arche.target_items is None
+
+
+def test_arche_df(get_df):
+    a = Arche(source=get_df, target=get_df)
+    pd.testing.assert_frame_equal(a.source_items.df, get_df)
+    pd.testing.assert_frame_equal(a.target_items.df, get_df)
 
 
 schema_dummies = [
@@ -51,9 +62,11 @@ def test_schema(passed_schema_source, set_schema_source, expected_schema):
 @pytest.mark.parametrize(
     "source, start, count, filters, expand", [("112358/13/21", 1, 50, None, False)]
 )
-def test_get_items(mocker, get_items, source, start, count, filters, expand):
+def test_get_items(mocker, get_raw_items, source, start, count, filters, expand):
     mocker.patch(
-        "arche.readers.items.JobItems.fetch_data", return_value=get_items, autospec=True
+        "arche.readers.items.JobItems.fetch_data",
+        return_value=get_raw_items,
+        autospec=True,
     )
     items = Arche.get_items(
         source=source, start=start, count=count, filters=filters, expand=expand
@@ -65,13 +78,22 @@ def test_get_items(mocker, get_items, source, start, count, filters, expand):
     assert items.start_index == start
 
 
+def test_get_items_from_iterable(get_cloud_items):
+    items = Arche.get_items(
+        get_cloud_items, start=None, count=None, filters=None, expand=True
+    )
+    assert items.raw == get_cloud_items
+
+
 @pytest.mark.parametrize(
     "source, count, filters, expand", [("112358/collections/s/pages", 5, None, True)]
 )
-def test_get_items_from_collection(mocker, get_items, source, count, filters, expand):
+def test_get_items_from_collection(
+    mocker, get_raw_items, source, count, filters, expand
+):
     mocker.patch(
         "arche.readers.items.CollectionItems.fetch_data",
-        return_value=get_items,
+        return_value=get_raw_items,
         autospec=True,
     )
     items = Arche.get_items(
@@ -101,6 +123,51 @@ def test_get_items_from_bad_source():
     assert str(excinfo.value) == f"'bad_key' is not a valid job or collection key"
 
 
+def test_arche_dataframe(mocker):
+    a = Arche(
+        source=pd.DataFrame({"c": [0, 1]}),
+        schema={"properties": {"c": {"type": "integer"}}},
+        target=pd.DataFrame({"c": [1, 1]}),
+    )
+    mocker.patch("arche.report.Report.write_details", autospec=True)
+    a.report_all()
+    executed = [
+        "Garbage Symbols",
+        "Fields Coverage",
+        "Scraped Fields",
+        "Boolean Fields",
+        "JSON Schema Validation",
+        "Tags",
+        "Compare Price Was And Now",
+        "Uniqueness",
+        "Duplicated Items",
+        "Coverage For Scraped Categories",
+        "Category Coverage Difference",
+        "Compare Prices For Same Urls",
+        "Compare Names Per Url",
+        "Compare Prices For Same Names",
+    ]
+    for e in executed:
+        assert a.report.results.get(e)
+    assert a.report.results.get("JSON Schema Validation").errors is None
+    assert (
+        a.report.results.get("JSON Schema Validation").info[0].summary
+        == "2 items were checked, 0 error(s)"
+    )
+    assert (
+        Arche(
+            pd.DataFrame({"_key": ["0", "1"], "c": [0, 1]}),
+            schema={"properties": {"c": {"type": "string"}}},
+        ).report_all()
+        is None
+    )
+
+
+def test_arche_dataframe_data_warning(caplog):
+    Arche(pd.DataFrame())
+    assert "Pandas stores `NA` (missing)" in caplog.text
+
+
 def test_report_all(mocker):
     mocked_run_all = mocker.patch("arche.Arche.run_all_rules", autospec=True)
     mocked_write_summary = mocker.patch(
@@ -121,8 +188,23 @@ def test_report_all(mocker):
     mocked_write_details.assert_called_once_with(arche.report, short=True)
 
 
-@pytest.mark.parametrize("source_key, target_key", [("112358/13/21", "112358/13/20")])
-def test_run_all_rules_job(mocker, source_key, target_key):
+def test_run_all_rules_job(mocker, get_cloud_items):
+    a = Arche(
+        source=pd.DataFrame(get_cloud_items), target=pd.DataFrame(get_cloud_items[:2])
+    )
+    a.run_all_rules()
+    executed = [
+        "Garbage Symbols",
+        "Fields Coverage",
+        "Scraped Fields",
+        "Boolean Fields",
+    ]
+    for e in executed:
+        assert e in a.report.results
+    assert len(a.report.results) == len(executed)
+
+
+def test_run_all_rules_collection(mocker, get_collection_items):
     mocked_check_metadata = mocker.patch("arche.Arche.check_metadata", autospec=True)
     mocked_compare_metadata = mocker.patch(
         "arche.Arche.compare_metadata", autospec=True
@@ -137,38 +219,8 @@ def test_run_all_rules_job(mocker, source_key, target_key):
     mocked_run_schema_rules = mocker.patch(
         "arche.Arche.run_schema_rules", autospec=True
     )
-    arche = Arche(source=source_key, target=target_key)
-    arche._source_items = get_job_items_mock(mocker, key=source_key)
-    arche._target_items = get_job_items_mock(mocker, key=target_key)
-    arche.run_all_rules()
-
-    mocked_check_metadata.assert_called_once_with(arche.source_items.job)
-    mocked_compare_metadata.assert_called_once_with(
-        arche.source_items.job, arche.target_items.job
-    )
-    mocked_run_general_rules.assert_called_once_with()
-    mocked_run_comparison_rules.assert_called_once_with()
-    mocked_run_schema_rules.assert_called_once_with(arche)
-
-
-@pytest.mark.parametrize("source_key", [("collection_key")])
-def test_run_all_rules_collection(mocker, source_key):
-    mocked_check_metadata = mocker.patch("arche.Arche.check_metadata", autospec=True)
-    mocked_compare_metadata = mocker.patch(
-        "arche.Arche.compare_metadata", autospec=True
-    )
-
-    mocked_run_general_rules = mocker.patch(
-        "arche.Arche.run_general_rules", autospec=True
-    )
-    mocked_run_comparison_rules = mocker.patch(
-        "arche.Arche.run_comparison_rules", autospec=True
-    )
-    mocked_run_schema_rules = mocker.patch(
-        "arche.Arche.run_schema_rules", autospec=True
-    )
-    arche = Arche(source=source_key)
-    arche._source_items = get_job_items_mock(mocker, key=source_key)
+    arche = Arche(source="collection_key")
+    arche._source_items = get_collection_items
     arche.run_all_rules()
 
     mocked_check_metadata.assert_not_called()
@@ -178,25 +230,19 @@ def test_run_all_rules_collection(mocker, source_key):
     mocked_run_schema_rules.assert_called_once_with(arche)
 
 
-def test_validate_with_json_schema(mocker):
-    mocked_save_result = mocker.patch("arche.Arche.save_result", autospec=True)
-    res = Result("fine")
-    mocked_validate = mocker.patch(
-        "arche.rules.json_schema.validate", autospec=True, return_value=res
+def test_validate_with_json_schema(mocker, get_job_items, get_schema):
+    res = create_result(
+        "JSON Schema Validation", {Level.INFO: [("4 items were checked, 0 error(s)",)]}
     )
     mocked_show = mocker.patch("arche.rules.result.Result.show", autospec=True)
 
-    arche = Arche(
-        "source", schema={"$schema": "http://json-schema.org/draft-07/schema"}
-    )
-    arche._source_items = get_job_items_mock(mocker)
-    arche.validate_with_json_schema()
+    a = Arche("source", schema=get_schema)
+    a._source_items = get_job_items
+    a.validate_with_json_schema()
 
-    mocked_validate.assert_called_once_with(
-        arche.schema, arche.source_items.dicts, False
-    )
-    mocked_save_result.assert_called_once_with(arche, res)
     mocked_show.assert_called_once_with(res)
+    assert len(a.report.results) == 1
+    assert a.report.results.get("JSON Schema Validation") == res
 
 
 @pytest.mark.parametrize(
@@ -212,37 +258,15 @@ def test_data_quality_report_fails(source, expected_message):
     assert str(excinfo.value) == expected_message
 
 
-def test_data_quality_report_no_results(mocker):
-    mocked_save_result = mocker.patch("arche.Arche.save_result", autospec=True)
-    mocked_validate = mocker.patch(
-        "arche.rules.json_schema.validate", autospec=True, return_value=None
-    )
+def test_data_quality_report(mocker, get_job_items):
     mocked_dqr = mocker.patch.object(
         arche, "DataQualityReport", autospec=True, return_value=None
     )
 
     g = Arche("source", schema={"$schema": "http://json-schema.org/draft-07/schema"})
-    g._source_items = get_job_items_mock(mocker)
-    g.data_quality_report()
-
-    mocked_validate.assert_called_once_with(g.schema, g.source_items.dicts, False)
-    mocked_save_result.assert_called_once_with(g, None)
-    mocked_dqr.assert_called_once_with(g.source_items, g.schema, g.report, None)
-
-
-def test_data_quality_report(mocker):
-    mocked_validate = mocker.patch(
-        "arche.rules.json_schema.validate", autospec=True, return_value=None
-    )
-    mocked_dqr = mocker.patch.object(
-        arche, "DataQualityReport", autospec=True, return_value=None
-    )
-
-    g = Arche("source", schema={"$schema": "http://json-schema.org/draft-07/schema"})
-    g._source_items = get_job_items_mock(mocker)
+    g._source_items = get_job_items
     g.report.results = "some_res"
     g.data_quality_report("s3")
-    mocked_validate.assert_not_called()
     mocked_dqr.assert_called_with(g.source_items, g.schema, g.report, "s3")
 
 
@@ -259,14 +283,12 @@ def test_compare_with_customized_rules(mocker, get_job_items):
         "arche.rules.price.compare_prices_for_same_names", autospec=True
     )
 
-    source_items = get_job_items_mock(mocker)
-    target_items = get_job_items_mock(mocker)
+    source_items = get_job_items
+    target_items = get_job_items
     arche = Arche("source")
     arche.compare_with_customized_rules(source_items, target_items, {})
 
-    mocked_coverage.assert_called_once_with(
-        source_items.key, target_items.key, source_items.df, target_items.df, []
-    )
+    mocked_coverage.assert_called_once_with(source_items.df, target_items.df, [])
     mocked_price_url.assert_called_once_with(source_items.df, target_items.df, {})
     mocked_name_url.assert_called_once_with(source_items.df, target_items.df, {})
     mocked_price_name.assert_called_once_with(source_items.df, target_items.df, {})

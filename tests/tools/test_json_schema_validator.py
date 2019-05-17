@@ -1,6 +1,7 @@
 from collections import deque
 
 from arche.tools.json_schema_validator import JsonSchemaValidator as JSV
+import numpy as np
 import pytest
 
 
@@ -64,25 +65,28 @@ def test_format_validation_message(
     )
 
 
-@pytest.mark.parametrize(
-    "schema_source, expected_schema",
-    [
-        (
-            {"$schema": "http://json-schema.org/draft-07/schema"},
-            {"$schema": "http://json-schema.org/draft-07/schema"},
-        )
-    ],
-)
-def test_validator(schema_source, expected_schema):
-    jsv = JSV(schema_source)
-    assert jsv.schema == expected_schema
+def test_validate():
+    jsv = JSV({"properties": {"NAME": {"type": "string"}}})
+    jsv.validate(np.array([{"NAME": None, "_key": "0"}]))
+    assert jsv.errors == {"NAME is not of type 'string'": {"0"}}
 
 
-@pytest.mark.parametrize(
-    "items, expected_errors",
-    [([{"_key": "0"}, {"_key": "1"}], {"data must be number": {"0", "1"}})],
-)
-def test_fast_validate(items, expected_errors):
-    jsv = JSV({"type": "number"})
-    jsv.fast_validate(items)
-    assert jsv.errors == expected_errors
+def test_fast_validate_fails():
+    jsv = JSV({"type": "object", "properties": {"_key": {"type": "number"}}})
+    jsv.fast_validate(np.array([{"_key": "0"}, {"_key": "1"}]))
+    assert jsv.errors == {"data._key must be number": {"0", "1"}}
+
+
+def test_fast_validate(get_schema, get_raw_items):
+    jsv = JSV(get_schema)
+    jsv.fast_validate(get_raw_items)
+    assert not jsv.errors
+
+
+def test_run():
+    schema = {"properties": {"NAME": {"type": "string"}}}
+    jsv = JSV(schema)
+    assert jsv.schema == schema
+    jsv.run(np.array([{"NAME": None, "_key": "0", "__DEBUG": None}]), fast=False)
+
+    assert jsv.errors == {"NAME is not of type 'string'": {"0"}}

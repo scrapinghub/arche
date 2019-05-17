@@ -42,6 +42,32 @@ def test_basic_json_schema(mocker):
     mocked_create_js.assert_called_once_with("235801/1/15", [0, 5])
 
 
+def test_create_json_schema(mocker, get_job, get_raw_items):
+    mocker.patch("arche.tools.api.get_job", return_value=get_job, autospec=True)
+    mocker.patch("arche.tools.api.get_items", return_value=get_raw_items, autospec=True)
+    schema_tools.create_json_schema(get_job.key, [2])
+    assert schema_tools.create_json_schema(get_job.key, [2, 3]) == {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "definitions": {
+            "float": {"pattern": r"^-?[0-9]+\.[0-9]{2}$"},
+            "url": {
+                "pattern": (
+                    r"^https?://(www\.)?[a-z0-9.-]*\.[a-z]{2,}"
+                    r"([^<>%\x20\x00-\x1f\x7F]|%[0-9a-fA-F]{2})*$"
+                )
+            },
+        },
+        "additionalProperties": False,
+        "type": "object",
+        "properties": {
+            "_key": {"type": "string"},
+            "name": {"type": "string"},
+            "price": {"type": "integer"},
+        },
+        "required": ["_key", "name", "price"],
+    }
+
+
 def test_basic_schema_json(capsys):
     bs = schema_tools.BasicSchema(
         {

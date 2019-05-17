@@ -3,18 +3,21 @@ from functools import partial
 import math
 from multiprocessing import Pool
 import time
-from typing import Any, Dict, List, Tuple, Optional, Union
+from typing import List, Tuple, Optional, Union
 
-from arche import SH_URL
 from arche.tools import helpers
 from dateutil.relativedelta import relativedelta
+import numpy as np
 from scrapinghub import ScrapinghubClient
+from scrapinghub.client.jobs import Job
 from tqdm import tqdm, tqdm_notebook
 
 
 Filters = List[Tuple[str, str, str]]
-Item = Dict[str, Any]
-Items = List[Item]
+
+
+def get_job(key: str) -> Job:
+    return ScrapinghubClient().get_job(key)
 
 
 def get_collection(key):
@@ -22,12 +25,6 @@ def get_collection(key):
     project = client.get_project(key.split("/")[0])
     collections = project.collections
     return collections.get_store(key.split("/")[3])
-
-
-def get_spider_name(job_key):
-    client = ScrapinghubClient()
-    job = client.get_job(job_key)
-    return job.metadata.get("spider")
 
 
 def get_errors_count(job):
@@ -50,40 +47,6 @@ def get_items_count(job):
         return 0
 
     return job.items.stats().get("totals", {}).get("input_values", 0)
-
-
-def get_job_arguments(job):
-    return job.metadata.get("spider_args")
-
-
-def get_batch_id(job):
-    if "batch_id" in get_job_arguments(job):
-        return job.metadata.get("spider_args")["batch_id"]
-    else:
-        return None
-
-
-def get_store_id(job):
-    if "store_id" in get_job_arguments(job):
-        return job.metadata.get("spider_args")["store_id"]
-    else:
-        return None
-
-
-def get_store_details(job):
-    if "store_id" in get_job_arguments(job):
-        for line in get_warnings(job, "INFO"):
-            if "Selected store:" in line["message"]:
-                return line["message"]
-
-
-def get_warnings(job, level):
-    return job.logs.list(level=level)
-
-
-def get_keywords(job):
-    if "keywords" in get_job_arguments(job):
-        return job.metadata.get("spider_args")["keywords"]
 
 
 def get_finish_time_difference_in_days(job1, job2):
@@ -119,13 +82,6 @@ def get_runtime_s(job):
         return finished_time - start_time
 
     return int(round(time.time() * 1000)) - start_time
-
-
-def get_scraped_fields(job):
-    if "counts" in job.items.stats():
-        return job.items.stats()["counts"].keys()
-    else:
-        return None
 
 
 def get_max_memusage(job):
@@ -170,7 +126,7 @@ def get_source(source_key):
 
 def get_items_with_pool(
     source_key: str, count: int, start_index: int = 0, workers: int = 4
-) -> Items:
+) -> np.ndarray:
     """Concurrently reads items from API using Pool
 
     Args:
@@ -180,21 +136,18 @@ def get_items_with_pool(
         workers: the number of separate processors to get data in
 
     Returns:
-        A list of items
+        A numpy array of items
     """
     active_connections_limit = 10
     processes_count = min(max(helpers.cpus_count(), workers), active_connections_limit)
     batch_size = math.ceil(count / processes_count)
 
-    items = []
     with Pool(processes_count) as p:
         results = p.starmap(
             partial(get_items, source_key, batch_size, p_bar=tqdm),
             zip([i for i in range(start_index, start_index + count, batch_size)]),
         )
-        for items_batch in results:
-            items.extend(items_batch)
-    return items
+        return np.concatenate(results)
 
 
 def get_items(
@@ -203,8 +156,7 @@ def get_items(
     start_index: int,
     filters: Optional[Filters] = None,
     p_bar: Union[tqdm, tqdm_notebook] = tqdm_notebook,
-) -> Items:
-    items = []
+) -> np.ndarray:
     source = get_source(key)
     items_iter = source.iter(
         start=f"{key}/{start_index}", count=count, filter=filters, meta="_key"
@@ -216,28 +168,4 @@ def get_items(
             total=count,
             unit_scale=1,
         )
-    for item in items_iter:
-        item.update({"_key": key_to_url(item["_key"], key)})
-        items.append(item)
-    return items
-
-
-def key_to_url(key: str, source_key: str) -> str:
-    """Get full Scrapy Cloud url from `_key`
-    E.g. 112358/13/21/0 to https://app.scrapinghub.com/
-    p/112358/13/21/item/0
-
-    Args:
-        key: a meta `_key`
-        source_key: a job or collection key
-
-    Returns:
-        A full url to an item in a Scrapy Cloud
-    """
-    if "/" in key:
-        item_number = key.rsplit("/")[-1]
-        item_url = f"{SH_URL}/{source_key}/item/{item_number}"
-    else:
-        item_url = f"{SH_URL}/{source_key}/{key}"
-
-    return item_url
+    return np.asarray(list(items_iter))

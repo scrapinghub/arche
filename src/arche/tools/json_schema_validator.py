@@ -1,8 +1,8 @@
 from collections import defaultdict
-from typing import Deque
+from typing import Any, Dict, Deque
 
+from arche.readers.items import RawItems
 from arche.readers.schema import Schema
-from arche.tools.api import Item, Items
 import fastjsonschema
 from jsonschema import FormatChecker, validators
 from tqdm import tqdm_notebook
@@ -13,29 +13,29 @@ class JsonSchemaValidator:
         self.errors = defaultdict(set)
         self.schema = schema
 
-    def run(self, items: Items, fast: bool):
+    def run(self, raw_items: RawItems, fast: bool) -> None:
         if fast:
-            self.fast_validate(items)
+            self.fast_validate(raw_items)
         else:
-            self.validate(items)
+            self.validate(raw_items)
 
-    def fast_validate(self, items: Items):
+    def fast_validate(self, raw_items: RawItems) -> None:
         """Verify items one by one. It stops after the first error in an item in most cases.
         Faster than jsonschema validation"""
         validate = fastjsonschema.compile(self.schema)
-        for item in tqdm_notebook(items, desc="JSON Schema Validation"):
+        for raw_item in tqdm_notebook(raw_items, desc="JSON Schema Validation"):
             try:
-                validate(item)
+                validate(raw_item)
             except fastjsonschema.JsonSchemaException as error:
-                self.errors[str(error)].add(item["_key"])
+                self.errors[str(error)].add(raw_item["_key"])
 
-    def validate(self, items: Items):
+    def validate(self, raw_items: RawItems) -> None:
         validator = validators.validator_for(self.schema)(self.schema)
         validator.format_checker = FormatChecker()
-        for item in tqdm_notebook(items, desc="JSON Schema Validation"):
-            self.validate_item(item, validator)
+        for raw_item in tqdm_notebook(raw_items, desc="JSON Schema Validation"):
+            self.validate_item(raw_item, validator)
 
-    def validate_item(self, item: Item, validator):
+    def validate_item(self, item: Dict[str, Any], validator) -> None:
         """Check a single item against jsonschema
 
         Args:

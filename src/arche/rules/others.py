@@ -1,7 +1,7 @@
 import re
 
 from arche.readers.items import Items
-from arche.rules.result import Result
+from arche.rules.result import Outcome, Result
 import numpy as np
 import pandas as pd
 
@@ -20,7 +20,7 @@ def compare_boolean_fields(source_df: pd.DataFrame, target_df: pd.DataFrame) -> 
 
     result = Result("Boolean Fields")
     if not fields_to_compare(source_bool, target_bool):
-        result.add_info("SKIPPED")
+        result.add_info(Outcome.SKIPPED)
         return result
 
     dummy = pd.DataFrame(columns=[True, False])
@@ -54,8 +54,6 @@ def compare_boolean_fields(source_df: pd.DataFrame, target_df: pd.DataFrame) -> 
             f"{', '.join(warn_diffs.index)} relative frequencies differ by "
             f"{warn_thr:.0%}-{err_thr:.0%}"
         )
-    if err_diffs.empty and warn_diffs.empty:
-        result.add_info("PASSED")
 
     return result
 
@@ -88,7 +86,7 @@ def garbage_symbols(items: Items) -> Result:
 
     errors = {}
     row_keys = set()
-    rule_result = Result("Garbage Symbols", items_count=items.size)
+    rule_result = Result("Garbage Symbols", items_count=len(items))
 
     for column in items.flat_df.select_dtypes([np.object]):
         matches = items.flat_df[column].str.extractall(garbage, flags=re.IGNORECASE)
@@ -98,7 +96,7 @@ def garbage_symbols(items: Items) -> Result:
             original_column = items.get_origin_column_name(column)
             bad_texts = matches.stack().value_counts().index.sort_values().tolist()
             error = (
-                f"{len(error_keys)/items.size*100:.1f}% of '{original_column}' "
+                f"{len(error_keys)/len(items)*100:.1f}% of '{original_column}' "
                 f"values contain {[t[:20] for t in bad_texts]}"
             )
             errors[error] = list(error_keys)
@@ -106,7 +104,7 @@ def garbage_symbols(items: Items) -> Result:
 
     if errors:
         rule_result.add_error(
-            f"{len(row_keys)/items.size * 100:.1f}% ({len(row_keys)}) items affected",
+            f"{len(row_keys)/len(items) * 100:.1f}% ({len(row_keys)}) items affected",
             errors=errors,
         )
         rule_result.err_items_count = len(row_keys)

@@ -7,11 +7,12 @@ This section contains real notebooks with real output from a real project
    :maxdepth: 2
    :caption: Contents:
 
-   in-short
-   basics
-   compare
-   API
-   schema
+   In-Short
+   Basics
+   Compare
+   Rules
+   Items
+   Schema
    DQR
 
 Indices and tables

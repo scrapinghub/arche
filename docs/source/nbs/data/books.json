@@ -1,0 +1,48 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "definitions": {
+        "float": {
+            "pattern": "^-?[0-9]+\\.[0-9]{2}$"
+        },
+        "url": {
+            "pattern": "^https?://(www\\.)?[a-z0-9.-]*\\.[a-z]{2,}([^<>%\\x20\\x00-\\x1f\\x7F]|%[0-9a-fA-F]{2})*$"
+        }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "properties": {
+        "category": {
+            "type": "string",
+            "tag": [
+                "category"
+            ]
+        },
+        "price": {
+            "type": "string",
+            "pattern": "^£\\d{2}.\\d{2}$"
+        },
+        "_type": {
+            "type": "string"
+        },
+        "description": {
+            "type": "string"
+        },
+        "title": {
+            "type": "string",
+            "tag": [
+                "unique"
+            ]
+        },
+        "_key": {
+            "type": "string"
+        }
+    },
+    "required": [
+        "_key",
+        "_type",
+        "category",
+        "description",
+        "price",
+        "title"
+    ]
+}
