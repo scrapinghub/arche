@@ -16,6 +16,7 @@ cloud_items = [
 default_schema = {
     "$schema": "http://json-schema.org/draft-07/schema",
     "required": ["_key", "name"],
+    "type": "object",
     "properties": {
         "_key": {"type": "string"},
         "price": {"type": "integer"},
