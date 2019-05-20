@@ -15,6 +15,7 @@ Note that the top-most release is changes in the unreleased master branch on Git
 ### Fixed
 - `Arche.glance()`, #88
 - Item links in Schema validation errors, #89
+- Empty NAN bars on category graphs, #93
 ### Removed
 
 

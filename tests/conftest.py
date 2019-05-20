@@ -1,3 +1,4 @@
+from itertools import zip_longest
 from typing import Dict, List, Optional
 
 from arche.readers.items import CollectionItems, JobItems
@@ -205,11 +206,11 @@ def create_result(
 def pytest_assertrepr_compare(op, left, right):
     if isinstance(left, Result) and isinstance(right, Result) and op == "==":
         assert_msgs = ["Results are equal"]
-        for (left_n, left_v), (_, right_v) in zip(
+        for (left_n, left_v), (_, right_v) in zip_longest(
             left.__dict__.items(), right.__dict__.items()
         ):
             if left_n == "_stats":
-                for left_stat, right_stat in zip(left_v, right_v):
+                for left_stat, right_stat in zip_longest(left_v, right_v):
                     if not Result.tensors_equal(left_stat, right_stat):
                         assert_msgs.extend([f"{left_stat}", "!=", f"{right_stat}"])
             elif left_v != right_v:
