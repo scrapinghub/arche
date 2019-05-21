@@ -14,6 +14,8 @@ Note that the top-most release is changes in the unreleased master branch on Git
 ### Changed
 - `Arche.report_all()` does not shorten report by default, added `short` parameter.
 ### Fixed
+- `Arche.glance()`, #88
+- Item links in Schema validation errors, #89
 - Empty NAN bars on category graphs, #93
 ### Removed
 

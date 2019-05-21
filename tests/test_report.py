@@ -131,16 +131,22 @@ def test_write_detailed_errors(mocker, errors, short, keys_limit, expected_messa
         (
             pd.Series(f"{SH_URL}/112358/13/21/item/0"),
             5,
-            [f"{SH_URL}/112358/13/21/item/5"],
+            pd.Series(f"{SH_URL}/112358/13/21/item/5"),
             f"<a href='{SH_URL}/112358/13/21/item/0'>0</a>",
         ),
         (
             pd.Series([f"{SH_URL}/112358/13/21/item/{i}" for i in range(20)]),
             10,
-            [f"{SH_URL}/112358/13/21/item/5"],
+            pd.Series(f"{SH_URL}/112358/13/21/item/5"),
             f"<a href='{SH_URL}/112358/13/21/item/5'>5</a>",
         ),
         (pd.Series([str(i) for i in range(5)]), 1, ["0"], "0"),
+        (
+            pd.Series("112358/13/21/0"),
+            1,
+            pd.Series("112358/13/21/0"),
+            f"<a href='{SH_URL}/112358/13/21/item/0'>0</a>",
+        ),
     ],
 )
 def test_sample_keys(mocker, keys, limit, sample_mock, expected_sample):

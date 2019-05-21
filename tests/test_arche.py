@@ -1,4 +1,4 @@
-from arche import arche
+from arche import arche, SH_URL
 from arche.arche import Arche
 from arche.rules.result import Level
 from conftest import create_result
@@ -243,6 +243,34 @@ def test_validate_with_json_schema(mocker, get_job_items, get_schema):
     mocked_show.assert_called_once_with(res)
     assert len(a.report.results) == 1
     assert a.report.results.get("JSON Schema Validation") == res
+
+
+def test_validate_with_json_schema_fails(mocker, get_job_items, get_schema):
+    mocked_html = mocker.patch("arche.report.HTML", autospec=True)
+    key = f"112358/13/21"
+    url_base = f"{SH_URL}/{key}/item"
+    res = create_result(
+        "JSON Schema Validation",
+        {
+            Level.ERROR: [
+                (
+                    "4 items were checked, 1 error(s)",
+                    None,
+                    {"'price' is a required property": {f"{key}/1"}},
+                )
+            ]
+        },
+    )
+    schema = {"type": "object", "required": ["price"]}
+    a = Arche("source", schema=schema)
+    a._source_items = get_job_items
+    a.validate_with_json_schema()
+
+    assert len(a.report.results) == 1
+    assert a.report.results.get("JSON Schema Validation") == res
+    mocked_html.assert_any_call(
+        f"1 items affected - 'price' is a required property: <a href='{url_base}/1'>1</a>"
+    )
 
 
 @pytest.mark.parametrize(
