@@ -169,7 +169,11 @@ class Result:
         figures = []
         for stat in stats:
             if isinstance(stat, pd.Series):
-                data = [go.Bar(x=stat.values, y=stat.index.values, orientation="h")]
+                data = [
+                    go.Bar(
+                        x=stat.values, y=stat.index.values.astype(str), orientation="h"
+                    )
+                ]
             else:
                 data = [
                     go.Bar(
@@ -182,7 +186,7 @@ class Result:
                 title=stat.name,
                 bargap=0.1,
                 template="seaborn",
-                height=max(min(len(stat) * 20, 900), 450),
+                height=min(len(stat) * 20, 900),
                 hovermode="y",
                 margin=dict(l=200, t=35),
                 xaxis=go.layout.XAxis(range=[0, max(stat.values.max(), 1) * 1.05]),

@@ -22,7 +22,6 @@ def validate(schema: Schema, raw_items: RawItems, fast: bool = False) -> Result:
     schema_result_message = (
         f"{len(raw_items)} items were checked, {len(errors)} error(s)"
     )
-
     if errors:
         result.add_error(schema_result_message, errors=errors)
     else:

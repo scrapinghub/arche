@@ -36,7 +36,8 @@ class Arche:
             target: a data source to compare with
             start: an item number to start reading from
             count: the amount of items to read from start
-            filters: Scrapinghub filtering
+            filters: Scrapinghub filtering, see
+            https://python-scrapinghub.readthedocs.io/en/latest/client/apidocs.html#scrapinghub.client.items.Items # noqa
             expand: if True, use flattened data in garbage rules, affects performance
             see flatten_df
         """
@@ -124,12 +125,12 @@ class Arche:
     def save_result(self, rule_result):
         self.report.save(rule_result)
 
-    def report_all(self):
+    def report_all(self, short: bool = False) -> None:
         self.run_all_rules()
         IPython.display.clear_output()
         self.report.write_summaries()
         self.report.write("\n" * 2)
-        self.report.write_details(short=True)
+        self.report.write_details(short)
 
     def run_all_rules(self):
         if isinstance(self.source_items, JobItems):
