@@ -124,9 +124,9 @@ def get_job(request):
     return Job(*request.param)
 
 
-@pytest.fixture(scope="function", params=[(cloud_items)])
-def get_collection(request):
-    return Collection(*request.param)
+@pytest.fixture(scope="function")
+def get_collection():
+    return Collection()
 
 
 @pytest.fixture(scope="function")
