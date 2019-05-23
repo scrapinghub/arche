@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 pandas = "*"
+flatten_json = "*"
 scrapinghub = {extras = ["msgpack"],version = "*"}
 plotly = "*"
 genson = "*"
@@ -38,6 +39,9 @@ sphinx-autoapi = {git = "https://github.com/rtfd/sphinx-autoapi"}
 nbsphinx = "*"
 memory-profiler = "*"
 jupyter-console = "*"
+matplotlib = "*"
+pyarrow = "*"
+cufflinks = "*"
 
 [requires]
 python_version = "3.7"
