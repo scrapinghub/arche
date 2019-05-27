@@ -35,6 +35,7 @@ class Items:
     @staticmethod
     def process_df(df: pd.DataFrame) -> pd.DataFrame:
         # clean empty objects - mainly lists and dicts, but keep everything else
+        # TODO see if np.squeeze(x) is faster
         df = df.applymap(lambda x: x if x or isinstance(x, numbers.Real) else np.nan)
         if "_type" in df.columns:
             df["_type"] = df["_type"].astype("category")
