@@ -93,7 +93,7 @@ def garbage_symbols(items: Items) -> Result:
         matches = matches[["spaces", "html_entities", "css", "html_tags"]]
         if not matches.empty:
             error_keys = items.flat_df.iloc[matches.unstack().index.values]["_key"]
-            original_column = items.get_origin_column_name(column)
+            original_column = items.origin_column_name(column)
             bad_texts = matches.stack().value_counts().index.sort_values().tolist()
             error = (
                 f"{len(error_keys)/len(items)*100:.1f}% of '{original_column}' "

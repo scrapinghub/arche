@@ -7,12 +7,11 @@ import pytest
 
 
 @pytest.mark.parametrize(
-    "name, expected_name", [("address", "address"), ("address_0", "address")]
+    "name, expected_name", [("price", "price"), ("name_0", "name")]
 )
-def test_get_origin_column_name(get_cloud_items, name, expected_name):
+def test_origin_column_name(get_cloud_items, name, expected_name):
     items = Items.from_df(pd.DataFrame(get_cloud_items))
-    items._columns_map = {"address_0": "address"}
-    assert items.get_origin_column_name(name) == expected_name
+    assert items.origin_column_name(name) == expected_name
 
 
 @pytest.mark.parametrize(
@@ -134,3 +133,78 @@ def test_process_df():
     exp_df = pd.DataFrame([[np.nan, np.nan, "NameItem"]], columns=["a", "b", "_type"])
     exp_df["_type"] = exp_df["_type"].astype("category")
     pd.testing.assert_frame_equal(df, exp_df)
+
+
+flat_df_inputs = [
+    (
+        [{"name": "Bob", "alive": True, "_key": 0, "following": None}],
+        {"_key": [0], "alive": [True], "following": [None], "name": ["Bob"]},
+        {"name": "name", "alive": "alive", "_key": "_key", "following": "following"},
+    ),
+    (
+        [{"tags": ["western", "comedy"]}, {"tags": ["drama", "history"]}],
+        {
+            "tags_0": ["western", "drama"],
+            "tags_1": ["comedy", "history"],
+            "_key": ["0", "1"],
+        },
+        {"tags_0": "tags", "tags_1": "tags"},
+    ),
+    (
+        [
+            {
+                "links": [
+                    {"Instagram": "http://www.instagram.com"},
+                    {"ITW website": "http://www.itw.com"},
+                ]
+            }
+        ],
+        {
+            "links_0_Instagram": ["http://www.instagram.com"],
+            "links_1_ITW website": ["http://www.itw.com"],
+            "_key": ["0"],
+        },
+        {"links_0_Instagram": "links", "links_1_ITW website": "links"},
+    ),
+    (
+        [
+            {
+                "links": [
+                    {"Instagram": ["http://www.instagram.com"]},
+                    {"ITW website": ["http://www.itw.com"]},
+                ]
+            }
+        ],
+        {
+            "links_0_Instagram_0": ["http://www.instagram.com"],
+            "links_1_ITW website_0": ["http://www.itw.com"],
+            "_key": ["0"],
+        },
+        {"links_0_Instagram_0": "links", "links_1_ITW website_0": "links"},
+    ),
+    # Corner case https://github.com/amirziai/flatten/issues/48
+    (
+        [
+            {"type": [0], "str": "k", "type_0": 5},
+            {"type": [0, [2, 3]], "str": "s", "type_0": 6},
+        ],
+        {
+            "str": ["k", "s"],
+            "type_0": [5, 6],
+            "type_1_0": [np.nan, 2.0],
+            "type_1_1": [np.nan, 3.0],
+            "_key": ["0", "1"],
+        },
+        {"type_0": "type_0", "str": "str", "type_1_0": "type", "type_1_1": "type"},
+    ),
+]
+
+
+@pytest.mark.parametrize("data, expected_data, expected_map", flat_df_inputs)
+def test_flat_df(data, expected_data, expected_map):
+    i = Items.from_array(data, expand=True)
+    pd.testing.assert_frame_equal(
+        i.flat_df, pd.DataFrame(expected_data), check_like=False
+    )
+    for new, old in expected_map.items():
+        assert i.origin_column_name(new) == old
