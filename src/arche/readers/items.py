@@ -3,7 +3,8 @@ import numbers
 from typing import Any, Dict, Iterable, Optional
 
 from arche import SH_URL
-from arche.tools import pandas, api
+from arche.tools import api
+from flatten_json import flatten
 import numpy as np
 import pandas as pd
 from scrapinghub import ScrapinghubClient
@@ -13,23 +14,25 @@ RawItems = Iterable[Dict[str, Any]]
 
 
 class Items:
-    def __init__(self, raw: RawItems, df: pd.DataFrame, expand: bool = False):
+    def __init__(self, raw: RawItems, df: pd.DataFrame, expand: bool):
         self.raw = raw
         self.df = self.process_df(df)
         self._flat_df = None
         self.expand = expand
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.df)
 
     @property
-    def flat_df(self):
+    def flat_df(self) -> pd.DataFrame:
         if self._flat_df is None:
             if self.expand:
-                self._flat_df, self._columns_map = pandas.flatten_df(self.df)
+                self._flat_df = pd.DataFrame(flatten(i) for i in self.raw)
+                self._flat_df["_key"] = self.df.get(
+                    "_key", [str(i) for i in range(len(self))]
+                )
             else:
                 self._flat_df = self.df
-                self._columns_map = {}
         return self._flat_df
 
     @staticmethod
@@ -40,8 +43,12 @@ class Items:
             df["_type"] = df["_type"].astype("category")
         return df
 
-    def get_origin_column_name(self, column_name: str) -> str:
-        return self._columns_map.get(column_name, column_name)
+    def origin_column_name(self, new: str) -> str:
+        if new in self.df.columns:
+            return new
+        for column in self.df.columns:
+            if column in new:
+                return column
 
     @classmethod
     def from_df(cls, df: pd.DataFrame, expand: bool = True):
