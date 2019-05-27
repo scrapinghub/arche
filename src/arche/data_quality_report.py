@@ -5,7 +5,7 @@ from typing import Optional
 
 from arche.figures import tables
 from arche.quality_estimation_algorithm import generate_quality_estimation
-from arche.readers.items import Items
+from arche.readers.items import CloudItems
 from arche.readers.schema import Schema, Tags
 from arche.report import Report
 import arche.rules.coverage as coverage_rules
@@ -22,7 +22,11 @@ import plotly.io as pio
 
 class DataQualityReport:
     def __init__(
-        self, items: Items, schema: Schema, report: Report, bucket: Optional[str] = None
+        self,
+        items: CloudItems,
+        schema: Schema,
+        report: Report,
+        bucket: Optional[str] = None,
     ):
         """Print a data quality report
 
@@ -63,7 +67,7 @@ class DataQualityReport:
 
         validation_errors = self.report.results.get(
             "JSON Schema Validation",
-            schema_rules.validate(self.schema, df=items.df, fast=False),
+            schema_rules.validate(self.schema, raw_items=items.raw, fast=False),
         ).get_errors_count()
 
         garbage_symbols_result = self.report.results.get(

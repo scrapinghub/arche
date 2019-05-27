@@ -42,7 +42,6 @@ class Result:
         messages: messages separated by severity
         _stats: pandas data to plot
         items_count: the count of verified items
-        checked_fields: the names of verified fields
         err_items_count: the number of error items
         _figures: a list of graphs created from stats
     """
@@ -51,7 +50,6 @@ class Result:
     messages: Dict[Level, List[Message]] = field(default_factory=dict)
     _stats: Optional[List[Stat]] = field(default_factory=list)
     items_count: Optional[int] = 0
-    checked_fields: Optional[List[str]] = field(default_factory=list)
     err_items_count: Optional[int] = 0
     _figures: Optional[List[go.FigureWidget]] = field(default_factory=list)
 
@@ -64,7 +62,6 @@ class Result:
             self.name == other.name
             and self.messages == other.messages
             and self.items_count == other.items_count
-            and self.checked_fields == other.checked_fields
             and self.err_items_count == other.err_items_count
             and len(self.stats) == len(other.stats)
         )

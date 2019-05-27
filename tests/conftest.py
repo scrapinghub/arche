@@ -180,12 +180,7 @@ def get_collection_items(request, mocker):
 
 
 def create_result(
-    rule_name,
-    messages,
-    stats=None,
-    err_items_count=None,
-    checked_fields=None,
-    items_count=None,
+    rule_name, messages, stats=None, err_items_count=None, items_count=None
 ):
     result = Result(rule_name)
     for level, messages in messages.items():
@@ -196,8 +191,6 @@ def create_result(
         result.stats = stats
     if err_items_count:
         result.err_items_count = err_items_count
-    if checked_fields:
-        result.checked_fields = checked_fields
     if items_count:
         result.items_count = items_count
     return result
