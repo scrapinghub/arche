@@ -131,8 +131,35 @@ def test_process_df():
         pd.DataFrame([[dict(), list(), "NameItem"]], columns=["a", "b", "_type"])
     )
     exp_df = pd.DataFrame([[np.nan, np.nan, "NameItem"]], columns=["a", "b", "_type"])
-    exp_df["_type"] = exp_df["_type"].astype("category")
     pd.testing.assert_frame_equal(df, exp_df)
+
+
+@pytest.mark.parametrize(
+    "data, expected_cats",
+    [
+        (
+            {
+                "a": [i for i in range(100)],
+                "b": [False for i in range(100)],
+                "c": [[False] for i in range(100)],
+                "d": [{0} for i in range(100)],
+            },
+            ["b"],
+        )
+    ],
+)
+def test_categorize(data, expected_cats):
+    df = pd.DataFrame(data)
+    Items.categorize(df)
+    np.testing.assert_array_equal(
+        df.select_dtypes(["category"]).columns.values, expected_cats
+    )
+
+
+def test_no_categorize():
+    df = pd.DataFrame({"a": [i for i in range(99)]})
+    Items.categorize(df)
+    assert df.select_dtypes(["category"]).empty
 
 
 flat_df_inputs = [

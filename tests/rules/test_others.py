@@ -13,7 +13,7 @@ compare_bool_data = [
     (
         {"b": [True, True]},
         {"b": [False, False]},
-        {Level.ERROR: [(("b relative frequencies differ by more than 10%"),)]},
+        {Level.ERROR: [("b relative frequencies differ by more than 10%",)]},
         [
             create_df(
                 {True: [1.0, 0.0], False: [0.0, 1.0]}, index=["b_source", "b_target"]
