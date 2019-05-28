@@ -13,11 +13,11 @@ Note that the top-most release is changes in the unreleased master branch on Git
 ### Added
 ### Changed
 - `Arche.report_all()` does not shorten report by default, added `short` parameter.
+- `expand=True` which enables nested data flattening is more than 100x faster and consumes ~2x less memory than before, #94
 ### Fixed
 - `Arche.glance()`, #88
 - Item links in Schema validation errors, #89
 - Empty NAN bars on category graphs, #93
-- `expand=True` which enables nested data flattening is more than 100x faster and consumes ~2x less memory than before, #94
 - `data_quality_report()`, #95
 ### Removed
 
