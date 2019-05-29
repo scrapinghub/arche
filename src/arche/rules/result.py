@@ -165,17 +165,12 @@ class Result:
     def create_figures(stats: List[Stat]) -> List[go.FigureWidget]:
         figures = []
         for stat in stats:
+            y = stat.index.values.astype(str)
             if isinstance(stat, pd.Series):
-                data = [
-                    go.Bar(
-                        x=stat.values, y=stat.index.values.astype(str), orientation="h"
-                    )
-                ]
+                data = [go.Bar(x=stat.values, y=y, orientation="h")]
             else:
                 data = [
-                    go.Bar(
-                        x=stat[c].values, y=stat.index.values, orientation="h", name=c
-                    )
+                    go.Bar(x=stat[c].values, y=y, orientation="h", name=c)
                     for c in stat.columns
                 ]
 
