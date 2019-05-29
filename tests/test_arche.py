@@ -198,6 +198,7 @@ def test_run_all_rules_job(mocker, get_cloud_items):
         "Fields Coverage",
         "Scraped Fields",
         "Boolean Fields",
+        "Categories",
     ]
     for e in executed:
         assert e in a.report.results

@@ -81,3 +81,12 @@ def test_get_difference(source, target, categories, expected_messages, expected_
     ) == create_result(
         "Category Coverage Difference", expected_messages, stats=expected_stats
     )
+
+
+@pytest.mark.parametrize(
+    "data, expected_messages",
+    [(np.random.rand(10), {Level.INFO: [("Categorical data was not found",)]})],
+)
+def test_get_categorical_data(data, expected_messages):
+    result = c.get_categorical_data(pd.DataFrame(data))
+    assert result == create_result("Categories", expected_messages)
