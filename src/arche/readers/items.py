@@ -48,7 +48,7 @@ class Items:
             return
         for c in df.columns:
             try:
-                if df[c].nunique(dropna=False) < 11:
+                if df[c].nunique(dropna=False) <= 10:
                     df[c] = df[c].astype("category")
             # ignore lists and dicts columns
             except TypeError:

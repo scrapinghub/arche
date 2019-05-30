@@ -87,6 +87,6 @@ def test_get_difference(source, target, categories, expected_messages, expected_
     "data, expected_messages",
     [(np.random.rand(10), {Level.INFO: [("Categorical data was not found",)]})],
 )
-def test_get_categorical_data(data, expected_messages):
-    result = c.get_categorical_data(pd.DataFrame(data))
+def test_get_categories(data, expected_messages):
+    result = c.get_categories(pd.DataFrame(data))
     assert result == create_result("Categories", expected_messages)

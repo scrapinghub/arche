@@ -2,6 +2,7 @@ from typing import List
 
 from arche.rules.result import Outcome, Result
 import pandas as pd
+from plotly.colors import DEFAULT_PLOTLY_COLORS
 import plotly.graph_objs as go
 
 
@@ -81,27 +82,35 @@ def get_coverage_per_category(df: pd.DataFrame, category_names: List[str]) -> Re
     return result
 
 
-def get_categorical_data(df: pd.DataFrame) -> Result:
+def get_categories(
+    df: pd.DataFrame, max_uniques: int = 10, max_uniques_percentage: float = 0.5
+) -> Result:
+    """Create a stacked bar chart showing categories including `NAN`. Categories
+    are determined by `max_uniques` values. To be such column, it needs to have the size of
+    value counts less or equal than `max_uniques`.
+
+    Args:
+        df: data
+        max_uniques: filter which determines which columns to use. Only columns with
+        the number of unique values less or equal than `max_uniques` are used.
+        max_uniques_percentage: determines `df` with what percentage of maximum uniques
+        to consider.
+
+    Returns:
+        A result with figure containing all plots.
+    """
     result = Result("Categories")
-    data = []
-    cat_df = df.select_dtypes(["category"])
-    if cat_df.empty:
+    if df.empty or max_uniques / len(df) > max_uniques_percentage:
         result.add_info("Categorical data was not found")
         return result
-    colors = [
-        "rgb(55, 128, 191)",
-        "rgb(219, 85, 108)",
-        "rgb(119, 164, 82)",
-        "rgb(255, 153, 102)",
-        "rgb(122, 120, 168)",
-        "rgb(204, 153, 0)",
-        "rgb(58, 71, 80)",
-        "rgb(10, 200, 225)",
-        "rgb(40, 171, 0)",
-        "rgb(222, 10, 10)",
+
+    v_counts = [
+        df[c].value_counts(dropna=False)
+        for c in df
+        if len(df[c].value_counts(dropna=False)) <= max_uniques
     ]
-    for c in cat_df:
-        vc = df[c].value_counts(dropna=False)
+    data = []
+    for vc in v_counts:
         data.extend(
             [
                 go.Bar(
@@ -109,23 +118,24 @@ def get_categorical_data(df: pd.DataFrame) -> Result:
                     y=[vc.name],
                     name=index,
                     orientation="h",
-                    opacity=0.7,
-                    marker=dict(color=colors[i]),
+                    opacity=0.6,
+                    marker_color=DEFAULT_PLOTLY_COLORS[i % 10],
                 )
                 for i, (index, value) in enumerate(vc.items())
             ]
         )
+
     layout = go.Layout(
-        title="Fields with less than 11 unique values",
+        title=f"Fields with less than {max_uniques + 1} unique values",
         bargap=0.1,
         barmode="stack",
         template="seaborn",
-        height=min(len(cat_df.columns) * 20, 900),
+        height=min(len(df.columns) * 20, 900),
         hovermode="y",
         margin=dict(l=200, t=35),
         showlegend=False,
     )
 
     result._figures = [go.FigureWidget(data, layout)]
-    result.add_info(f"{len(cat_df.columns)} categorical fields")
+    result.add_info(f"{len(df.columns)} categorical field(s)")
     return result
