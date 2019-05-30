@@ -83,7 +83,7 @@ def get_coverage_per_category(df: pd.DataFrame, category_names: List[str]) -> Re
 
 
 def get_categories(
-    df: pd.DataFrame, max_uniques: int = 10, max_uniques_percentage: float = 0.5
+    df: pd.DataFrame, max_uniques: int = 10, max_uniques_ratio: float = 0.5
 ) -> Result:
     """Create a stacked bar chart showing categories including `NAN`. Categories
     are determined by `max_uniques` values. To be such column, it needs to have the size of
@@ -93,14 +93,14 @@ def get_categories(
         df: data
         max_uniques: filter which determines which columns to use. Only columns with
         the number of unique values less or equal than `max_uniques` are used.
-        max_uniques_percentage: determines `df` with what percentage of maximum uniques
+        max_uniques_ratio: determines `df` with what ratio of maximum uniques
         to consider.
 
     Returns:
         A result with figure containing all plots.
     """
     result = Result("Categories")
-    if df.empty or max_uniques / len(df) > max_uniques_percentage:
+    if df.empty or max_uniques / len(df) > max_uniques_ratio:
         result.add_info("Categorical data was not found")
         return result
 
