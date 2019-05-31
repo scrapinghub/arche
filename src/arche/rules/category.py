@@ -85,57 +85,30 @@ def get_coverage_per_category(df: pd.DataFrame, category_names: List[str]) -> Re
 def get_categories(
     df: pd.DataFrame, max_uniques: int = 10, max_uniques_ratio: float = 0.5
 ) -> Result:
-    """Create a stacked bar chart showing categories including `NAN`. Categories
-    are determined by `max_uniques` values. To be such column, it needs to have the size of
-    value counts less or equal than `max_uniques`.
+    """Create a stacked bar chart showing categories per column including `NAN`. Category
+    columns are determined by `max_uniques` values. To be such column, it needs to have
+    the size of value counts less or equal than `max_uniques`.
 
     Args:
         df: data
         max_uniques: filter which determines which columns to use. Only columns with
-        the number of unique values less or equal than `max_uniques` are used.
-        max_uniques_ratio: determines `df` with what ratio of maximum uniques
-        to consider.
+        the number of unique values less or equal than `max_uniques` are used
+        max_uniques_ratio: if ratio of `max_uniques` to df length is higher than this,
+        df is skipped
 
     Returns:
-        A result with figure containing all plots.
+        A result with stats containing value counts.
     """
     result = Result("Categories")
     if df.empty or max_uniques / len(df) > max_uniques_ratio:
-        result.add_info("Categorical data was not found")
+        result.add_info("Categories were not found")
         return result
 
-    v_counts = [
+    result.stats = [
         df[c].value_counts(dropna=False)
         for c in df
         if len(df[c].value_counts(dropna=False)) <= max_uniques
     ]
-    data = []
-    for vc in v_counts:
-        data.extend(
-            [
-                go.Bar(
-                    x=[value],
-                    y=[vc.name],
-                    name=index,
-                    orientation="h",
-                    opacity=0.6,
-                    marker_color=DEFAULT_PLOTLY_COLORS[i % 10],
-                )
-                for i, (index, value) in enumerate(vc.items())
-            ]
-        )
 
-    layout = go.Layout(
-        title=f"Fields with less than {max_uniques + 1} unique values",
-        bargap=0.1,
-        barmode="stack",
-        template="seaborn",
-        height=min(len(df.columns) * 20, 900),
-        hovermode="y",
-        margin=dict(l=200, t=35),
-        showlegend=False,
-    )
-
-    result._figures = [go.FigureWidget(data, layout)]
-    result.add_info(f"{len(df.columns)} categorical field(s)")
+    result.add_info(f"{len(result.stats)} category field(s)")
     return result

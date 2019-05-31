@@ -84,9 +84,57 @@ def test_get_difference(source, target, categories, expected_messages, expected_
 
 
 @pytest.mark.parametrize(
-    "data, expected_messages",
-    [(np.random.rand(10), {Level.INFO: [("Categorical data was not found",)]})],
+    "data, expected_message",
+    [
+        (np.random.rand(10), "Categories were not found"),
+        (None, "Categories were not found"),
+    ],
 )
-def test_get_categories(data, expected_messages):
+def test_get_no_categories(data, expected_message):
     result = c.get_categories(pd.DataFrame(data))
-    assert result == create_result("Categories", expected_messages)
+    assert result == create_result("Categories", {Level.INFO: [(expected_message,)]})
+
+
+@pytest.mark.parametrize(
+    "data, max_uniques, max_uniques_ratio, expected_stats, expected_message",
+    [
+        (
+            np.zeros(10),
+            2,
+            0.5,
+            [pd.Series(10, index=[0.0], name=0)],
+            "1 category field(s)",
+        ),
+        (
+            [[np.nan]] * 10,
+            2,
+            0.5,
+            [pd.Series(10, index=[np.nan], name=0)],
+            "1 category field(s)",
+        ),
+        (
+            {"a": [True] * 10, "b": [i for i in range(10)]},
+            2,
+            0.5,
+            [pd.Series(10, index=[True], name="a")],
+            "1 category field(s)",
+        ),
+        (
+            {"b": [i for i in range(10)], "c": [np.nan] * 10},
+            10,
+            1.0,
+            [
+                pd.Series([1] * 10, index=[i for i in range(10)][::-1], name="b"),
+                pd.Series(10, index=[np.nan], name="c"),
+            ],
+            "2 category field(s)",
+        ),
+    ],
+)
+def test_get_categories(
+    data, max_uniques, max_uniques_ratio, expected_stats, expected_message
+):
+    result = c.get_categories(pd.DataFrame(data), max_uniques, max_uniques_ratio)
+    assert result == create_result(
+        "Categories", {Level.INFO: [(expected_message,)]}, stats=expected_stats
+    )
