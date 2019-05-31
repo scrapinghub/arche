@@ -3,6 +3,7 @@ from enum import Enum
 from typing import Dict, List, Optional, Union
 
 import pandas as pd
+from plotly.colors import DEFAULT_PLOTLY_COLORS
 import plotly.graph_objs as go
 import plotly.io as pio
 
@@ -100,7 +101,7 @@ class Result:
     @property
     def figures(self):
         if not self._figures:
-            self._figures = Result.create_figures(self.stats)
+            self._figures = Result.create_figures(self.stats, self.name)
         return self._figures
 
     def add_info(self, summary, detailed=None, errors=None):
@@ -162,7 +163,12 @@ class Result:
             pio.show(f)
 
     @staticmethod
-    def create_figures(stats: List[Stat]) -> List[go.FigureWidget]:
+    def create_figures(stats: List[Stat], name: str) -> List[go.FigureWidget]:
+        if name == "Categories":
+            data = Result.build_stack_bar_data(stats)
+            layout = Result.get_layout(f"Category fields", len(stats))
+            layout.barmode = "stack"
+            return [go.FigureWidget(data, layout)]
         figures = []
         for stat in stats:
             y = stat.index.values.astype(str)
@@ -174,15 +180,7 @@ class Result:
                     for c in stat.columns
                 ]
 
-            layout = go.Layout(
-                title=stat.name,
-                bargap=0.1,
-                template="seaborn",
-                height=min(len(stat) * 20, 900),
-                hovermode="y",
-                margin=dict(l=200, t=35),
-                xaxis=go.layout.XAxis(range=[0, max(stat.values.max(), 1) * 1.05]),
-            )
+            layout = Result.get_layout(stat.name, len(stat), stat.values.max())
             if stat.name.startswith("Coverage"):
                 layout.xaxis.tickformat = ".2p"
             if stat.name == "Coverage for boolean fields":
@@ -192,6 +190,41 @@ class Result:
 
             figures.append(go.FigureWidget(data, layout))
         return figures
+
+    @staticmethod
+    def get_layout(
+        name: str, rows_count: int, max_x: Optional[float] = None
+    ) -> go.Layout:
+        layout = go.Layout(
+            title=name,
+            bargap=0.1,
+            template="seaborn",
+            height=min(rows_count * 20, 900),
+            hovermode="y",
+            margin=dict(l=200, t=35),
+        )
+        if max_x:
+            layout.xaxis = go.layout.XAxis(range=[0, max(max_x, 1) * 1.05])
+        return layout
+
+    @staticmethod
+    def build_stack_bar_data(values_counts: List[pd.Series]) -> List[go.Bar]:
+        data = []
+        for vc in values_counts:
+            data.extend(
+                [
+                    go.Bar(
+                        x=[counts],
+                        y=[vc.name],
+                        name=str(value),
+                        orientation="h",
+                        opacity=0.6,
+                        marker_color=DEFAULT_PLOTLY_COLORS[i % 10],
+                    )
+                    for i, (value, counts) in enumerate(vc.items())
+                ]
+            )
+        return data
 
     @staticmethod
     def make_annotations(stat: pd.Series) -> List[Dict]:

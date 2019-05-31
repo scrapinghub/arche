@@ -2,8 +2,6 @@ from typing import List
 
 from arche.rules.result import Outcome, Result
 import pandas as pd
-from plotly.colors import DEFAULT_PLOTLY_COLORS
-import plotly.graph_objs as go
 
 
 def get_difference(
