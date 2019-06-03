@@ -168,24 +168,27 @@ def test_arche_dataframe_data_warning(caplog):
     assert "Pandas stores `NA` (missing)" in caplog.text
 
 
-def test_report_all(mocker):
-    mocked_run_all = mocker.patch("arche.Arche.run_all_rules", autospec=True)
-    mocked_write_summary = mocker.patch(
+def test_report_all(mocker, get_cloud_items):
+    mocked_write_summaries = mocker.patch(
         "arche.report.Report.write_summaries", autospec=True
     )
     # autospec and classmethod bug https://github.com/python/cpython/pull/11613
     mocked_write = mocker.patch("arche.report.Report.write", autospec=False)
-    mocked_write_details = mocker.patch(
-        "arche.report.Report.write_details", autospec=True
-    )
 
-    arche = Arche("source")
-    arche.report_all()
-
-    mocked_run_all.assert_called_once_with(arche)
-    mocked_write_summary.assert_called_once_with(arche.report)
+    source = pd.DataFrame(get_cloud_items)
+    source["b"] = True
+    a = Arche(source=source, target=pd.DataFrame(get_cloud_items[:2]))
+    a.report_all()
+    executed = {
+        "Garbage Symbols",
+        "Fields Coverage",
+        "Scraped Fields",
+        "Boolean Fields",
+        "Categories",
+    }
+    mocked_write_summaries.assert_called_once_with(a.report)
     mocked_write.assert_called_once_with("\n" * 2)
-    mocked_write_details.assert_called_once_with(arche.report, short=False)
+    assert executed == a.report.results.keys()
 
 
 def test_run_all_rules_job(mocker, get_cloud_items):
@@ -193,15 +196,15 @@ def test_run_all_rules_job(mocker, get_cloud_items):
         source=pd.DataFrame(get_cloud_items), target=pd.DataFrame(get_cloud_items[:2])
     )
     a.run_all_rules()
-    executed = [
+    executed = {
         "Garbage Symbols",
         "Fields Coverage",
         "Scraped Fields",
         "Boolean Fields",
-    ]
-    for e in executed:
-        assert e in a.report.results
-    assert len(a.report.results) == len(executed)
+        "Categories",
+    }
+
+    assert executed == a.report.results.keys()
 
 
 def test_run_all_rules_collection(mocker, get_collection_items):

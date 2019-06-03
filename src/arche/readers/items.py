@@ -39,9 +39,20 @@ class Items:
     def process_df(df: pd.DataFrame) -> pd.DataFrame:
         # clean empty objects - mainly lists and dicts, but keep everything else
         df = df.applymap(lambda x: x if x or isinstance(x, numbers.Real) else np.nan)
-        if "_type" in df.columns:
-            df["_type"] = df["_type"].astype("category")
+        Items.categorize(df)
         return df
+
+    @staticmethod
+    def categorize(df: pd.DataFrame) -> pd.DataFrame:
+        if len(df) < 100:
+            return
+        for c in df.columns:
+            try:
+                if df[c].nunique(dropna=False) <= 10:
+                    df[c] = df[c].astype("category")
+            # ignore lists and dicts columns
+            except TypeError:
+                continue
 
     def origin_column_name(self, new: str) -> str:
         if new in self.df.columns:

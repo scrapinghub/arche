@@ -204,8 +204,14 @@ def pytest_assertrepr_compare(op, left, right):
         ):
             if left_n == "_stats":
                 for left_stat, right_stat in zip_longest(left_v, right_v):
-                    if not Result.tensors_equal(left_stat, right_stat):
+                    try:
+                        if isinstance(left_stat, pd.DataFrame):
+                            pd.testing.assert_frame_equal(left_stat, right_stat)
+                        else:
+                            pd.testing.assert_series_equal(left_stat, right_stat)
+                    except AssertionError as e:
                         assert_msgs.extend([f"{left_stat}", "!=", f"{right_stat}"])
+                        assert_msgs.extend(str(e).split("\n"))
             elif left_v != right_v:
                 assert_msgs.extend([f"{left_v}", "!=", f"{right_v}"])
         return assert_msgs

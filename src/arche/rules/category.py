@@ -78,3 +78,29 @@ def get_coverage_per_category(df: pd.DataFrame, category_names: List[str]) -> Re
     if not category_names:
         result.add_info(Outcome.SKIPPED)
     return result
+
+
+def get_categories(df: pd.DataFrame, max_uniques: int = 10) -> Result:
+    """Find category columns. A category column is the column which holds a limited number
+    of possible values, including `NAN`.
+
+    Args:
+        df: data
+        max_uniques: filter which determines which columns to use. Only columns with
+        the number of unique values less than or equal to `max_uniques` are category columns.
+
+    Returns:
+        A result with stats containing value counts.
+    """
+    result = Result("Categories")
+
+    result.stats = [
+        df[c].value_counts(dropna=False)
+        for c in df
+        if len(df[c].value_counts(dropna=False)) <= max_uniques
+    ]
+    if not result.stats:
+        result.add_info("Categories were not found")
+        return result
+    result.add_info(f"{len(result.stats)} category field(s)")
+    return result

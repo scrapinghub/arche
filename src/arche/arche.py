@@ -158,6 +158,7 @@ class Arche:
                 df.drop(columns=df.columns[df.columns.str.startswith("_")])
             )
         )
+        self.save_result(category_rules.get_categories(df))
 
     def validate_with_json_schema(self) -> None:
         """Run JSON schema check and output results. It will try to find all errors, but

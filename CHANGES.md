@@ -9,8 +9,10 @@ Note that the top-most release is changes in the unreleased master branch on Git
 
 [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
 ## [0.3.6dev] (Work In Progress)
 ### Added
+- **Categories** rule with a plot showing unique values and count per field. By default, `report_all()` only includes fields which have less or equal to 10 unique values. See https://arche.readthedocs.io/en/latest/nbs/Rules.html#Category-fields, #100
 ### Changed
 - `Arche.report_all()` does not shorten report by default, added `short` parameter.
 - `expand=True` which enables nested data flattening is more than 100x faster and consumes ~2x less memory than before, #94
