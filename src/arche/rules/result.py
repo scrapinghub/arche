@@ -100,7 +100,7 @@ class Result:
 
     @property
     def figures(self):
-        if not self._figures:
+        if not self._figures and self.stats:
             self._figures = Result.create_figures(self.stats, self.name)
         return self._figures
 
@@ -166,7 +166,7 @@ class Result:
     def create_figures(stats: List[Stat], name: str) -> List[go.FigureWidget]:
         if name == "Categories":
             data = Result.build_stack_bar_data(stats)
-            layout = Result.get_layout(f"Category fields", len(stats))
+            layout = Result.get_layout("Category fields", len(stats))
             layout.barmode = "stack"
             return [go.FigureWidget(data, layout)]
         figures = []
@@ -180,7 +180,8 @@ class Result:
                     for c in stat.columns
                 ]
 
-            layout = Result.get_layout(stat.name, len(stat), stat.values.max())
+            layout = Result.get_layout(stat.name, len(stat))
+            layout.xaxis = go.layout.XAxis(range=[0, max(stat.values.max(), 1) * 1.05])
             if stat.name.startswith("Coverage"):
                 layout.xaxis.tickformat = ".2p"
             if stat.name == "Coverage for boolean fields":
@@ -192,23 +193,17 @@ class Result:
         return figures
 
     @staticmethod
-    def get_layout(
-        name: str, rows_count: int, max_x: Optional[float] = None
-    ) -> go.Layout:
-        layout = go.Layout(
-            title=name,
-            bargap=0.1,
-            template="seaborn",
-            height=min(rows_count * 20, 900),
-            hovermode="y",
-            margin=dict(l=200, t=35),
-        )
-        if max_x:
-            layout.xaxis = go.layout.XAxis(range=[0, max(max_x, 1) * 1.05])
-        return layout
-
-    @staticmethod
     def build_stack_bar_data(values_counts: List[pd.Series]) -> List[go.Bar]:
+        """Create data for plotly stack bar chart with consistent colors between
+        bars. Each bar values have indexes unique to the bar, without any correlation
+        to other obars.
+
+        Args:
+            values_counts: an array of value_counts series
+
+        Returns:
+            A list of Bar objects.
+        """
         data = []
         for vc in values_counts:
             data.extend(
@@ -225,6 +220,17 @@ class Result:
                 ]
             )
         return data
+
+    @staticmethod
+    def get_layout(name: str, rows_count: int) -> go.Layout:
+        return go.Layout(
+            title=name,
+            bargap=0.1,
+            template="seaborn",
+            height=min(rows_count * 20, 900),
+            hovermode="y",
+            margin=dict(l=200, t=35),
+        )
 
     @staticmethod
     def make_annotations(stat: pd.Series) -> List[Dict]:
