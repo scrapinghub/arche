@@ -173,10 +173,10 @@ class Result:
         for stat in stats:
             y = stat.index.values.astype(str)
             if isinstance(stat, pd.Series):
-                data = [go.Bar(x=stat.values, y=y, orientation="h")]
+                data = [go.Bar(x=stat.values, y=y, orientation="h", opacity=0.7)]
             else:
                 data = [
-                    go.Bar(x=stat[c].values, y=y, orientation="h", name=c)
+                    go.Bar(x=stat[c].values, y=y, orientation="h", opacity=0.7, name=c)
                     for c in stat.columns
                 ]
 
@@ -206,19 +206,18 @@ class Result:
         """
         data = []
         for vc in values_counts:
-            data.extend(
-                [
-                    go.Bar(
-                        x=[counts],
-                        y=[vc.name],
-                        name=str(value),
-                        orientation="h",
-                        opacity=0.6,
-                        marker_color=DEFAULT_PLOTLY_COLORS[i % 10],
-                    )
-                    for i, (value, counts) in enumerate(vc.items())
-                ]
-            )
+            data = data + [
+                go.Bar(
+                    x=[counts],
+                    y=[vc.name],
+                    name=str(value)[:30],
+                    orientation="h",
+                    opacity=0.6,
+                    legendgroup=vc.name,
+                    marker_color=DEFAULT_PLOTLY_COLORS[i % 10],
+                )
+                for i, (value, counts) in enumerate(vc.items())
+            ]
         return data
 
     @staticmethod
