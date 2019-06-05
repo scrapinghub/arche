@@ -21,7 +21,7 @@ def test_origin_column_name(get_cloud_items, name, expected_name):
         (
             pd.DataFrame({"0": [0], "_key": ["0"]}),
             [{"0": 0, "_key": "0"}],
-            pd.DataFrame({"0": [0], "_key": ["0"]}, index=["0"]),
+            pd.DataFrame({"0": [0], "_key": ["0"]}),
         ),
     ],
 )
@@ -34,8 +34,8 @@ def test_items_from_df(df, expected_raw, expected_df):
 @pytest.mark.parametrize(
     "raw",
     [
-        ([{"0": 0, "_key": "0"}, {"_key": "1"}]),
-        (np.array([{"0": 0, "_key": "0"}, {"_key": "1"}])),
+        [{"0": 0, "_key": "0"}, {"_key": "1"}],
+        np.array([{"0": 0, "_key": "0"}, {"_key": "1"}]),
     ],
 )
 def test_items_from_array(raw):
@@ -53,7 +53,8 @@ collection_items = np.array(
     ]
 )
 expected_col_df = pd.DataFrame(
-    list(collection_items), index=[f"{SH_URL}/key/{i}" for i in range(4)]
+    {"name": ["Book", "Movie", "Guitar", "Dog"]},
+    index=[f"{SH_URL}/key/{i}" for i in range(4)],
 )
 
 
@@ -95,7 +96,8 @@ job_items = np.array(
     ]
 )
 expected_job_df = pd.DataFrame(
-    list(job_items), index=[f"{SH_URL}/112358/13/21/item/{i}" for i in range(4)]
+    {"name": ["Elizabeth", "Margaret", "Yulia", "Vivien"]},
+    index=[f"{SH_URL}/112358/13/21/item/{i}" for i in range(4)],
 )
 
 
