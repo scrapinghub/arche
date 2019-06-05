@@ -32,8 +32,9 @@ Then just `pip install arche`
 * You need to check the quality of data from Scrapy Cloud jobs continuously.
 
   Say, you scraped some website and have the data ready in the cloud. A typical approach would be:
-    * Create a JSON schema and validate the data with it
-    * Use the created schema in [Spidermon Validation](https://spidermon.readthedocs.io/en/latest/item-validation.html#with-json-schema)
+  * Create a JSON schema and validate the data with it
+  * Use the created schema in [Spidermon Validation](https://spidermon.readthedocs.io/en/latest/item-validation.html#with-json-schema)
+
 * You want to use it in your application to verify Scrapy Cloud data
 
 ## Developer Setup
