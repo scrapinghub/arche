@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import Any, Dict, Deque
+from typing import Deque
 
 from arche.readers.items import RawItems
 from arche.readers.schema import Schema
@@ -23,30 +23,25 @@ class JsonSchemaValidator:
         """Verify items one by one. It stops after the first error in an item in most cases.
         Faster than jsonschema validation"""
         validate = fastjsonschema.compile(self.schema)
-        for raw_item in tqdm_notebook(raw_items, desc="JSON Schema Validation"):
+        for i, raw_item in enumerate(
+            tqdm_notebook(raw_items, desc="Fast Schema Validation")
+        ):
             try:
                 validate(raw_item)
             except fastjsonschema.JsonSchemaException as error:
-                self.errors[str(error)].add(raw_item["_key"])
+                self.errors[str(error)].add(raw_item.get("_key", str(i)))
 
     def validate(self, raw_items: RawItems) -> None:
         validator = validators.validator_for(self.schema)(self.schema)
         validator.format_checker = FormatChecker()
-        for raw_item in tqdm_notebook(raw_items, desc="JSON Schema Validation"):
-            self.validate_item(raw_item, validator)
-
-    def validate_item(self, item: Dict[str, Any], validator) -> None:
-        """Check a single item against jsonschema
-
-        Args:
-            item: a dict with item data
-            validator: a validator instance
-        """
-        for e in validator.iter_errors(item):
-            error = self.format_validation_message(
-                e.message, e.path, e.schema_path, e.validator
-            )
-            self.errors[error].add(item["_key"])
+        for i, raw_item in enumerate(
+            tqdm_notebook(raw_items, desc="JSON Schema Validation")
+        ):
+            for e in validator.iter_errors(raw_item):
+                error = self.format_validation_message(
+                    e.message, e.path, e.schema_path, e.validator
+                )
+                self.errors[error].add(raw_item.get("_key", str(i)))
 
     @staticmethod
     def format_validation_message(

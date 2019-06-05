@@ -65,16 +65,16 @@ def test_format_validation_message(
     )
 
 
-def test_validate():
+def test_validate_fails():
     jsv = JSV({"properties": {"NAME": {"type": "string"}}})
-    jsv.validate(np.array([{"NAME": None, "_key": "0"}]))
-    assert jsv.errors == {"NAME is not of type 'string'": {"0"}}
+    jsv.validate(np.array([{"NAME": None, "_key": "0"}, {"NAME": None}]))
+    assert jsv.errors == {"NAME is not of type 'string'": {"0", "1"}}
 
 
 def test_fast_validate_fails():
-    jsv = JSV({"type": "object", "properties": {"_key": {"type": "number"}}})
-    jsv.fast_validate(np.array([{"_key": "0"}, {"_key": "1"}]))
-    assert jsv.errors == {"data._key must be number": {"0", "1"}}
+    jsv = JSV({"type": "object", "properties": {"v": {"type": "number"}}})
+    jsv.fast_validate(np.array([{"v": "0"}, {"v": "1"}]))
+    assert jsv.errors == {"data.v must be number": {"0", "1"}}
 
 
 def test_fast_validate(get_schema, get_raw_items):
