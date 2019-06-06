@@ -87,6 +87,6 @@ def test_run():
     schema = {"properties": {"NAME": {"type": "string"}}}
     jsv = JSV(schema)
     assert jsv.schema == schema
-    jsv.run(np.array([{"NAME": None, "_key": "0", "__DEBUG": None}]), fast=False)
+    jsv.run(np.array([{"NAME": None, "__DEBUG": None}]), fast=False)
 
     assert jsv.errors == {"NAME is not of type 'string'": {"0"}}

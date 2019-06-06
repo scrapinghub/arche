@@ -89,7 +89,7 @@ check_uniqueness_inputs = [
         },
         6,
     ),
-    ({"_key": ["0", "1"], "name": ["a", "b"]}, {"unique": ["name"]}, {}, 0),
+    ({"name": ["a", "b"]}, {"unique": ["name"]}, {}, 0),
 ]
 
 

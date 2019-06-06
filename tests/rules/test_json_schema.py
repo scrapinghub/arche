@@ -20,8 +20,8 @@ tags_inputs = [
         },
     ),
     (
-        ["key"],
-        ["key"],
+        ["name"],
+        ["name"],
         {"unique": ["id"]},
         {
             Level.INFO: [
@@ -39,8 +39,8 @@ tags_inputs = [
         },
     ),
     (
-        ["key", "id"],
-        ["key"],
+        ["name", "id"],
+        ["name"],
         {"unique": ["id"]},
         {
             Level.INFO: [
@@ -57,7 +57,7 @@ tags_inputs = [
         },
     ),
     (
-        ["key"],
+        ["name"],
         None,
         {"unique": ["id"]},
         {
@@ -75,7 +75,7 @@ tags_inputs = [
         },
     ),
     (
-        ["_key"],
+        ["name"],
         None,
         {},
         {
@@ -88,15 +88,15 @@ tags_inputs = [
         },
     ),
     (
-        ["_key"],
+        ["name"],
         None,
         {
-            "category": ["_key"],
-            "name_field": ["_key"],
-            "product_price_field": ["_key"],
-            "product_price_was_field": ["_key"],
-            "product_url_field": ["_key"],
-            "unique": ["_key"],
+            "category": ["name"],
+            "name_field": ["name"],
+            "product_price_field": ["name"],
+            "product_price_was_field": ["name"],
+            "product_url_field": ["name"],
+            "unique": ["name"],
         },
         {
             Level.INFO: [
