@@ -29,7 +29,7 @@ class Items:
             if self.expand:
                 flat_df = pd.DataFrame(flatten(i) for i in self.raw)
                 flat_df.index = self.df.index
-                self._flat_df = flat_df.drop(columns=["_key"], errors="ignore")
+                self._flat_df = flat_df.drop(columns=["_key", "_type"], errors="ignore")
             else:
                 self._flat_df = self.df
         return self._flat_df
@@ -38,7 +38,6 @@ class Items:
     def process_df(df: pd.DataFrame) -> pd.DataFrame:
         # clean empty objects - mainly lists and dicts, but keep everything else
         df = df.applymap(lambda x: x if x or isinstance(x, numbers.Real) else np.nan)
-        df = df.drop(columns=["_type"], errors="ignore")
         Items.categorize(df)
         return df
 
@@ -87,7 +86,7 @@ class CloudItems(Items):
         df = pd.DataFrame(list(raw))
         df.index = self.format_keys(df["_key"])
         df.index.name = None
-        df = df.drop(columns=["_key"], errors="ignore")
+        df = df.drop(columns=["_key", "_type"], errors="ignore")
         super().__init__(raw=raw, df=df, expand=expand)
 
     @property

@@ -46,10 +46,10 @@ def test_items_from_array(raw):
 
 collection_items = np.array(
     [
-        {"_key": "0", "name": "Book"},
-        {"_key": "1", "name": "Movie"},
-        {"_key": "2", "name": "Guitar"},
-        {"_key": "3", "name": "Dog"},
+        {"_key": "0", "name": "Book", "_type": "Book"},
+        {"_key": "1", "name": "Movie", "_type": "Book"},
+        {"_key": "2", "name": "Guitar", "_type": "Book"},
+        {"_key": "3", "name": "Dog", "_type": "Book"},
     ]
 )
 expected_col_df = pd.DataFrame(
@@ -119,7 +119,7 @@ def test_job_items(mocker, start, count, expected_count):
 
 def test_process_df():
     df = Items.process_df(
-        pd.DataFrame([[dict(), list(), "I", [10]]], columns=["a", "b", "_type", "ages"])
+        pd.DataFrame([[dict(), list(), [10]]], columns=["a", "b", "ages"])
     )
     exp_df = pd.DataFrame([[np.nan, np.nan, [10]]], columns=["a", "b", "ages"])
     pd.testing.assert_frame_equal(df, exp_df)
@@ -208,6 +208,7 @@ flat_df_inputs = [
         },
         {"type_0": "type_0", "str": "str", "type_1_0": "type", "type_1_1": "type"},
     ),
+    ([{"_type": "XItem", "_key": "0/0/0", "a": 0}], {"a": [0]}, {}),
 ]
 
 
