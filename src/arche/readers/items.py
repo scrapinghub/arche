@@ -38,6 +38,7 @@ class Items:
     def process_df(df: pd.DataFrame) -> pd.DataFrame:
         # clean empty objects - mainly lists and dicts, but keep everything else
         df = df.applymap(lambda x: x if x or isinstance(x, numbers.Real) else np.nan)
+        df = df.drop(columns=["_type"], errors="ignore")
         Items.categorize(df)
         return df
 

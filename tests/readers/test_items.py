@@ -119,9 +119,9 @@ def test_job_items(mocker, start, count, expected_count):
 
 def test_process_df():
     df = Items.process_df(
-        pd.DataFrame([[dict(), list(), "NameItem"]], columns=["a", "b", "_type"])
+        pd.DataFrame([[dict(), list(), "I", [10]]], columns=["a", "b", "_type", "ages"])
     )
-    exp_df = pd.DataFrame([[np.nan, np.nan, "NameItem"]], columns=["a", "b", "_type"])
+    exp_df = pd.DataFrame([[np.nan, np.nan, [10]]], columns=["a", "b", "ages"])
     pd.testing.assert_frame_equal(df, exp_df)
 
 
