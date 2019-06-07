@@ -49,7 +49,10 @@ def test_get_coverage_per_category(data, cat_names, expected_messages, expected_
             },
             [
                 create_named_df(
-                    {"s": [0.25, 0.25, 0.5], "t": [0.000000, 0.333333, 0.666667]},
+                    {
+                        "source": [0.25, 0.25, 0.5],
+                        "target": [0.000000, 0.333333, 0.666667],
+                    },
                     index=[np.nan, "female", "male"],
                     name="Coverage for sex",
                 ),
@@ -59,7 +62,7 @@ def test_get_coverage_per_category(data, cat_names, expected_messages, expected_
                     name="Coverage difference more than 10% for sex",
                 ),
                 create_named_df(
-                    {"s": [0.25, 0.75], "t": [0.0, 1.0]},
+                    {"source": [0.25, 0.75], "target": [0.0, 1.0]},
                     index=["us", "uk"],
                     name="Coverage for country",
                 ),
@@ -69,7 +72,9 @@ def test_get_coverage_per_category(data, cat_names, expected_messages, expected_
                     name="Coverage difference more than 10% for country",
                 ),
                 create_named_df(
-                    {"s": [1.0], "t": [1.0]}, index=[26], name="Coverage for age"
+                    {"source": [1.0], "target": [1.0]},
+                    index=[26],
+                    name="Coverage for age",
                 ),
             ],
         )
@@ -77,7 +82,7 @@ def test_get_coverage_per_category(data, cat_names, expected_messages, expected_
 )
 def test_get_difference(source, target, categories, expected_messages, expected_stats):
     assert c.get_difference(
-        pd.DataFrame(source), pd.DataFrame(target), categories, "s", "t"
+        pd.DataFrame(source), pd.DataFrame(target), categories
     ) == create_result(
         "Category Coverage Difference", expected_messages, stats=expected_stats
     )
