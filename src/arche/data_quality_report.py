@@ -67,7 +67,9 @@ class DataQualityReport:
 
         validation_errors = self.report.results.get(
             "JSON Schema Validation",
-            schema_rules.validate(self.schema, raw_items=items.raw, fast=False),
+            schema_rules.validate(
+                self.schema, raw_items=items.raw, keys=items.df.index, fast=False
+            ),
         ).get_errors_count()
 
         garbage_symbols_result = self.report.results.get(

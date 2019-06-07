@@ -164,7 +164,9 @@ class Arche:
         """Run JSON schema check and output results. It will try to find all errors, but
         there are no guarantees. Slower than `check_with_json_schema()`
         """
-        res = schema_rules.validate(self.schema, self.source_items.raw)
+        res = schema_rules.validate(
+            self.schema, self.source_items.raw, self.source_items.df.index
+        )
         self.save_result(res)
         res.show()
 
@@ -173,14 +175,20 @@ class Arche:
         only the first error per item. Usable for big jobs as it's about 100x faster than
         `validate_with_json_schema()`.
         """
-        res = schema_rules.validate(self.schema, self.source_items.raw, fast=True)
+        res = schema_rules.validate(
+            self.schema, self.source_items.raw, self.source_items.df.index, fast=True
+        )
         self.save_result(res)
         res.show()
 
     def run_schema_rules(self) -> None:
         if not self.schema:
             return
-        self.save_result(schema_rules.validate(self.schema, self.source_items.raw))
+        self.save_result(
+            schema_rules.validate(
+                self.schema, self.source_items.raw, self.source_items.df.index
+            )
+        )
 
         tagged_fields = sr.Tags().get(self.schema)
         target_columns = (

@@ -1,3 +1,4 @@
+from copy import deepcopy
 from itertools import zip_longest
 from typing import Dict, List, Optional
 
@@ -9,20 +10,16 @@ import pytest
 
 
 CLOUD_ITEMS = [
-    {"_key": "112358/13/21/0", "price": 0, "name": "Elizabeth"},
-    {"_key": "112358/13/21/1", "name": "Margaret"},
-    {"_key": "112358/13/21/2", "price": 10, "name": "Yulia"},
-    {"_key": "112358/13/21/3", "price": 11, "name": "Vivien"},
+    {"_key": "112358/13/21/0", "_type": "Type", "price": 0, "name": "Elizabeth"},
+    {"_key": "112358/13/21/1", "_type": "Type", "name": "Margaret"},
+    {"_key": "112358/13/21/2", "_type": "Type", "price": 10, "name": "Yulia"},
+    {"_key": "112358/13/21/3", "_type": "Type", "price": 11, "name": "Vivien"},
 ]
 DEFAULT_SCHEMA = {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "required": ["_key", "name"],
+    "required": ["name"],
     "type": "object",
-    "properties": {
-        "_key": {"type": "string"},
-        "price": {"type": "integer"},
-        "name": {"type": "string"},
-    },
+    "properties": {"price": {"type": "integer"}, "name": {"type": "string"}},
     "additionalProperties": False,
 }
 
@@ -152,13 +149,13 @@ def get_job_items(mocker):
     mocker.patch(
         "arche.readers.items.JobItems.job", return_value=get_job, autospec=True
     )
+    raw_data = deepcopy(CLOUD_ITEMS)
     mocker.patch(
         "arche.readers.items.JobItems.fetch_data",
-        return_value=np.array(CLOUD_ITEMS),
+        return_value=np.array(raw_data),
         autospec=True,
     )
-
-    job_items = JobItems(key="112358/13/21", count=len(CLOUD_ITEMS))
+    job_items = JobItems(key="112358/13/21", count=len(raw_data))
     return job_items
 
 

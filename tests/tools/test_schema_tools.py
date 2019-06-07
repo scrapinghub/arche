@@ -13,9 +13,9 @@ schema = {
         },
     },
     "type": "object",
-    "properties": {"url": {"type": "string"}, "_key": {"type": "integer"}},
+    "properties": {"url": {"type": "string"}, "id": {"type": "integer"}},
     "additionalProperties": False,
-    "required": ["_key", "url"],
+    "required": ["id", "url"],
 }
 
 
@@ -27,8 +27,8 @@ def test_set_item_no():
 
 
 def test_infer_schema():
-    item1 = {"url": "https://example.com", "_key": 0}
-    item2 = {"url": "https://example.com", "_key": 1}
+    item1 = {"url": "https://example.com", "id": 0}
+    item2 = {"url": "https://example.com", "id": 1}
 
     assert schema_tools.infer_schema([item1, item2]) == schema
     assert schema_tools.infer_schema([item2]) == schema
@@ -59,12 +59,8 @@ def test_create_json_schema(mocker, get_job, get_raw_items):
         },
         "additionalProperties": False,
         "type": "object",
-        "properties": {
-            "_key": {"type": "string"},
-            "name": {"type": "string"},
-            "price": {"type": "integer"},
-        },
-        "required": ["_key", "name", "price"],
+        "properties": {"name": {"type": "string"}, "price": {"type": "integer"}},
+        "required": ["name", "price"],
     }
 
 

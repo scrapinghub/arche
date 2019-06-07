@@ -66,27 +66,36 @@ def test_format_validation_message(
 
 
 def test_validate_fails():
-    jsv = JSV({"properties": {"NAME": {"type": "string"}}})
+    jsv = JSV({"properties": {"NAME": {"type": "string"}}}, keys=[0, 1])
     jsv.validate(np.array([{"NAME": None, "_key": "0"}, {"NAME": None}]))
-    assert jsv.errors == {"NAME is not of type 'string'": {"0", "1"}}
+    assert jsv.errors == {"NAME is not of type 'string'": {0, 1}}
+
+
+def test_validate_type_key():
+    jsv = JSV(
+        {"properties": {"A": {"type": "number"}}, "additionalProperties": False},
+        keys=[0, 1],
+    )
+    jsv.validate(np.array([{"A": 0, "_key": "0", "_type": "Some"}, {"A": 1}]))
+    assert not jsv.errors
 
 
 def test_fast_validate_fails():
-    jsv = JSV({"type": "object", "properties": {"v": {"type": "number"}}})
+    jsv = JSV({"type": "object", "properties": {"v": {"type": "number"}}}, keys=[0, 1])
     jsv.fast_validate(np.array([{"v": "0"}, {"v": "1"}]))
-    assert jsv.errors == {"data.v must be number": {"0", "1"}}
+    assert jsv.errors == {"data.v must be number": {0, 1}}
 
 
 def test_fast_validate(get_schema, get_raw_items):
-    jsv = JSV(get_schema)
+    jsv = JSV(get_schema, keys=list(range(len(get_raw_items))))
     jsv.fast_validate(get_raw_items)
     assert not jsv.errors
 
 
 def test_run():
     schema = {"properties": {"NAME": {"type": "string"}}}
-    jsv = JSV(schema)
+    jsv = JSV(schema, keys=[0])
     assert jsv.schema == schema
     jsv.run(np.array([{"NAME": None, "__DEBUG": None}]), fast=False)
 
-    assert jsv.errors == {"NAME is not of type 'string'": {"0"}}
+    assert jsv.errors == {"NAME is not of type 'string'": {0}}

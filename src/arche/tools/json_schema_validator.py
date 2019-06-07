@@ -5,13 +5,15 @@ from arche.readers.items import RawItems
 from arche.readers.schema import Schema
 import fastjsonschema
 from jsonschema import FormatChecker, validators
+import pandas as pd
 from tqdm import tqdm_notebook
 
 
 class JsonSchemaValidator:
-    def __init__(self, schema: Schema):
+    def __init__(self, schema: Schema, keys: pd.Index):
         self.errors = defaultdict(set)
         self.schema = schema
+        self.keys = keys
 
     def run(self, raw_items: RawItems, fast: bool) -> None:
         if fast:
@@ -26,10 +28,12 @@ class JsonSchemaValidator:
         for i, raw_item in enumerate(
             tqdm_notebook(raw_items, desc="Fast Schema Validation")
         ):
+            raw_item.pop("_key", None)
+            raw_item.pop("_type", None)
             try:
                 validate(raw_item)
             except fastjsonschema.JsonSchemaException as error:
-                self.errors[str(error)].add(raw_item.get("_key", str(i)))
+                self.errors[str(error)].add(self.keys[i])
 
     def validate(self, raw_items: RawItems) -> None:
         validator = validators.validator_for(self.schema)(self.schema)
@@ -37,11 +41,13 @@ class JsonSchemaValidator:
         for i, raw_item in enumerate(
             tqdm_notebook(raw_items, desc="JSON Schema Validation")
         ):
+            raw_item.pop("_key", None)
+            raw_item.pop("_type", None)
             for e in validator.iter_errors(raw_item):
                 error = self.format_validation_message(
                     e.message, e.path, e.schema_path, e.validator
                 )
-                self.errors[error].add(raw_item.get("_key", str(i)))
+                self.errors[error].add(self.keys[i])
 
     @staticmethod
     def format_validation_message(

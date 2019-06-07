@@ -57,6 +57,8 @@ def create_json_schema(
     samples = []
     for n in item_numbers:
         item = api.get_items(source_key, start_index=n, count=1, p_bar=None)[0]
+        item.pop("_type", None)
+        item.pop("_key", None)
         samples.append(item)
 
     return infer_schema(samples)

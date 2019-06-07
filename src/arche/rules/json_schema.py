@@ -3,9 +3,12 @@ from arche.readers.schema import Schema, Tag, TaggedFields
 from arche.rules.result import Result
 from arche.tools.json_schema_validator import JsonSchemaValidator
 import numpy as np
+import pandas as pd
 
 
-def validate(schema: Schema, raw_items: RawItems, fast: bool = False) -> Result:
+def validate(
+    schema: Schema, raw_items: RawItems, keys: pd.Index, fast: bool = False
+) -> Result:
     """Run JSON schema validation against data.
 
     Args:
@@ -14,7 +17,7 @@ def validate(schema: Schema, raw_items: RawItems, fast: bool = False) -> Result:
     Returns:
         Schema errors if any
     """
-    validator = JsonSchemaValidator(schema)
+    validator = JsonSchemaValidator(schema, keys)
     validator.run(raw_items, fast)
     result = Result("JSON Schema Validation")
 

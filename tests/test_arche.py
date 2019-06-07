@@ -250,8 +250,7 @@ def test_validate_with_json_schema(mocker, get_job_items, get_schema):
 
 def test_validate_with_json_schema_fails(mocker, get_job_items, get_schema):
     mocked_html = mocker.patch("arche.report.HTML", autospec=True)
-    key = f"112358/13/21"
-    url_base = f"{SH_URL}/{key}/item"
+    url = f"{SH_URL}/112358/13/21/item/1"
     res = create_result(
         "JSON Schema Validation",
         {
@@ -259,7 +258,7 @@ def test_validate_with_json_schema_fails(mocker, get_job_items, get_schema):
                 (
                     "4 items were checked, 1 error(s)",
                     None,
-                    {"'price' is a required property": {f"{key}/1"}},
+                    {"'price' is a required property": {url}},
                 )
             ]
         },
@@ -272,7 +271,7 @@ def test_validate_with_json_schema_fails(mocker, get_job_items, get_schema):
     assert len(a.report.results) == 1
     assert a.report.results.get("JSON Schema Validation") == res
     mocked_html.assert_any_call(
-        f"1 items affected - 'price' is a required property: <a href='{url_base}/1'>1</a>"
+        f"1 items affected - 'price' is a required property: <a href='{url}'>1</a>"
     )
 
 
