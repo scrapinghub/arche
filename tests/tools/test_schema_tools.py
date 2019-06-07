@@ -1,5 +1,8 @@
-import arche.tools.schema as schema_tools
+from collections import deque
 
+import arche.tools.schema as schema_tools
+import numpy as np
+import pytest
 
 schema = {
     "$schema": "http://json-schema.org/draft-07/schema#",
@@ -95,3 +98,97 @@ def test_basic_schema_repr():
         "{'additionalProperties': False,\n "
         "'definitions': {'float': {'pattern': '^-?[0-9]+\\\\.[0-9]{2}$'}}}"
     )
+
+
+@pytest.mark.parametrize(
+    "error_msg, path, schema_path, validator, formatted_msg",
+    [
+        (
+            "is not of type 'string'",
+            ["root_field", 0, "deep", "deeper", 100],
+            [],
+            "type",
+            "root_field/deep/deeper is not of type 'string'",
+        ),
+        ("other error", ["field"], [], "", "field - other error"),
+        (
+            "'biography' is a required property",
+            [],
+            [],
+            "required",
+            "'biography' is a required property",
+        ),
+        (
+            "'s' does not match any of the regexes: '^spec(_\\w.+){1,}$'",
+            [],
+            [],
+            "pattern",
+            "'s' does not match any of the regexes: '^spec(_\\w.+){1,}$'",
+        ),
+        (
+            "Additional properties are not allowed ('delivery_options')",
+            [],
+            [],
+            "additionalProperties",
+            "Additional properties are not allowed",
+        ),
+        (
+            "https://sto' is not a 'date-time'",
+            ["url"],
+            [],
+            "format",
+            "url is not a 'date-time'",
+        ),
+        ("a very long error message", [], ["anyOf"], "anyOf", "'schema/anyOf' failed"),
+        (
+            "a very very long error message",
+            ["options", 0],
+            ["properties", "options", "items", "anyOf"],
+            "anyOf",
+            "'options' does not satisfy 'schema/properties/options/items/anyOf'",
+        ),
+    ],
+)
+def test_format_validation_message(
+    error_msg, path, schema_path, validator, formatted_msg
+):
+    assert (
+        schema_tools.format_validation_message(
+            error_msg, deque(path), deque(schema_path), validator
+        )
+        == formatted_msg
+    )
+
+
+def test_full_validate_fails():
+    errors = schema_tools.full_validate(
+        {"properties": {"NAME": {"type": "string"}}},
+        np.array([{"NAME": None, "_key": "0"}, {"NAME": None}]),
+        keys=[0, 1],
+    )
+    assert errors == {"NAME is not of type 'string'": {0, 1}}
+
+
+def test_full_validate_type_key():
+    errors = schema_tools.full_validate(
+        {"properties": {"A": {"type": "number"}}, "additionalProperties": False},
+        np.array([{"A": 0, "_key": "0", "_type": "Some"}, {"A": 1}]),
+        [0, 1],
+    )
+    assert not errors
+
+
+def test_fast_validate_fails():
+    errors = schema_tools.fast_validate(
+        {"type": "object", "properties": {"v": {"type": "number"}}},
+        [{"v": "0"}, {"v": "1"}],
+        keys=[0, 1],
+    )
+    assert errors == {"data.v must be number": {0, 1}}
+
+
+def test_fast_validate(get_schema, get_raw_items):
+    errors = schema_tools.fast_validate(
+        get_schema, get_raw_items, keys=list(range(len(get_raw_items)))
+    )
+    assert not errors
