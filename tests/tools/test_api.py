@@ -7,7 +7,6 @@ import pytest
 @pytest.mark.parametrize(
     "metadata, stats, expected_count",
     [
-        ({"state": "deleted"}, None, 0),
         (None, {}, 0),
         (None, {"totals": {"input_values": 0}}, 0),
         (None, {"totals": {"input_values": 10}}, 10),

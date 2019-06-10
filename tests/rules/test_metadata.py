@@ -162,14 +162,14 @@ compare_response_ratio_inputs = [
         {"scrapystats": {"downloader/response_count": 2000}},
         {"totals": {"input_values": 1000}},
         {"scrapystats": {"downloader/response_count": 4000}},
-        {Level.ERROR: [("Difference is 50.0% - 2.0 and 4.0",)]},
+        {Level.ERROR: [("Difference is 50.00% - 2.0 and 4.0",)]},
     ),
     (
         {"totals": {"input_values": 1000}},
         {"scrapystats": {"downloader/response_count": 2000}},
         {"totals": {"input_values": 1000}},
         {"scrapystats": {"downloader/response_count": 2300}},
-        {Level.WARNING: [("Difference is 13.0% - 2.0 and 2.3",)]},
+        {Level.WARNING: [("Difference is 13.00% - 2.0 and 2.3",)]},
     ),
 ]
 

@@ -141,7 +141,7 @@ class JobItems(CloudItems):
         if not self._job:
             job = ScrapinghubClient().get_job(self.key)
             if job.metadata.get("state") == "deleted":
-                raise ValueError(f"{self.key} has 'deleted' state")
+                raise ValueError(f"'{self.key}' has 'deleted' state")
             self._job = job
         return self._job
 
