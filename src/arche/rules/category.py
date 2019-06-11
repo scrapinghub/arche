@@ -18,8 +18,8 @@ def get_difference(
         source_df: a data you want to compare
         target_df: a data you want to compare with
         category_names: list of columns which values to compare
-        warn_thr: sets warning threshold
-        err_thr: error threshold
+        err_thr: sets error threshold
+        warn_thr: warning threshold
 
     Returns:
         A result instance with messages containing significant difference defined by
