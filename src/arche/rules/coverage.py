@@ -27,20 +27,23 @@ def check_fields_coverage(df: pd.DataFrame) -> Result:
     return result
 
 
-def get_difference(source_job: Job, target_job: Job) -> Result:
+def get_difference(
+    source_job: Job, target_job: Job, err_thr: float = 0.10, warn_thr: float = 0.05
+) -> Result:
     """Get difference between jobs coverages. The coverage is job fields counts
     divided on the job size.
 
     Args:
         source_job: a base job, the difference is calculated from it
         target_job: a job to compare
+        err_thr: a threshold for errors
+        warn_thr: a threshold for warnings
 
     Returns:
         A Result instance with huge dif and stats with fields counts coverage and dif
     """
     result = Result("Coverage Difference")
-    warn_thr = 0.05
-    err_thr = 0.10
+
     f_counts = (
         pd.DataFrame(
             {

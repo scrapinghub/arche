@@ -6,15 +6,19 @@ import numpy as np
 import pandas as pd
 
 
-def compare_boolean_fields(source_df: pd.DataFrame, target_df: pd.DataFrame) -> Result:
+def compare_boolean_fields(
+    source_df: pd.DataFrame,
+    target_df: pd.DataFrame,
+    err_thr: float = 0.10,
+    warn_thr: float = 0.05,
+) -> Result:
     """Compare booleans distribution between two dataframes
 
     Returns:
         A result containing dataframe with distributions and messages if differences
         are in thresholds
     """
-    warn_thr = 0.05
-    err_thr = 0.10
+
     source_bool = source_df.select_dtypes(include="bool")
     target_bool = target_df.select_dtypes(include="bool")
 
