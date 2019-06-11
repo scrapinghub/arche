@@ -1,6 +1,3 @@
-from dataclasses import dataclass
-import json
-import pprint
 import random
 from typing import Any, Dict, List, Optional
 
@@ -10,18 +7,7 @@ from arche.tools import api, helpers
 from genson import SchemaBuilder
 
 
-@dataclass
-class BasicSchema:
-    d: Schema
-
-    def json(self):
-        print(json.dumps(self.d, indent=4))
-
-    def __repr__(self):
-        return pprint.pformat(self.d)
-
-
-def basic_json_schema(data_source: str, items_numbers: List[int] = None) -> BasicSchema:
+def basic_json_schema(data_source: str, items_numbers: List[int] = None) -> Schema:
     """Print a json schema based on the provided job_key and item numbers
 
     Args:
@@ -29,7 +15,7 @@ def basic_json_schema(data_source: str, items_numbers: List[int] = None) -> Basi
         items_numbers: array of item numbers to create schema from
     """
     schema = create_json_schema(data_source, items_numbers)
-    return BasicSchema(schema)
+    return Schema(schema)
 
 
 def create_json_schema(

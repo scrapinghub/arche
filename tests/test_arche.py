@@ -34,29 +34,31 @@ def test_arche_df(get_df):
     pd.testing.assert_frame_equal(a.target_items.df, get_df)
 
 
-schema_dummies = [
-    {"$schema": "http://json-schema.org/draft-07/schema"},
-    {"$schema": "http://json-schema.org/draft-06/schema"},
-]
+schema_dummies = [{"properties": {"name": {}}}, {"properties": {"url": {}}}]
+
+
+def test_schema():
+    arche = Arche("source", schema=schema_dummies[0])
+    assert arche.schema_source == schema_dummies[0]
+    assert arche.schema.raw == schema_dummies[0]
+    arche = Arche("source")
+    assert not arche.schema_source
+    assert not arche.schema
 
 
 @pytest.mark.parametrize(
     "passed_schema_source, set_schema_source, expected_schema",
     [
-        (schema_dummies[0], None, schema_dummies[0]),
         (None, schema_dummies[1], schema_dummies[1]),
         (schema_dummies[1], schema_dummies[0], schema_dummies[0]),
-        (None, None, None),
     ],
 )
-def test_schema(passed_schema_source, set_schema_source, expected_schema):
+def test_schema_setter(passed_schema_source, set_schema_source, expected_schema):
     arche = Arche("source", schema=passed_schema_source)
-    assert arche._schema == passed_schema_source
     assert arche.schema_source == passed_schema_source
-    if set_schema_source:
-        arche.schema = set_schema_source
-        assert arche.schema_source == set_schema_source
-    assert arche.schema == expected_schema
+    arche.schema = set_schema_source
+    assert arche.schema_source == set_schema_source
+    assert arche.schema.raw == expected_schema
 
 
 @pytest.mark.parametrize(
@@ -172,8 +174,7 @@ def test_report_all(mocker, get_cloud_items):
     mocked_write_summaries = mocker.patch(
         "arche.report.Report.write_summaries", autospec=True
     )
-    # autospec and classmethod bug https://github.com/python/cpython/pull/11613
-    mocked_write = mocker.patch("arche.report.Report.write", autospec=False)
+    mocked_write = mocker.patch("arche.report.Report.write", autospec=True)
 
     source = pd.DataFrame(get_cloud_items)
     source["b"] = True
@@ -264,7 +265,7 @@ def test_validate_with_json_schema_fails(mocker, get_job_items, get_schema):
             ]
         },
     )
-    schema = {"type": "object", "required": ["price"]}
+    schema = {"type": "object", "required": ["price"], "properties": {"price": {}}}
     a = Arche("source", schema=schema)
     a._source_items = get_job_items
     a.validate_with_json_schema()
@@ -289,12 +290,12 @@ def test_data_quality_report_fails(source, expected_message):
     assert str(excinfo.value) == expected_message
 
 
-def test_data_quality_report(mocker, get_job_items):
+def test_data_quality_report(mocker, get_job_items, get_schema):
     mocked_dqr = mocker.patch.object(
         arche, "DataQualityReport", autospec=True, return_value=None
     )
 
-    g = Arche("source", schema={"$schema": "http://json-schema.org/draft-07/schema"})
+    g = Arche("source", schema=get_schema)
     g._source_items = get_job_items
     g.report.results = "some_res"
     g.data_quality_report("s3")

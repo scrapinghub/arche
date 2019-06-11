@@ -4,7 +4,7 @@ from typing import Iterable, Optional, Union
 
 from arche.data_quality_report import DataQualityReport
 from arche.readers.items import Items, CollectionItems, JobItems, RawItems
-import arche.readers.schema as sr
+from arche.readers.schema import Schema, SchemaSource
 from arche.report import Report
 import arche.rules.category as category_rules
 import arche.rules.coverage as coverage_rules
@@ -22,7 +22,7 @@ class Arche:
     def __init__(
         self,
         source: Union[str, pd.DataFrame, RawItems],
-        schema: Optional[sr.SchemaSource] = None,
+        schema: Optional[SchemaSource] = None,
         target: Optional[Union[str, pd.DataFrame]] = None,
         start: int = 0,
         count: Optional[int] = None,
@@ -57,7 +57,7 @@ class Arche:
         self._schema = None
         self.schema_source = None
         if schema:
-            self.schema = sr.get_schema(schema)
+            self.schema = schema
         self.target = target
         self.start = start
         self.count = count
@@ -89,13 +89,13 @@ class Arche:
     @property
     def schema(self):
         if not self._schema and self.schema_source:
-            self._schema = sr.get_schema(self.schema_source)
+            self._schema = Schema(self.schema_source)
         return self._schema
 
     @schema.setter
     def schema(self, schema_source):
         self.schema_source = schema_source
-        self._schema = sr.get_schema(schema_source)
+        self._schema = Schema(schema_source)
 
     @staticmethod
     def get_items(
@@ -164,7 +164,7 @@ class Arche:
         """Run JSON schema check and output results. It will try to find all errors, but
         there are no guarantees. Slower than `check_with_json_schema()`
         """
-        res = schema_rules.validate(self.schema, self.source_items.raw)
+        res = schema_rules.validate(self.schema.raw, self.source_items.raw)
         self.save_result(res)
         res.show()
 
@@ -173,30 +173,29 @@ class Arche:
         only the first error per item. Usable for big jobs as it's about 100x faster than
         `validate_with_json_schema()`.
         """
-        res = schema_rules.validate(self.schema, self.source_items.raw, fast=True)
+        res = schema_rules.validate(self.schema.raw, self.source_items.raw, fast=True)
         self.save_result(res)
         res.show()
 
     def run_schema_rules(self) -> None:
         if not self.schema:
             return
-        self.save_result(schema_rules.validate(self.schema, self.source_items.raw))
+        self.save_result(schema_rules.validate(self.schema.raw, self.source_items.raw))
 
-        tagged_fields = sr.Tags().get(self.schema)
         target_columns = (
             self.target_items.df.columns.values if self.target_items else None
         )
 
         check_tags_result = schema_rules.check_tags(
-            self.source_items.df.columns.values, target_columns, tagged_fields
+            self.source_items.df.columns.values, target_columns, self.schema.tags
         )
         self.save_result(check_tags_result)
         if check_tags_result.errors:
             return
 
-        self.run_customized_rules(self.source_items, tagged_fields)
+        self.run_customized_rules(self.source_items, self.schema.tags)
         self.compare_with_customized_rules(
-            self.source_items, self.target_items, tagged_fields
+            self.source_items, self.target_items, self.schema.tags
         )
 
     def run_customized_rules(self, items, tagged_fields):

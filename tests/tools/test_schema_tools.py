@@ -38,7 +38,7 @@ def test_basic_json_schema(mocker):
     mocked_create_js = mocker.patch(
         "arche.tools.schema.create_json_schema", return_value=schema, autospec=True
     )
-    assert schema_tools.basic_json_schema("235801/1/15", [0, 5]).d == schema
+    assert schema_tools.basic_json_schema("235801/1/15", [0, 5]).raw == schema
     mocked_create_js.assert_called_once_with("235801/1/15", [0, 5])
 
 
@@ -66,36 +66,3 @@ def test_create_json_schema(mocker, get_job, get_raw_items):
         },
         "required": ["_key", "name", "price"],
     }
-
-
-def test_basic_schema_json(capsys):
-    bs = schema_tools.BasicSchema(
-        {
-            "definitions": {"float": {"pattern": r"^-?[0-9]+\.[0-9]{2}$"}},
-            "additionalProperties": False,
-        }
-    )
-    bs.json()
-    assert (
-        capsys.readouterr().out
-        == """{
-    "definitions": {
-        "float": {
-            "pattern": "^-?[0-9]+\\\\.[0-9]{2}$"
-        }
-    },
-    "additionalProperties": false
-}\n"""
-    )
-
-
-def test_basic_schema_repr():
-    assert schema_tools.BasicSchema(
-        {
-            "definitions": {"float": {"pattern": r"^-?[0-9]+\.[0-9]{2}$"}},
-            "additionalProperties": False,
-        }
-    ).__repr__() == (
-        "{'additionalProperties': False,\n "
-        "'definitions': {'float': {'pattern': '^-?[0-9]+\\\\.[0-9]{2}$'}}}"
-    )

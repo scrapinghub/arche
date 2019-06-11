@@ -2,14 +2,14 @@ from collections import defaultdict
 from typing import Any, Dict, Deque
 
 from arche.readers.items import RawItems
-from arche.readers.schema import Schema
+from arche.readers.schema import RawSchema
 import fastjsonschema
 from jsonschema import FormatChecker, validators
 from tqdm import tqdm_notebook
 
 
 class JsonSchemaValidator:
-    def __init__(self, schema: Schema):
+    def __init__(self, schema: RawSchema):
         self.errors = defaultdict(set)
         self.schema = schema
 
