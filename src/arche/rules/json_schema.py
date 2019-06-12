@@ -1,7 +1,7 @@
 from arche.readers.items import RawItems
 from arche.readers.schema import Schema, Tag, TaggedFields
 from arche.rules.result import Result
-from arche.tools.json_schema_validator import JsonSchemaValidator
+from arche.tools.schema import fast_validate, full_validate
 import numpy as np
 import pandas as pd
 
@@ -17,11 +17,10 @@ def validate(
     Returns:
         Schema errors if any
     """
-    validator = JsonSchemaValidator(schema, keys)
-    validator.run(raw_items, fast)
+    validate_func = fast_validate if fast else full_validate
+    errors = validate_func(schema, raw_items, keys)
     result = Result("JSON Schema Validation")
 
-    errors = validator.errors
     schema_result_message = (
         f"{len(raw_items)} items were checked, {len(errors)} error(s)"
     )
