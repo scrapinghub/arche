@@ -43,9 +43,6 @@ def get_job_close_reason(job):
 
 
 def get_items_count(job):
-    if job.metadata.get("state") == "deleted":
-        return 0
-
     return job.items.stats().get("totals", {}).get("input_values", 0)
 
 

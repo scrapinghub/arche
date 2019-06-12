@@ -41,16 +41,15 @@ def check_response_ratio(job: Job) -> Result:
 
 def compare_response_ratio(source_job: Job, target_job: Job) -> Result:
     """Compare request with response per item ratio"""
-    items_count1 = api.get_items_count(source_job)
-    items_count2 = api.get_items_count(target_job)
-
-    source_ratio = round(api.get_requests_count(source_job) / items_count1, 2)
-    target_ratio = round(api.get_requests_count(target_job) / items_count2, 2)
-
-    response_ratio_diff = helpers.ratio_diff(source_ratio, target_ratio)
-    msg = "Difference is {}% - {} and {}".format(
-        response_ratio_diff * 100, source_ratio, target_ratio
+    s_ratio = round(
+        api.get_requests_count(source_job) / api.get_items_count(source_job), 2
     )
+    t_ratio = round(
+        api.get_requests_count(target_job) / api.get_items_count(target_job), 2
+    )
+
+    response_ratio_diff = helpers.ratio_diff(s_ratio, t_ratio)
+    msg = f"Difference is {response_ratio_diff:.2%} - {s_ratio} and {t_ratio}"
 
     result = Result("Compare Responses Per Item Ratio")
     if response_ratio_diff > 0.2:
@@ -78,18 +77,18 @@ def compare_errors(source_job: Job, target_job: Job) -> Result:
 
 
 def compare_number_of_scraped_items(source_job: Job, target_job: Job) -> Result:
-    items_count1 = api.get_items_count(source_job)
-    items_count2 = api.get_items_count(target_job)
-    diff = helpers.ratio_diff(items_count1, items_count2)
+    s_count = api.get_items_count(source_job)
+    t_count = api.get_items_count(target_job)
+    diff = helpers.ratio_diff(s_count, t_count)
     result = Result("Total Scraped Items")
     if 0 <= diff < 0.05:
         if diff == 0:
             msg = "Same number of items"
         else:
-            msg = f"Almost the same number of items - {items_count1} and {items_count2}"
+            msg = f"Almost the same number of items - {s_count} and {t_count}"
         result.add_info(msg)
     else:
-        msg = f"{items_count1} differs from {items_count2} on {diff * 100}%"
+        msg = f"{s_count} differs from {t_count} on {diff:.2%}"
         if 0.05 <= diff < 0.10:
             result.add_warning(msg)
         elif diff >= 0.10:
@@ -98,13 +97,13 @@ def compare_number_of_scraped_items(source_job: Job, target_job: Job) -> Result:
 
 
 def compare_spider_names(source_job: Job, target_job: Job) -> Result:
-    name1 = source_job.metadata.get("spider")
-    name2 = target_job.metadata.get("spider")
+    s_name = source_job.metadata.get("spider")
+    t_name = target_job.metadata.get("spider")
 
     result = Result("Spider Names")
-    if name1 != name2:
+    if s_name != t_name:
         result.add_warning(
-            f"{source_job.key} spider is {name1}, {target_job.key} spider is {name2}"
+            f"{source_job.key} spider is {s_name}, {target_job.key} spider is {t_name}"
         )
     return result
 

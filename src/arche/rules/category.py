@@ -8,27 +8,27 @@ def get_difference(
     source_df: pd.DataFrame,
     target_df: pd.DataFrame,
     category_names: List[str],
-    source_key: str = "source",
-    target_key: str = "target",
+    err_thr: float = 0.2,
+    warn_thr: float = 0.1,
 ) -> Result:
-    """Find and show differences between categories coverage, including nan values.
+    """Find and show differences between categories coverage, including `nan` values.
     Coverage means value counts divided on total size.
 
     Args:
         source_df: a data you want to compare
         target_df: a data you want to compare with
         category_names: list of columns which values to compare
-        source_key: label for `source_df`
-        target_key: label for `target_df`
+        err_thr: sets error threshold
+        warn_thr: warning threshold
 
     Returns:
         A result instance with messages containing significant difference defined by
-        thresholds, a dataframe showing all normalized value counts in percents,
+        thresholds, a dataframe showing all normalized value counts in percents and
         a series containing significant difference.
     """
+    source_key = "source"
+    target_key = "target"
     result = Result("Category Coverage Difference")
-    warn_thr = 0.10
-    err_thr = 0.20
 
     for c in category_names:
         cats = (
