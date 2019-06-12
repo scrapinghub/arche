@@ -112,4 +112,4 @@ class Report:
         if keys.dtype == np.dtype("object") and "/" in keys.iloc[0]:
             sample = sample.apply(url)
 
-        return ", ".join(sample)
+        return ", ".join(sample.apply(str))

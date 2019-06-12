@@ -18,25 +18,21 @@ check_items_inputs = [
         0,
     ),
     (
-        {
-            "_key": ["0", "1", "2", "3"],
-            "name": ["bob", "bob", "bob", "bob"],
-            "url": ["u1", "u1", "2", "u1"],
-        },
+        {"name": ["bob", "bob", "bob", "bob"], "url": ["u1", "u1", "2", "u1"]},
         {"name_field": ["name"], "product_url_field": ["url"]},
         {
             Level.ERROR: [
                 (
                     "3 duplicate(s) with same name and url",
                     None,
-                    {"same 'bob' name and 'u1' url": ["0", "1", "3"]},
+                    {"same 'bob' name and 'u1' url": [0, 1, 3]},
                 )
             ]
         },
         3,
     ),
     (
-        {"_key": ["0", "1"], "name": ["john", "bob"], "url": ["url1", "url1"]},
+        {"name": ["john", "bob"], "url": ["url1", "url1"]},
         {"name_field": ["name"], "product_url_field": ["url"]},
         {},
         0,
@@ -62,22 +58,17 @@ def test_check_items(data, tagged_fields, expected_messages, expected_err_items_
 check_uniqueness_inputs = [
     ({}, {}, {Level.INFO: [("'unique' tag was not found in schema",)]}, 0),
     (
-        {"_key": ["0", "1", "2"], "id": ["0", "0", "1"]},
+        {"id": ["0", "0", "1"]},
         {"unique": ["id"]},
         {
             Level.ERROR: [
-                (
-                    "'id' contains 1 duplicated value(s)",
-                    None,
-                    {"same '0' id": ["0", "1"]},
-                )
+                ("'id' contains 1 duplicated value(s)", None, {"same '0' id": [0, 1]})
             ]
         },
         2,
     ),
     (
         {
-            "_key": [str(i) for i in range(6)],
             "id": ["47" for x in range(6)],
             "name": ["Walt", "Juan", "Juan", "Walt", "Walt", "John"],
         },
@@ -87,21 +78,18 @@ check_uniqueness_inputs = [
                 (
                     "'id' contains 1 duplicated value(s)",
                     None,
-                    {"same '47' id": [str(i) for i in range(6)]},
+                    {"same '47' id": [i for i in range(6)]},
                 ),
                 (
                     "'name' contains 2 duplicated value(s)",
                     None,
-                    {
-                        "same 'Juan' name": ["1", "2"],
-                        "same 'Walt' name": ["0", "3", "4"],
-                    },
+                    {"same 'Juan' name": [1, 2], "same 'Walt' name": [0, 3, 4]},
                 ),
             ]
         },
         6,
     ),
-    ({"_key": ["0", "1"], "name": ["a", "b"]}, {"unique": ["name"]}, {}, 0),
+    ({"name": ["a", "b"]}, {"unique": ["name"]}, {}, 0),
 ]
 
 
@@ -123,29 +111,21 @@ def test_check_uniqueness(
 
 find_by_inputs = [
     (
-        {"_key": ["0", "1", "2"], "id": ["0", "0", "1"]},
+        {"id": ["0", "0", "1"]},
         ["id"],
-        {
-            Level.ERROR: [
-                ("2 duplicate(s) with same id", None, {"same '0' id": ["0", "1"]})
-            ]
-        },
+        {Level.ERROR: [("2 duplicate(s) with same id", None, {"same '0' id": [0, 1]})]},
         2,
     ),
-    ({"_key": ["0", "1", "2"], "id": ["0", "1", "2"]}, ["id"], {}, 0),
+    ({"id": ["0", "1", "2"]}, ["id"], {}, 0),
     (
-        {
-            "_key": ["0", "1", "2"],
-            "id": [np.nan, "9", "9"],
-            "city": [np.nan, "Talca", "Talca"],
-        },
+        {"id": [np.nan, "9", "9"], "city": [np.nan, "Talca", "Talca"]},
         ["id", "city"],
         {
             Level.ERROR: [
                 (
                     "2 duplicate(s) with same id, city",
                     None,
-                    {"same '9' id 'Talca' city": ["1", "2"]},
+                    {"same '9' id 'Talca' city": [1, 2]},
                 )
             ]
         },

@@ -20,7 +20,7 @@ def check_items(df: pd.DataFrame, tagged_fields: TaggedFields) -> Result:
         errors = {}
         name_field = name_fields[0]
         url_field = url_fields[0]
-        df = df[[name_field, url_field, "_key"]]
+        df = df[[name_field, url_field]]
         duplicates = df[df[[name_field, url_field]].duplicated(keep=False)]
         if duplicates.empty:
             return result
@@ -30,7 +30,7 @@ def check_items(df: pd.DataFrame, tagged_fields: TaggedFields) -> Result:
             msg = (
                 f"same '{d[name_field].iloc[0]}' name and '{d[url_field].iloc[0]}' url"
             )
-            errors[msg] = list(d["_key"])
+            errors[msg] = list(d.index)
         result.add_error(
             f"{len(duplicates)} duplicate(s) with same name and url", errors=errors
         )
@@ -53,10 +53,10 @@ def check_uniqueness(df: pd.DataFrame, tagged_fields: TaggedFields) -> Result:
     err_keys = set()
     for field in unique_fields:
         result.items_count = df[field].count()
-        duplicates = df[df[field].duplicated(keep=False)][[field, "_key"]]
+        duplicates = df[df[field].duplicated(keep=False)][[field]]
         errors = {}
         for _, d in duplicates.groupby([field]):
-            keys = list(d["_key"])
+            keys = list(d.index)
             msg = f"same '{d[field].iloc[0]}' {field}"
             errors[msg] = keys
             err_keys = err_keys.union(keys)
@@ -79,7 +79,7 @@ def find_by(df: pd.DataFrame, columns: List[str]) -> Result:
     result = Result("Items Uniqueness By Columns")
     result.items_count = len(df)
     df = df.dropna(subset=columns, how="all")
-    duplicates = df[df[columns].duplicated(keep=False)][columns + ["_key"]]
+    duplicates = df[df[columns].duplicated(keep=False)][columns]
     if duplicates.empty:
         return result
 
@@ -89,7 +89,7 @@ def find_by(df: pd.DataFrame, columns: List[str]) -> Result:
         msg = "same"
         for c in columns:
             msg = f"{msg} '{d[c].iloc[0]}' {c}"
-        errors[msg] = list(d["_key"])
+        errors[msg] = list(d.index)
 
     result.add_error(
         f"{len(duplicates)} duplicate(s) with same {', '.join(columns)}", errors=errors

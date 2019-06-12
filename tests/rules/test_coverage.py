@@ -9,9 +9,9 @@ import pytest
     "df, expected_messages, expected_stats",
     [
         (
-            pd.DataFrame({"_key": [n for n in range(1000)]}),
+            pd.DataFrame({"id": [n for n in range(1000)]}),
             {},
-            [pd.Series([1000], index=["_key"], name="Fields coverage for 1_000 items")],
+            [pd.Series([1000], index=["id"], name="Fields coverage for 1_000 items")],
         ),
         (
             pd.DataFrame([("Jordan", None)], columns=["Name", "Field"]),

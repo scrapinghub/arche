@@ -116,7 +116,7 @@ def test_write_rule_details(capsys, message, expected_details):
     ],
 )
 def test_write_detailed_errors(mocker, errors, short, keys_limit, expected_messages):
-    mocker.patch("pandas.Series.sample", return_value=["5"], autospec=True)
+    mocker.patch("pandas.Series.sample", return_value=pd.Series("5"), autospec=True)
     html_mock = mocker.patch("arche.report.HTML", autospec=True)
     Report.write_detailed_errors(errors, short, keys_limit)
     calls = []
@@ -140,13 +140,13 @@ def test_write_detailed_errors(mocker, errors, short, keys_limit, expected_messa
             pd.Series(f"{SH_URL}/112358/13/21/item/5"),
             f"<a href='{SH_URL}/112358/13/21/item/5'>5</a>",
         ),
-        (pd.Series([str(i) for i in range(5)]), 1, ["0"], "0"),
         (
             pd.Series("112358/13/21/0"),
             1,
             pd.Series("112358/13/21/0"),
             f"<a href='{SH_URL}/112358/13/21/item/0'>0</a>",
         ),
+        (pd.Series([0, 1]), 1, pd.Series([0, 1]), f"0, 1"),
     ],
 )
 def test_sample_keys(mocker, keys, limit, sample_mock, expected_sample):

@@ -9,7 +9,6 @@ import pytest
 was_now_inputs = [
     (
         {
-            "_key": [str(i) for i in range(9)],
             "original_price": [10, 15, 40, None, 30, None, "60", "56.6", "30.2"],
             "sale_price": [20, 15, 30, 30, None, None, "30", "30", "56.6"],
         },
@@ -21,13 +20,13 @@ was_now_inputs = [
             Level.ERROR: [
                 (
                     "22.22% (2) of items with original_price < sale_price",
-                    "Past price is less than current for 2 items:\n['0', '8']",
+                    "Past price is less than current for 2 items:\n[0, 8]",
                 )
             ],
             Level.WARNING: [
                 (
                     "11.11% (1) of items with original_price = sale_price",
-                    "Prices equal for 1 items:\n['1']",
+                    "Prices equal for 1 items:\n[1]",
                 )
             ],
         },
@@ -35,7 +34,7 @@ was_now_inputs = [
     ),
     (
         {},
-        {"product_price_field": ["_key"]},
+        {"product_price_field": ["name"]},
         {
             Level.INFO: [
                 (
@@ -50,7 +49,6 @@ was_now_inputs = [
     ),
     (
         {
-            "_key": [str(i) for i in range(9)],
             "original_price": [10, 15, 40, None, 30, None, "60", "56.6", "30.2"],
             "sale_price": [9, 14, 30, 30, None, None, "30", "30", "20.6"],
         },
@@ -82,16 +80,8 @@ def test_compare_was_now(
 
 compare_prices_inputs = [
     (
-        {
-            "_key": ["1", "0", "2"],
-            "price": [1, "2", 5],
-            "url": ["http://1", "http://2", np.nan],
-        },
-        {
-            "_key": ["0", "1", "2"],
-            "price": [1.15, "2.3", 6],
-            "url": ["http://1", "http://2", np.nan],
-        },
+        {"price": ["2", 1, 5], "url": ["http://2", "http://1", np.nan]},
+        {"price": [1.15, "2.3", 6], "url": ["http://1", "http://2", np.nan]},
         {"product_price_field": ["price"], "product_url_field": ["url"]},
         {
             Level.INFO: [
@@ -103,10 +93,10 @@ compare_prices_inputs = [
                 (
                     "2 checked, 2 errors",
                     (
-                        "different prices for url: http://1\nsource price is 1 for 1\n"
-                        "target price is 1.15 for 0\n"
                         "different prices for url: http://2\nsource price is 2 for 0\n"
-                        "target price is 2.3 for 1"
+                        "target price is 2.3 for 1\n"
+                        "different prices for url: http://1\nsource price is 1 for 1\n"
+                        "target price is 1.15 for 0"
                     ),
                 )
             ],
@@ -129,22 +119,18 @@ def test_compare_prices_for_same_urls(
 
 compare_names_inputs = [
     (
-        {"_key": ["1", "0"], "name": ["John", "Carl"], "url": ["http://1", "http://2"]},
-        {
-            "_key": ["0", "1"],
-            "name": ["Johnny", "Ted"],
-            "url": ["http://1", "http://2"],
-        },
+        {"name": ["John", "Carl"], "url": ["http://1", "http://2"]},
+        {"name": ["Ted", "Johnny"], "url": ["http://2", "http://1"]},
         {"name_field": ["name"], "product_url_field": ["url"]},
         {
             Level.ERROR: [
                 (
                     "2 checked, 2 errors",
                     (
-                        "different names for url: http://1\nsource name is John for 1\n"
-                        "target name is Johnny for 0\n"
-                        "different names for url: http://2\nsource name is Carl for 0\n"
-                        "target name is Ted for 1"
+                        "different names for url: http://1\nsource name is John for 0\n"
+                        "target name is Johnny for 1\n"
+                        "different names for url: http://2\nsource name is Carl for 1\n"
+                        "target name is Ted for 0"
                     ),
                 )
             ]

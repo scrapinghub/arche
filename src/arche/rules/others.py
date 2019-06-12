@@ -96,7 +96,7 @@ def garbage_symbols(items: Items) -> Result:
         matches = items.flat_df[column].str.extractall(garbage, flags=re.IGNORECASE)
         matches = matches[["spaces", "html_entities", "css", "html_tags"]]
         if not matches.empty:
-            error_keys = items.flat_df.iloc[matches.unstack().index.values]["_key"]
+            error_keys = items.flat_df.loc[matches.unstack().index.values].index
             original_column = items.origin_column_name(column)
             bad_texts = matches.stack().value_counts().index.sort_values().tolist()
             error = (

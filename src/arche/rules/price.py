@@ -27,7 +27,7 @@ def compare_was_now(df: pd.DataFrame, tagged_fields: TaggedFields):
 
         df_prices_less = pd.DataFrame(
             prices[prices[price_was_field] < prices[price_field]],
-            columns=["_key", price_was_field, price_field],
+            columns=[price_was_field, price_field],
         )
 
         price_less_percent = "{:.2%}".format(len(df_prices_less) / items_number)
@@ -37,12 +37,12 @@ def compare_was_now(df: pd.DataFrame, tagged_fields: TaggedFields):
             result.add_error(
                 f"{price_less_percent} ({len(df_prices_less)}) of "
                 f"items with {price_was_field} < {price_field}",
-                detailed=f"{error}:\n{list(df_prices_less['_key'])}",
+                detailed=f"{error}:\n{list(df_prices_less.index)}",
             )
 
         df_prices_equals = pd.DataFrame(
             prices[prices[price_was_field] == prices[price_field]],
-            columns=["_key", price_was_field, price_field],
+            columns=[price_was_field, price_field],
         )
         price_equal_percent = "{:.2%}".format(len(df_prices_equals) / items_number)
 
@@ -54,7 +54,7 @@ def compare_was_now(df: pd.DataFrame, tagged_fields: TaggedFields):
                 ),
                 detailed=(
                     f"Prices equal for {len(df_prices_equals)} items:\n"
-                    f"{list(df_prices_equals['_key'])}"
+                    f"{list(df_prices_equals.index)}"
                 ),
             )
 
@@ -104,7 +104,7 @@ def compare_prices_for_same_urls(
 
     missing_detailed_messages = []
     for url in missing_urls:
-        key = target_df.loc[target_df[url_field] == url]["_key"].iloc[0]
+        key = target_df.loc[target_df[url_field] == url].index[0]
         missing_detailed_messages.append(f"Missing {url} from {key}")
 
     result.add_info(
@@ -135,8 +135,8 @@ def compare_prices_for_same_urls(
                     and ratio_diff(source_price, target_price) > 0.1
                 ):
                     diff_prices_count += 1
-                    source_key = source_df[source_df[url_field] == url]["_key"].iloc[0]
-                    target_key = target_df[target_df[url_field] == url]["_key"].iloc[0]
+                    source_key = source_df[source_df[url_field] == url].index[0]
+                    target_key = target_df[target_df[url_field] == url].index[0]
                     msg = (
                         f"different prices for url: {url}\nsource price is {source_price} "
                         f"for {source_key}\ntarget price is {target_price} for {target_key}"
@@ -197,8 +197,8 @@ def compare_names_for_same_urls(
                 and target_name.strip() != "nan"
             ):
                 diff_names_count += 1
-                source_key = source_df[source_df[url_field] == url]["_key"].iloc[0]
-                target_key = target_df[target_df[url_field] == url]["_key"].iloc[0]
+                source_key = source_df[source_df[url_field] == url].index[0]
+                target_key = target_df[target_df[url_field] == url].index[0]
                 msg = (
                     f"different names for url: {url}\nsource name is {source_name} "
                     f"for {source_key}\ntarget name is {target_name} for {target_key}"
@@ -245,7 +245,7 @@ def compare_prices_for_same_names(
 
     detailed_messages = []
     for name in missing_names:
-        target_key = target_df.loc[target_df[name_field] == name]["_key"].iloc[0]
+        target_key = target_df.loc[target_df[name_field] == name].index[0]
         msg = f"Missing {name} from {target_key}"
         if product_url_field:
             url = target_df.loc[target_df[name_field] == name][product_url_field].iloc[
@@ -277,12 +277,8 @@ def compare_prices_for_same_names(
             if is_number(source_price) and is_number(target_price):
                 if ratio_diff(source_price, target_price) > 0.1:
                     count += 1
-                    source_key = source_df[source_df[name_field] == name]["_key"].iloc[
-                        0
-                    ]
-                    target_key = target_df[target_df[name_field] == name]["_key"].iloc[
-                        0
-                    ]
+                    source_key = source_df[source_df[name_field] == name].index[0]
+                    target_key = target_df[target_df[name_field] == name].index[0]
                     msg = (
                         f"different price for {name}\nsource price is {source_price} "
                         f"for {source_key}\ntarget price is {target_price} for {target_key}"
