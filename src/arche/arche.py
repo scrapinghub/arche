@@ -215,7 +215,7 @@ class Arche:
         self.save_result(duplicate_rules.check_items(items.df, tagged_fields))
         self.save_result(
             category_rules.get_coverage_per_category(
-                items.df, tagged_fields.get("category", [])
+                items.df, tagged_fields.get("category", []) + self.schema.enums
             )
         )
 
@@ -249,7 +249,9 @@ class Arche:
             return
         self.save_result(
             category_rules.get_difference(
-                source_items.df, target_items.df, tagged_fields.get("category", [])
+                source_items.df,
+                target_items.df,
+                tagged_fields.get("category", []) + self.schema.enums,
             )
         )
         for r in [
