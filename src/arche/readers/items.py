@@ -27,10 +27,9 @@ class Items:
     def flat_df(self) -> pd.DataFrame:
         if self._flat_df is None:
             if self.expand:
-                self._flat_df = pd.DataFrame(flatten(i) for i in self.raw)
-                self._flat_df["_key"] = self.df.get(
-                    "_key", [str(i) for i in range(len(self))]
-                )
+                flat_df = pd.DataFrame(flatten(i) for i in self.raw)
+                flat_df.index = self.df.index
+                self._flat_df = flat_df.drop(columns=["_key", "_type"], errors="ignore")
             else:
                 self._flat_df = self.df
         return self._flat_df
@@ -63,9 +62,6 @@ class Items:
 
     @classmethod
     def from_df(cls, df: pd.DataFrame, expand: bool = True):
-        if "_key" not in df.columns:
-            df["_key"] = df.index
-            df["_key"] = df["_key"].apply(str)
         return cls(raw=np.array(df.to_dict("records")), df=df, expand=expand)
 
     @classmethod
@@ -88,7 +84,9 @@ class CloudItems(Items):
         self.expand = expand
         raw = self.fetch_data()
         df = pd.DataFrame(list(raw))
-        df["_key"] = self.format_keys(df["_key"])
+        df.index = self.format_keys(df["_key"])
+        df.index.name = None
+        df = df.drop(columns=["_key", "_type"], errors="ignore")
         super().__init__(raw=raw, df=df, expand=expand)
 
     @property
