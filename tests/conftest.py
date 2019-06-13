@@ -15,6 +15,7 @@ CLOUD_ITEMS = [
     {"_key": "112358/13/21/2", "_type": "Type", "price": 10, "name": "Yulia"},
     {"_key": "112358/13/21/3", "_type": "Type", "price": 11, "name": "Vivien"},
 ]
+
 DEFAULT_SCHEMA = {
     "$schema": "http://json-schema.org/draft-07/schema",
     "required": ["name"],
@@ -65,7 +66,9 @@ class Collection:
 
 
 class Source:
-    def __init__(self, items=None, stats=None):
+    def __init__(
+        self, items: Optional[List[Dict]] = None, stats: Optional[Dict] = None
+    ):
         self.items = items
         if stats:
             self._stats = stats
@@ -81,34 +84,62 @@ class Source:
 
     def iter(self, **kwargs):
         start = kwargs.get("start", 0)
+        count = kwargs.get("count", None)
+        counter = 0
         if start:
             start = int(start.split("/")[-1])
-        count = kwargs.get("count", len(self.items) - start)
-
-        # Scrapinghub API returns all posible items even if `count` greater than possible
-        if start + count > len(self.items):
-            limit = len(self.items)
-        else:
-            limit = start + count
 
         if kwargs.get("filter"):
             field_name = kwargs.get("filter")[0][0]
             value = kwargs.get("filter")[0][1][0]
-            filtered_items = []
 
-            counter = 0
-            for index in range(start, limit):
-                if counter == limit:
+            for item in self.items[start:]:
+                if counter == count:
                     return
-                if self.items[index].get(field_name) == value:
-                    filtered_items.append(self.items[index])
+                if item.get(field_name) == value:
                     counter += 1
+                    yield item
 
-            for filtered_item in filtered_items:
-                yield filtered_item
         else:
-            for index in range(start, limit):
-                yield self.items[index]
+            for item in self.items[start:]:
+                if counter == count:
+                    return
+                counter += 1
+                yield item
+
+
+class StoreSource:
+    def __init__(self, items: List[Dict] = None):
+        self.items = items
+
+    def count(self):
+        return len(self.items)
+
+    def iter(self, **kwargs):
+        start = kwargs.get("start", None)
+        if start:
+            start_idx = [
+                i for i, item in enumerate(self.items) if item.get("_key") == start
+            ][0]
+        count = kwargs.get("count", None)
+        counter = 0
+
+        if kwargs.get("filter"):
+            field_name = kwargs.get("filter")[0][0]
+            value = kwargs.get("filter")[0][1][0]
+
+            for item in self.items[start_idx:]:
+                if counter == count:
+                    return
+                if item.get(field_name) == value:
+                    counter += 1
+                    yield item
+        else:
+            for item in self.items[start_idx:]:
+                if counter == count:
+                    return
+                counter += 1
+                yield item
 
 
 @pytest.fixture(scope="function")
