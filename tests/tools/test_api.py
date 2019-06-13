@@ -1,5 +1,5 @@
 from arche.tools import api
-from conftest import Job, Source
+from conftest import Job, Source, StoreSource
 import numpy as np
 import pytest
 
@@ -17,15 +17,16 @@ def test_get_items_count(metadata, stats, expected_count):
 
 
 @pytest.mark.parametrize(
-    "mocked_items, start, count, filters, expected_items",
+    "mocked_items, count, start_index, start, filters, expected_items",
     [
         (
             [
                 {"_key": "112358/13/21/0", "_type": "NameItem", "name": "Elizabeth"},
                 {"_key": "112358/13/21/1", "_type": "NameItem", "name": "Margaret"},
             ],
-            0,
             1,
+            0,
+            "112358/13/21/0",
             None,
             np.array(
                 [{"_key": "112358/13/21/0", "_type": "NameItem", "name": "Elizabeth"}]
@@ -33,21 +34,54 @@ def test_get_items_count(metadata, stats, expected_count):
         ),
         (
             [
-                {"_key": "124fdfs20", "_type": "NameItem", "name": "Elizabeth"},
-                {"_key": "124fdfs23", "_type": "CityItem", "name": "Margaret"},
+                {"_key": "112358/13/21/0", "_type": "NameItem", "name": "Elizabeth"},
+                {"_key": "112358/13/21/1", "_type": "CityItem", "name": "Margaret"},
             ],
-            0,
             100,
+            0,
+            "112358/13/21/0",
             [("_type", ["NameItem"])],
-            np.array([{"_key": "124fdfs20", "_type": "NameItem", "name": "Elizabeth"}]),
+            np.array(
+                [{"_key": "112358/13/21/0", "_type": "NameItem", "name": "Elizabeth"}]
+            ),
         ),
     ],
 )
-def test_get_items(mocker, mocked_items, start, count, filters, expected_items):
+def test_get_items(
+    mocker, mocked_items, count, start_index, start, filters, expected_items
+):
     mocker.patch(
         "arche.tools.api.get_source", return_value=Source(mocked_items), autospec=True
     )
-    items = api.get_items("source_key", start_index=start, count=count, filters=filters)
+    items = api.get_items("source_key", count, start_index, start, filters)
+    np.testing.assert_array_equal(items, expected_items)
+
+
+@pytest.mark.parametrize(
+    "mocked_items, count, start, filters, expected_items",
+    [
+        (
+            [
+                {"_key": "124fdfs15", "_type": "CityItem", "name": "Merlot"},
+                {"_key": "124fdfs20", "_type": "NameItem", "name": "Elizabeth"},
+                {"_key": "124fdfs23", "_type": "CityItem", "name": "Margaret"},
+            ],
+            100,
+            "124fdfs20",
+            [("_type", ["CityItem"])],
+            np.array([{"_key": "124fdfs23", "_type": "CityItem", "name": "Margaret"}]),
+        )
+    ],
+)
+def test_get_items_from_collection(
+    mocker, mocked_items, count, start, filters, expected_items
+):
+    mocker.patch(
+        "arche.tools.api.get_source",
+        return_value=StoreSource(mocked_items),
+        autospec=True,
+    )
+    items = api.get_items("source_key", count, 0, start, filters)
     np.testing.assert_array_equal(items, expected_items)
 
 

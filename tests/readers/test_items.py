@@ -46,7 +46,7 @@ def test_items_from_array(raw):
 
 collection_items = np.array(
     [
-        {"_key": "0", "name": "Book", "_type": "Book"},
+        {"_key": "10", "name": "Book", "_type": "Book"},
         {"_key": "1", "name": "Movie", "_type": "Book"},
         {"_key": "2", "name": "Guitar", "_type": "Book"},
         {"_key": "3", "name": "Dog", "_type": "Book"},
@@ -54,15 +54,15 @@ collection_items = np.array(
 )
 expected_col_df = pd.DataFrame(
     {"name": ["Book", "Movie", "Guitar", "Dog"]},
-    index=[f"{SH_URL}/key/{i}" for i in range(4)],
+    index=[f"{SH_URL}/key/{i}" for i in [10, 1, 2, 3]],
 )
 
 
 @pytest.mark.parametrize(
-    "count, filters, expand, expected_count",
-    [(1, None, False, 1), (None, None, True, 4)],
+    "count, start, filters, expand, expected_count",
+    [(1, "1", None, False, 1), (None, None, None, True, 4)],
 )
-def test_collection_items(mocker, count, filters, expand, expected_count):
+def test_collection_items(mocker, count, start, filters, expand, expected_count):
     mocker.patch(
         "arche.tools.api.get_collection",
         return_value=Collection(len(collection_items)),
@@ -73,18 +73,20 @@ def test_collection_items(mocker, count, filters, expand, expected_count):
         return_value=collection_items[:expected_count],
         autospec=True,
     )
-    items = CollectionItems("key", count, filters, expand)
+    items = CollectionItems("key", count, start, filters, expand)
     assert items.key == "key"
+    assert items.start == start
     assert items.filters == filters
     assert items.expand == expand
     np.testing.assert_array_equal(items.raw, collection_items[:expected_count])
     pd.testing.assert_frame_equal(items.df, expected_col_df.iloc[:expected_count])
     pd.testing.assert_frame_equal(items.flat_df, items.df)
-
-    assert len(items) == len(expected_col_df.iloc[:expected_count])
+    assert len(items) == expected_count
     assert items.limit == len(collection_items)
     assert items.count == expected_count
-    get_items_mock.assert_called_once_with("key", expected_count, 0, filters)
+    get_items_mock.assert_called_once_with(
+        "key", expected_count, 0, start, filters, desc="Fetching from 'key'"
+    )
 
 
 job_items = np.array(
@@ -101,20 +103,18 @@ expected_job_df = pd.DataFrame(
 )
 
 
-@pytest.mark.parametrize("start, count, expected_count", [(1, 2, 2)])
-def test_job_items(mocker, start, count, expected_count):
+def test_job_items(mocker):
     mocker.patch("arche.readers.items.JobItems.job", return_value=Job(), autospec=True)
     mocker.patch(
-        "arche.tools.api.get_items",
-        return_value=job_items[start:expected_count],
-        autospec=True,
+        "arche.tools.api.get_items", return_value=job_items[1:3], autospec=True
     )
     items = JobItems(
-        key="112358/13/21", start=start, count=count, filters=None, expand=False
+        key="112358/13/21", count=2, start_index=1, filters=None, expand=False
     )
-    np.testing.assert_array_equal(items.raw, job_items[start:count])
-    pd.testing.assert_frame_equal(items.df, expected_job_df.iloc[start:count])
-    assert items.count == count
+    np.testing.assert_array_equal(items.raw, job_items[1:3])
+    pd.testing.assert_frame_equal(items.df, expected_job_df.iloc[1:3])
+    assert items.count == 2
+    assert items.start == "112358/13/21/1"
 
 
 def test_process_df():
