@@ -1,5 +1,5 @@
 from arche.readers.items import RawItems
-from arche.readers.schema import Schema, Tag, TaggedFields
+from arche.readers.schema import RawSchema, Tag, TaggedFields
 from arche.rules.result import Result
 from arche.tools.schema import fast_validate, full_validate
 import numpy as np
@@ -7,7 +7,7 @@ import pandas as pd
 
 
 def validate(
-    schema: Schema, raw_items: RawItems, keys: pd.Index, fast: bool = False
+    schema: RawSchema, raw_items: RawItems, keys: pd.Index, fast: bool = False
 ) -> Result:
     """Run JSON schema validation against data.
 

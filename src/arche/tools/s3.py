@@ -1,6 +1,7 @@
 """AWS methods. Credentials are expected to be set in environment"""
 import io
 from urllib.parse import quote
+import urllib.request
 
 import boto3
 
@@ -38,3 +39,8 @@ def get_contents_as_string(bucket: str, filepath: str) -> str:
     client = session.client("s3")
     obj = client.get_object(Bucket=bucket, Key=filepath)
     return obj["Body"].read().decode("utf-8")
+
+
+def get_contents(url: str) -> str:
+    with urllib.request.urlopen(url) as f:
+        return f.read().decode("utf-8")

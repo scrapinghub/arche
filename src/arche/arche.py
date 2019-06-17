@@ -4,7 +4,7 @@ from typing import Iterable, Optional, Union
 
 from arche.data_quality_report import DataQualityReport
 from arche.readers.items import Items, CollectionItems, JobItems, RawItems
-import arche.readers.schema as sr
+from arche.readers.schema import Schema, SchemaSource
 from arche.report import Report
 import arche.rules.category as category_rules
 import arche.rules.coverage as coverage_rules
@@ -22,7 +22,7 @@ class Arche:
     def __init__(
         self,
         source: Union[str, pd.DataFrame, RawItems],
-        schema: Optional[sr.SchemaSource] = None,
+        schema: Optional[SchemaSource] = None,
         target: Optional[Union[str, pd.DataFrame]] = None,
         start: int = 0,
         count: Optional[int] = None,
@@ -57,7 +57,7 @@ class Arche:
         self._schema = None
         self.schema_source = None
         if schema:
-            self.schema = sr.get_schema(schema)
+            self.schema = schema
         self.target = target
         self.start = start
         self.count = count
@@ -89,13 +89,13 @@ class Arche:
     @property
     def schema(self):
         if not self._schema and self.schema_source:
-            self._schema = sr.get_schema(self.schema_source)
+            self._schema = Schema(self.schema_source)
         return self._schema
 
     @schema.setter
     def schema(self, schema_source):
         self.schema_source = schema_source
-        self._schema = sr.get_schema(schema_source)
+        self._schema = Schema(schema_source)
 
     @staticmethod
     def get_items(
@@ -165,7 +165,7 @@ class Arche:
         there are no guarantees. Slower than `check_with_json_schema()`
         """
         res = schema_rules.validate(
-            self.schema, self.source_items.raw, self.source_items.df.index
+            self.schema.raw, self.source_items.raw, self.source_items.df.index
         )
         self.save_result(res)
         res.show()
@@ -176,7 +176,10 @@ class Arche:
         `validate_with_json_schema()`.
         """
         res = schema_rules.validate(
-            self.schema, self.source_items.raw, self.source_items.df.index, fast=True
+            self.schema.raw,
+            self.source_items.raw,
+            self.source_items.df.index,
+            fast=True,
         )
         self.save_result(res)
         res.show()
@@ -186,25 +189,24 @@ class Arche:
             return
         self.save_result(
             schema_rules.validate(
-                self.schema, self.source_items.raw, self.source_items.df.index
+                self.schema.raw, self.source_items.raw, self.source_items.df.index
             )
         )
 
-        tagged_fields = sr.Tags().get(self.schema)
         target_columns = (
             self.target_items.df.columns.values if self.target_items else None
         )
 
         check_tags_result = schema_rules.check_tags(
-            self.source_items.df.columns.values, target_columns, tagged_fields
+            self.source_items.df.columns.values, target_columns, self.schema.tags
         )
         self.save_result(check_tags_result)
         if check_tags_result.errors:
             return
 
-        self.run_customized_rules(self.source_items, tagged_fields)
+        self.run_customized_rules(self.source_items, self.schema.tags)
         self.compare_with_customized_rules(
-            self.source_items, self.target_items, tagged_fields
+            self.source_items, self.target_items, self.schema.tags
         )
 
     def run_customized_rules(self, items, tagged_fields):
@@ -213,7 +215,7 @@ class Arche:
         self.save_result(duplicate_rules.check_items(items.df, tagged_fields))
         self.save_result(
             category_rules.get_coverage_per_category(
-                items.df, tagged_fields.get("category", [])
+                items.df, tagged_fields.get("category", []) + self.schema.enums
             )
         )
 
@@ -247,7 +249,9 @@ class Arche:
             return
         self.save_result(
             category_rules.get_difference(
-                source_items.df, target_items.df, tagged_fields.get("category", [])
+                source_items.df,
+                target_items.df,
+                tagged_fields.get("category", []) + self.schema.enums,
             )
         )
         for r in [
