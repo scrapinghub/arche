@@ -59,7 +59,7 @@ class Schema:
     def get_enums(self) -> List[str]:
         enums = []
         for k, v in self.raw["properties"].items():
-            if v.get("enum"):
+            if "enum" in v.keys():
                 enums.append(k)
         return enums
 

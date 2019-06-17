@@ -249,3 +249,12 @@ def test_get_field_tags(tags, field, expected_tags):
 )
 def test_parse_tag(value, expected):
     assert Schema.parse_tag(value) == expected
+
+
+def test_get_enums():
+    s = Schema({"properties": {"a": {"enum": ["x"]}, "b": {"enum": ["y"]}}})
+    assert s.get_enums() == ["a", "b"]
+    s = Schema({"properties": {"a": {"type": "string", "enum": ["x"]}}})
+    assert s.get_enums() == ["a"]
+    s = Schema({"properties": {"a": {"type": "string"}}})
+    assert not s.get_enums()
