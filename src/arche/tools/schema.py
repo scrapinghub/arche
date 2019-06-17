@@ -54,13 +54,11 @@ def create_json_schema(
     if items_count == 0:
         raise ValueError(f"'{source_key}' does not have any items")
 
-    item_n_err = "{} is a bad item number, choose numbers between 0 and {}"
-    if items_numbers:
-        items_numbers.sort()
-        if items_numbers[-1] >= items_count or items_numbers[0] < 0:
-            raise ValueError(item_n_err.format(items_numbers[-1], items_count - 1))
-    else:
-        items_numbers = set_item_no(items_count)
+    items_numbers = items_numbers or set_item_no(items_count)
+    if max(items_numbers) >= items_count or min(items_numbers) < 0:
+        raise ValueError(
+            f"Expected values between 0 and {items_count}, got '{items_numbers}'"
+        )
 
     samples = []
     for n in items_numbers:

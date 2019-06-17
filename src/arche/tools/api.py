@@ -139,7 +139,7 @@ def get_items_with_pool(
     processes_count = min(max(helpers.cpus_count(), workers), active_connections_limit)
     batch_size = math.ceil(count / processes_count)
 
-    start_idxs = [i for i in range(start_index, start_index + count, batch_size)]
+    start_idxs = range(start_index, start_index + count, batch_size)
     start = [f"{source_key}/{i}" for i in start_idxs]
     with Pool(processes_count) as p:
         results = p.starmap(

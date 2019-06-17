@@ -65,6 +65,12 @@ class Collection:
         return self._count
 
 
+def _is_filtered(x, by):
+    if by:
+        return x.get(by[0][0]) == by[0][1][0]
+    return True
+
+
 class Source:
     def __init__(
         self, items: Optional[List[Dict]] = None, stats: Optional[Dict] = None
@@ -89,21 +95,10 @@ class Source:
         if start:
             start = int(start.split("/")[-1])
 
-        if kwargs.get("filter"):
-            field_name = kwargs.get("filter")[0][0]
-            value = kwargs.get("filter")[0][1][0]
-
-            for item in self.items[start:]:
-                if counter == count:
-                    return
-                if item.get(field_name) == value:
-                    counter += 1
-                    yield item
-
-        else:
-            for item in self.items[start:]:
-                if counter == count:
-                    return
+        for item in self.items[start:]:
+            if counter == count:
+                return
+            if _is_filtered(item, kwargs.get("filter")):
                 counter += 1
                 yield item
 
@@ -116,28 +111,19 @@ class StoreSource:
         return len(self.items)
 
     def iter(self, **kwargs):
-        start = kwargs.get("start", None)
-        if start:
-            start_idx = [
-                i for i, item in enumerate(self.items) if item.get("_key") == start
-            ][0]
+        start = kwargs.get("start", self.items[0].get("_key"))
+
+        def start_idx():
+            for i, item in enumerate(self.items):
+                if item.get("_key") == start:
+                    return i
+
         count = kwargs.get("count", None)
         counter = 0
-
-        if kwargs.get("filter"):
-            field_name = kwargs.get("filter")[0][0]
-            value = kwargs.get("filter")[0][1][0]
-
-            for item in self.items[start_idx:]:
-                if counter == count:
-                    return
-                if item.get(field_name) == value:
-                    counter += 1
-                    yield item
-        else:
-            for item in self.items[start_idx:]:
-                if counter == count:
-                    return
+        for item in self.items[start_idx() :]:
+            if counter == count:
+                return
+            if _is_filtered(item, kwargs.get("filter")):
                 counter += 1
                 yield item
 
