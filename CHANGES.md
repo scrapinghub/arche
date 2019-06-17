@@ -20,12 +20,14 @@ Note that the top-most release is changes in the unreleased master branch on Git
 - Data is consistent with Dash and Spidermon: `_type, _key` fields are dropped from dataframe, raw data, basic schema, #104, #106
 - `df.index` now stores `_key` instead
 - `basic_json_schema()` works with `deleted` jobs
+- `start` is supported for Collections, #112
 - `enum` is counted as a `category` tag, #18
 ### Fixed
 - `Arche.glance()`, #88
 - Item links in Schema validation errors, #89
 - Empty NAN bars on category graphs, #93
 - `data_quality_report()`, #95
+- Wrong number of Collection Items if it contains item 0, #112
 ### Removed
 
 

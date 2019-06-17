@@ -25,30 +25,32 @@ def basic_json_schema(data_source: str, items_numbers: List[int] = None) -> Sche
 
 
 def create_json_schema(
-    source_key: str, item_numbers: Optional[List[int]] = None
+    source_key: str, items_numbers: Optional[List[int]] = None
 ) -> Schema:
     if helpers.is_collection_key(source_key):
         store = api.get_collection(source_key)
         items_count = store.count()
+        start_mask = ""
     elif helpers.is_job_key(source_key):
         items_count = api.get_items_count(api.get_job(source_key))
+        start_mask = f"{source_key}/"
     else:
         raise ValueError(f"'{source_key}' is not a valid job or collection key")
 
     if items_count == 0:
         raise ValueError(f"'{source_key}' does not have any items")
 
-    item_n_err = "{} is a bad item number, choose numbers between 0 and {}"
-    if item_numbers:
-        item_numbers.sort()
-        if item_numbers[-1] >= items_count or item_numbers[0] < 0:
-            raise ValueError(item_n_err.format(item_numbers[-1], items_count - 1))
-    else:
-        item_numbers = set_item_no(items_count)
+    items_numbers = items_numbers or set_item_no(items_count)
+    if max(items_numbers) >= items_count or min(items_numbers) < 0:
+        raise ValueError(
+            f"Expected values between 0 and {items_count}, got '{items_numbers}'"
+        )
 
     samples = []
-    for n in item_numbers:
-        item = api.get_items(source_key, start_index=n, count=1, p_bar=None)[0]
+    for n in items_numbers:
+        item = api.get_items(
+            source_key, count=1, start_index=n, start=f"{start_mask}{n}", p_bar=None
+        )[0]
         item.pop("_type", None)
         item.pop("_key", None)
         samples.append(item)

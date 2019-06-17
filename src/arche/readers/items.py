@@ -113,12 +113,13 @@ class JobItems(CloudItems):
     def __init__(
         self,
         key: str,
-        start: int = 0,
         count: Optional[int] = None,
+        start_index: int = 0,
         filters: Optional[api.Filters] = None,
         expand: bool = True,
     ):
-        self.start_index: int = start
+        self.start_index = start_index
+        self.start: int = f"{key}/{start_index}"
         self._job: Job = None
         super().__init__(key, count, filters, expand)
 
@@ -145,7 +146,9 @@ class JobItems(CloudItems):
 
     def fetch_data(self) -> np.ndarray:
         if self.filters or self.count < 200_000:
-            return api.get_items(self.key, self.count, self.start_index, self.filters)
+            return api.get_items(
+                self.key, self.count, self.start_index, self.start, self.filters
+            )
         else:
             return api.get_items_with_pool(self.key, self.count, self.start_index)
 
@@ -158,6 +161,17 @@ class JobItems(CloudItems):
 
 
 class CollectionItems(CloudItems):
+    def __init__(
+        self,
+        key: str,
+        count: Optional[int] = None,
+        start: Optional[str] = None,
+        filters: Optional[api.Filters] = None,
+        expand: bool = True,
+    ):
+        self.start = start
+        super().__init__(key, count, filters, expand)
+
     @property
     def limit(self) -> int:
         if not self._limit:
@@ -171,7 +185,10 @@ class CollectionItems(CloudItems):
         return self._count
 
     def fetch_data(self) -> np.ndarray:
-        return api.get_items(self.key, self.count, 0, self.filters)
+        desc = f"Fetching from '{self.key.rsplit('/')[-1]}'"
+        return api.get_items(
+            self.key, self.count, 0, self.start, self.filters, desc=desc
+        )
 
     def format_keys(self, keys: pd.Series) -> pd.Series:
         """Get full Scrapy Cloud url from `_key`

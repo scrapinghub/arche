@@ -107,18 +107,6 @@ def test_get_items_from_collection(
     assert items.expand == expand
 
 
-def test_get_items_start():
-    with pytest.raises(ValueError) as excinfo:
-        Arche.get_items(
-            source="112358/collections/s/pages",
-            count=1,
-            start=1,
-            filters=None,
-            expand=None,
-        )
-    assert str(excinfo.value) == "Collections API does not support 'start' parameter"
-
-
 def test_get_items_from_bad_source():
     with pytest.raises(ValueError) as excinfo:
         Arche.get_items(source="bad_key", count=1, start=1, filters=None, expand=None)

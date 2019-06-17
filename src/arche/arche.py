@@ -24,8 +24,8 @@ class Arche:
         source: Union[str, pd.DataFrame, RawItems],
         schema: Optional[SchemaSource] = None,
         target: Optional[Union[str, pd.DataFrame]] = None,
-        start: int = 0,
         count: Optional[int] = None,
+        start: Union[str, int] = None,
         filters: Optional[api.Filters] = None,
         expand: bool = True,
     ):
@@ -34,8 +34,8 @@ class Arche:
             source: a data source to validate, accepts job keys, pandas df, lists
             schema: a JSON schema source used to run validation
             target: a data source to compare with
-            start: an item number to start reading from
             count: the amount of items to read from start
+            start: an item key to start reading from
             filters: Scrapinghub filtering, see
             https://python-scrapinghub.readthedocs.io/en/latest/client/apidocs.html#scrapinghub.client.items.Items # noqa
             expand: if True, use flattened data in garbage rules, affects performance
@@ -72,7 +72,7 @@ class Arche:
     def source_items(self):
         if not self._source_items:
             self._source_items = self.get_items(
-                self.source, self.start, self.count, self.filters, self.expand
+                self.source, self.count, self.start, self.filters, self.expand
             )
         return self._source_items
 
@@ -82,7 +82,7 @@ class Arche:
             return None
         if not self._target_items:
             self._target_items = self.get_items(
-                self.target, self.start, self.count, self.filters, self.expand
+                self.target, self.count, self.start, self.filters, self.expand
             )
         return self._target_items
 
@@ -100,8 +100,8 @@ class Arche:
     @staticmethod
     def get_items(
         source: Union[str, pd.DataFrame, RawItems],
-        start: int,
         count: Optional[int],
+        start: Union[str, int],
         filters: Optional[api.Filters],
         expand: bool,
     ) -> Union[JobItems, CollectionItems]:
@@ -110,15 +110,9 @@ class Arche:
         elif isinstance(source, Iterable) and not isinstance(source, str):
             return Items.from_array(source, expand=expand)
         elif helpers.is_job_key(source):
-            return JobItems(
-                key=source, start=start, count=count, filters=filters, expand=expand
-            )
+            return JobItems(source, count, start, filters, expand)
         elif helpers.is_collection_key(source):
-            if start:
-                raise ValueError("Collections API does not support 'start' parameter")
-            return CollectionItems(
-                key=source, count=count, filters=filters, expand=expand
-            )
+            return CollectionItems(source, count, start, filters, expand)
         else:
             raise ValueError(f"'{source}' is not a valid job or collection key")
 
