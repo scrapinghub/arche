@@ -65,7 +65,6 @@ class Arche:
         self.expand = expand
         self._source_items = None
         self._target_items = None
-
         self.report = Report()
 
     @property
@@ -104,13 +103,13 @@ class Arche:
         start: Union[str, int],
         filters: Optional[api.Filters],
         expand: bool,
-    ) -> Union[JobItems, CollectionItems]:
+    ) -> Items:
         if isinstance(source, pd.DataFrame):
             return Items.from_df(source, expand=expand)
         elif isinstance(source, Iterable) and not isinstance(source, str):
             return Items.from_array(source, expand=expand)
         elif helpers.is_job_key(source):
-            return JobItems(source, count, start, filters, expand)
+            return JobItems(source, count, start or 0, filters, expand)
         elif helpers.is_collection_key(source):
             return CollectionItems(source, count, start, filters, expand)
         else:

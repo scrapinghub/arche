@@ -9,6 +9,7 @@ import numpy as np
 import pandas as pd
 from scrapinghub import ScrapinghubClient
 from scrapinghub.client.jobs import Job
+from tqdm import tqdm_notebook
 
 RawItems = Iterable[Dict[str, Any]]
 
@@ -27,7 +28,9 @@ class Items:
     def flat_df(self) -> pd.DataFrame:
         if self._flat_df is None:
             if self.expand:
-                flat_df = pd.DataFrame(flatten(i) for i in self.raw)
+                flat_df = pd.DataFrame(
+                    flatten(i) for i in tqdm_notebook(self.raw, desc="Flattening")
+                )
                 flat_df.index = self.df.index
                 self._flat_df = flat_df.drop(columns=["_key", "_type"], errors="ignore")
             else:

@@ -153,7 +153,7 @@ def get_items(
     key: str,
     count: int,
     start_index: int,
-    start: str,
+    start: Optional[str],
     filters: Optional[Filters] = None,
     p_bar: Union[tqdm, tqdm_notebook] = tqdm_notebook,
     desc: Optional[str] = None,
