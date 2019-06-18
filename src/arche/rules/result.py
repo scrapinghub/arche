@@ -226,7 +226,7 @@ class Result:
             title=name,
             bargap=0.1,
             template="seaborn",
-            height=min(rows_count * 20, 900),
+            height=min(max(rows_count * 20, 200), 900),
             hovermode="y",
             margin=dict(l=200, t=35),
         )
