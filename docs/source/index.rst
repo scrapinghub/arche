@@ -5,7 +5,7 @@ Welcome to Arche's documentation!
 
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: Contents:
 
    Handling-items-of-different-types
