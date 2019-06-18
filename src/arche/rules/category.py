@@ -95,9 +95,9 @@ def get_categories(df: pd.DataFrame, max_uniques: int = 10) -> Result:
     result = Result("Categories")
 
     result.stats = [
-        df[c].value_counts(dropna=False)
-        for c in df
-        if len(df[c].value_counts(dropna=False)) <= max_uniques
+        value_counts
+        for value_counts in map(lambda c: df[c].value_counts(dropna=False), df)
+        if len(value_counts) <= max_uniques
     ]
     if not result.stats:
         result.add_info("Categories were not found")
