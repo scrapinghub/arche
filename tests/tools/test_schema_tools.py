@@ -7,13 +7,12 @@ import pytest
 schema = {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "definitions": {
-        "float": {"pattern": r"^-?[0-9]+\.[0-9]{2}$"},
         "url": {
             "pattern": (
                 r"^https?://(www\.)?[a-z0-9.-]*\.[a-z]{2,}"
                 r"([^<>%\x20\x00-\x1f\x7F]|%[0-9a-fA-F]{2})*$"
             )
-        },
+        }
     },
     "type": "object",
     "properties": {"url": {"type": "string"}, "id": {"type": "integer"}},
@@ -52,13 +51,12 @@ def test_create_json_schema(mocker, get_job, get_raw_items):
     assert schema_tools.create_json_schema(get_job.key, [2, 3]) == {
         "$schema": "http://json-schema.org/draft-07/schema#",
         "definitions": {
-            "float": {"pattern": r"^-?[0-9]+\.[0-9]{2}$"},
             "url": {
                 "pattern": (
                     r"^https?://(www\.)?[a-z0-9.-]*\.[a-z]{2,}"
                     r"([^<>%\x20\x00-\x1f\x7F]|%[0-9a-fA-F]{2})*$"
                 )
-            },
+            }
         },
         "additionalProperties": False,
         "type": "object",
