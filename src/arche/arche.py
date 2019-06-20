@@ -38,8 +38,7 @@ class Arche:
             start: an item key to start reading from
             filters: Scrapinghub filtering, see
             https://python-scrapinghub.readthedocs.io/en/latest/client/apidocs.html#scrapinghub.client.items.Items # noqa
-            expand: if True, use flattened data in garbage rules, affects performance
-            see flatten_df
+            expand: if True, use flattened data in garbage rules
         """
         if isinstance(source, str) and target == source:
             raise ValueError(
