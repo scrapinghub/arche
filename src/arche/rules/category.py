@@ -101,6 +101,7 @@ def get_categories(df: pd.DataFrame, max_uniques: int = 10) -> Result:
         for value_counts in tqdm_notebook(
             map(lambda c: df[c].value_counts(dropna=False), columns),
             desc="Finding categories",
+            total=len(columns)
         )
         if len(value_counts) <= max_uniques
     ]
