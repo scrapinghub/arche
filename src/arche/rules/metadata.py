@@ -28,17 +28,6 @@ def check_outcome(job: Job) -> Result:
     return result
 
 
-def check_response_ratio(job: Job) -> Result:
-    requests_number = api.get_requests_count(job)
-    items_count = api.get_items_count(job)
-    result = Result("Responses Per Item Ratio")
-    result.add_info(
-        f"Number of responses / Number of scraped items - "
-        f"{round(requests_number / items_count, 2)}"
-    )
-    return result
-
-
 def compare_response_ratio(source_job: Job, target_job: Job) -> Result:
     """Compare request with response per item ratio"""
     s_ratio = round(

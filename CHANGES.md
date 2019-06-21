@@ -29,6 +29,7 @@ Note that the top-most release is changes in the unreleased master branch on Git
 - `data_quality_report()`, #95
 - Wrong number of Collection Items if it contains item 0, #112
 ### Removed
+- **Responses Per Item Ratio** rule
 
 
 ## [0.3.5] (2019-05-14)

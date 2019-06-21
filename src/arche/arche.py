@@ -216,7 +216,6 @@ class Arche:
     def check_metadata(self, job):
         self.save_result(metadata_rules.check_outcome(job))
         self.save_result(metadata_rules.check_errors(job))
-        self.save_result(metadata_rules.check_response_ratio(job))
 
     @lru_cache(maxsize=32)
     def compare_metadata(self, source_job, target_job):
