@@ -75,10 +75,11 @@ def test_tensors_not_equal(source, target):
 )
 def test_show(mocker, capsys, message, stats, expected_details):
     mock_pio_show = mocker.patch("plotly.io.show", autospec=True)
-    r = create_result("rule name here", message, stats=stats)
-    r.show()
-    mock_pio_show.assert_called_once_with(r.figures[0])
-    assert capsys.readouterr().out == expected_details
+    res = create_result("rule name here", message, stats=stats)
+    res.show()
+    mock_pio_show.assert_called_once_with(res.figures[0])
+    # capsys captures IPython.display.clear_output()
+    assert capsys.readouterr().out == f"\x1b[2K\r\x1b[2K\r{expected_details}"
 
 
 @pytest.mark.parametrize(
