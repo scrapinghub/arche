@@ -36,7 +36,7 @@ def is_job_key(value):
 def ms_to_time(ms):
     if ms is None:
         return None
-    return str(d.timedelta(milliseconds=ms))
+    return str(d.timedelta(milliseconds=ms))[:-7] or str(d.timedelta(milliseconds=ms))
 
 
 def ratio_diff(source, target):
