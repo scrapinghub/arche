@@ -1,5 +1,5 @@
 import arche.rules.duplicates as duplicates
-from arche.rules.result import Level
+from arche.rules.result import Level, Outcome
 from conftest import create_result
 import numpy as np
 import pandas as pd
@@ -7,16 +7,7 @@ import pytest
 
 
 check_items_inputs = [
-    (
-        {},
-        {},
-        {
-            Level.INFO: [
-                ("'name_field' and 'product_url_field' tags were not found in schema",)
-            ]
-        },
-        0,
-    ),
+    ({}, {}, {Level.INFO: [(Outcome.SKIPPED,)]}, 0),
     (
         {"name": ["bob", "bob", "bob", "bob"], "url": ["u1", "u1", "2", "u1"]},
         {"name_field": ["name"], "product_url_field": ["url"]},
@@ -56,7 +47,7 @@ def test_check_items(data, tagged_fields, expected_messages, expected_err_items_
 
 
 check_uniqueness_inputs = [
-    ({}, {}, {Level.INFO: [("'unique' tag was not found in schema",)]}, 0),
+    ({}, {}, {Level.INFO: [(Outcome.SKIPPED,)]}, 0),
     (
         {"id": ["0", "0", "1"]},
         {"unique": ["id"]},

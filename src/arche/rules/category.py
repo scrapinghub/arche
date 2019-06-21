@@ -53,7 +53,6 @@ def get_difference(
             result.add_warning(
                 f"The difference is greater than {err_thr:.0%} for {len(errs)} value(s) of {c}"
             )
-
     if not category_names:
         result.add_info(Outcome.SKIPPED)
     return result

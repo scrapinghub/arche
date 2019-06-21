@@ -1,7 +1,7 @@
 from typing import List
 
 from arche.readers.schema import TaggedFields
-from arche.rules.result import Result
+from arche.rules.result import Result, Outcome
 import pandas as pd
 
 
@@ -12,28 +12,24 @@ def check_items(df: pd.DataFrame, tagged_fields: TaggedFields) -> Result:
     url_fields = tagged_fields.get("product_url_field")
     result = Result("Duplicated Items")
     if not name_fields or not url_fields:
-        result.add_info(
-            "'name_field' and 'product_url_field' tags were not found in schema"
-        )
-    else:
-        result.items_count = len(df)
-        errors = {}
-        name_field = name_fields[0]
-        url_field = url_fields[0]
-        df = df[[name_field, url_field]]
-        duplicates = df[df[[name_field, url_field]].duplicated(keep=False)]
-        if duplicates.empty:
-            return result
+        result.add_info(Outcome.SKIPPED)
+        return result
+    result.items_count = len(df)
+    errors = {}
+    name_field = name_fields[0]
+    url_field = url_fields[0]
+    df = df[[name_field, url_field]]
+    duplicates = df[df[[name_field, url_field]].duplicated(keep=False)]
+    if duplicates.empty:
+        return result
 
-        result.err_items_count = len(duplicates)
-        for _, d in duplicates.groupby([name_field, url_field]):
-            msg = (
-                f"same '{d[name_field].iloc[0]}' name and '{d[url_field].iloc[0]}' url"
-            )
-            errors[msg] = list(d.index)
-        result.add_error(
-            f"{len(duplicates)} duplicate(s) with same name and url", errors=errors
-        )
+    result.err_items_count = len(duplicates)
+    for _, d in duplicates.groupby([name_field, url_field]):
+        msg = f"same '{d[name_field].iloc[0]}' name and '{d[url_field].iloc[0]}' url"
+        errors[msg] = list(d.index)
+    result.add_error(
+        f"{len(duplicates)} duplicate(s) with same name and url", errors=errors
+    )
     return result
 
 
@@ -47,7 +43,7 @@ def check_uniqueness(df: pd.DataFrame, tagged_fields: TaggedFields) -> Result:
     result = Result("Uniqueness")
 
     if not unique_fields:
-        result.add_info("'unique' tag was not found in schema")
+        result.add_info(Outcome.SKIPPED)
         return result
 
     err_keys = set()

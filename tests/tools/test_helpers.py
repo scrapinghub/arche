@@ -5,6 +5,7 @@ import pytest
 def test_ms_to_time():
     assert h.ms_to_time(None) is None
     assert h.ms_to_time(1000) == "0:00:01"
+    assert h.ms_to_time(2203085216) == "25 days, 11:58:05"
 
 
 input_ratio_values = [
