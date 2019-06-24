@@ -125,6 +125,7 @@ def test_get_no_categories(data, expected_message):
             ],
             "2 category field(s)",
         ),
+        ({"a": range(100)}, 1, [], "Categories were not found"),
     ],
 )
 def test_get_categories(data, max_uniques, expected_stats, expected_message):
@@ -154,6 +155,7 @@ def test_get_categories(data, max_uniques, expected_stats, expected_message):
             5000,
             ["a", "b"],
         ),
+        ({"a": range(100)}, 1, 10, []),
     ],
 )
 def test_find_likely_cats(data, max_uniques, sample, expected_cats):

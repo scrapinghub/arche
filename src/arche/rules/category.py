@@ -91,7 +91,7 @@ def get_categories(df: pd.DataFrame, max_uniques: int = 10) -> Result:
         the number of unique values less than or equal to `max_uniques` are category columns.
 
     Returns:
-        A result with stats containing value counts.
+        A result with stats containing value counts of categorical columns.
     """
     result = Result("Categories")
 
