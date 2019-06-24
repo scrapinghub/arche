@@ -13,21 +13,17 @@ import pytest
 
 error_input = [
     (
-        {"log_count/ERROR": 10},
+        {"log_count/ERROR": 5},
         {
             Level.ERROR: [
                 (
-                    "10 error(s)",
-                    (
-                        f"Errors for 112358/13/21 - {SH_URL}/112358/13/21/"
-                        f"log?filterType=error&filterAndHigher"
-                    ),
+                    f"5 error(s) - {SH_URL}/112358/13/21/log?filterType=error&filterAndHigher",
                 )
             ]
         },
     ),
-    ({}, {Level.INFO: [("No errors",)]}),
-    ({"log_count/ERROR": 0}, {Level.INFO: [("No errors",)]}),
+    ({}, {}),
+    ({"log_count/ERROR": 0}, {}),
 ]
 
 
@@ -37,8 +33,7 @@ def test_check_errors(get_job, error_count, expected_messages):
     job.metadata = {"scrapystats": error_count}
     job.key = "112358/13/21"
 
-    result = check_errors(job)
-    assert result == create_result("Job Errors", expected_messages)
+    assert check_errors(job) == create_result("Job Errors", expected_messages)
 
 
 outcome_input = [
@@ -67,7 +62,7 @@ outcome_input = [
         {Level.ERROR: [("Job has 'finished' state, 'None' close reason",)]},
     ),
     ({}, {Level.ERROR: [("Job has 'None' state, 'None' close reason",)]}),
-    ({"state": "finished", "close_reason": "finished"}, {Level.INFO: [("Finished",)]}),
+    ({"state": "finished", "close_reason": "finished"}, {}),
 ]
 
 

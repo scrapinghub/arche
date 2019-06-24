@@ -1,19 +1,26 @@
+from typing import Optional
+
 from arche import SH_URL
 from arche.rules.result import Result
 from arche.tools import api, helpers
 from scrapinghub.client.jobs import Job
 
 
-def check_errors(job: Job) -> Result:
-    errors_count = api.get_errors_count(job)
+def check_errors(source_job: Job, target_job: Optional[Job] = None) -> Result:
+    source_errs = api.get_errors_count(source_job)
     result = Result("Job Errors")
-    if errors_count:
-        url = f"{SH_URL}/{job.key}/log?filterType=error&filterAndHigher"
+    if not source_errs:
+        return result
+
+    errors_url = "{}/{}/log?filterType=error&filterAndHigher"
+    result.add_error(
+        f"{source_errs} error(s) - {errors_url.format(SH_URL, source_job.key)}"
+    )
+    if target_job:
+        target_errs = api.get_errors_count(target_job)
         result.add_error(
-            f"{errors_count} error(s)", detailed=f"Errors for {job.key} - {url}"
+            f"{target_errs} error(s) - {errors_url.format(SH_URL, target_job.key)}"
         )
-    else:
-        result.add_info(f"No errors")
     return result
 
 
@@ -23,8 +30,6 @@ def check_outcome(job: Job) -> Result:
     result = Result("Job Outcome")
     if state != "finished" or reason != "finished":
         result.add_error(f"Job has '{state}' state, '{reason}' close reason")
-    else:
-        result.add_info("Finished")
     return result
 
 
@@ -56,23 +61,6 @@ def compare_response_ratio(source_job: Job, target_job: Job) -> Result:
         result.add_error(msg)
     elif response_ratio_diff > 0.1:
         result.add_warning(msg)
-    return result
-
-
-def compare_errors(source_job: Job, target_job: Job) -> Result:
-    errors_count1 = api.get_errors_count(source_job)
-    errors_count2 = api.get_errors_count(target_job)
-
-    result = Result("Compare Job Errors")
-    if errors_count1:
-        errors_url = "{}/{}/log?filterType=error&filterAndHigher"
-        detailed_msg = (
-            f"{errors_count1} error(s) for {source_job.key} - "
-            f"{errors_url.format(SH_URL, source_job.key)}\n"
-            f"{errors_count2} error(s) for {target_job.key} - "
-            f"{errors_url.format(SH_URL, target_job.key)}"
-        )
-        result.add_error(f"{errors_count1} and {errors_count2} errors", detailed_msg)
     return result
 
 
