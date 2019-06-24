@@ -5,14 +5,6 @@
 # This file does only contain a selection of the most common options. For a
 # full list see the documentation:
 # http://www.sphinx-doc.org/en/master/config
-
-# -- Path setup --------------------------------------------------------------
-import os
-import sys
-
-# sys.path.insert(0, os.path.abspath("../../src"))
-# nbsphinx_allow_errors = True
-
 # -- Project information -----------------------------------------------------
 
 from datetime import datetime
@@ -48,6 +40,7 @@ extensions = [
 autoapi_type = "python"
 autoapi_dirs = ["../../src"]
 nbsphinx_execute = "auto"
+nbsphinx_allow_errors = False
 
 
 def setup(app):
