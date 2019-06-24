@@ -2,7 +2,6 @@ from arche import SH_URL
 from arche.rules.metadata import (
     check_errors,
     check_outcome,
-    check_response_ratio,
     compare_finish_time,
     compare_response_ratio,
 )
@@ -78,21 +77,6 @@ def test_check_outcome(get_job, metadata, expected_messages):
 
     result = check_outcome(job)
     assert result == create_result("Job Outcome", expected_messages)
-
-
-response_ratio_inputs = [
-    (
-        {"totals": {"input_values": 1000}},
-        {"scrapystats": {"downloader/response_count": 2000}},
-        {Level.INFO: [("Number of responses / Number of scraped items - 2.0",)]},
-    )
-]
-
-
-@pytest.mark.parametrize("stats, metadata, expected_messages", response_ratio_inputs)
-def test_check_response_ratio(stats, metadata, expected_messages):
-    result = check_response_ratio(Job(metadata=metadata, stats=stats))
-    assert result == create_result("Responses Per Item Ratio", expected_messages)
 
 
 time_inputs = [
