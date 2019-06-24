@@ -124,14 +124,12 @@ def find_likely_cats(
         df: where to find
         max_uniques: how we decide what is a categorical column
         sample_size: sample we look in. Defaults to 5000 since for bigger data
-        nested values make `value_counts` really slow
+        nested values make `value_counts` really slow after this number
 
     Returns:
         List of potential categorical column names.
     """
-    if len(df) <= sample_size:
-        return df.columns.values
-    sampled = df.sample(sample_size)
+    sampled = df.sample(sample_size) if len(df) > sample_size else df
     return [
         c
         for c in df.columns
