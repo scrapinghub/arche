@@ -125,6 +125,7 @@ def test_get_no_categories(data, expected_message):
             ],
             "2 category field(s)",
         ),
+        ({"a": range(100)}, 1, [], "Categories were not found"),
     ],
 )
 def test_get_categories(data, max_uniques, expected_stats, expected_message):
@@ -132,3 +133,30 @@ def test_get_categories(data, max_uniques, expected_stats, expected_message):
     assert result == create_result(
         "Categories", {Level.INFO: [(expected_message,)]}, stats=expected_stats
     )
+
+
+@pytest.mark.parametrize(
+    "data, max_uniques, sample, expected_cats",
+    [
+        ({"a": np.zeros(100)}, 1, 100, ["a"]),
+        ({"a": np.zeros(200)}, 1, 100, ["a"]),
+        (
+            {"a": np.concatenate([np.zeros(199), [np.nan]]), "b": list(range(200))},
+            2,
+            100,
+            ["a"],
+        ),
+        (
+            {
+                "a": np.repeat({"k": "v"}, 10_000),
+                "b": pd.Series([[{"x": 0}]]).repeat(10_000),
+            },
+            10,
+            5000,
+            ["a", "b"],
+        ),
+        ({"a": range(100)}, 1, 10, []),
+    ],
+)
+def test_find_likely_cats(data, max_uniques, sample, expected_cats):
+    assert c.find_likely_cats(pd.DataFrame(data), max_uniques, sample) == expected_cats

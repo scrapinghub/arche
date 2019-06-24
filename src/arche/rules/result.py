@@ -2,6 +2,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Dict, List, Optional, Union
 
+import IPython
 import pandas as pd
 from plotly.colors import DEFAULT_PLOTLY_COLORS
 import plotly.graph_objs as go
@@ -157,6 +158,7 @@ class Result:
     def show(self, short: bool = False, keys_limit: int = 10):
         from arche.report import Report
 
+        IPython.display.clear_output()
         Report.write_summary(self)
         Report.write_rule_details(self, short=short, keys_limit=keys_limit)
         for f in self.figures:
