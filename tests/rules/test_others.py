@@ -92,11 +92,11 @@ dirty_inputs = [
                     "100.0% (2) items affected",
                     None,
                     {
-                        "100.0% of 'name' values contain [' ', '-->', '<!--']": [0, 1],
-                        "50.0% of 'address' values contain ['&AMP']": [0],
+                        "100.0% of 'name' values contain ` , -->, <!--`": [0, 1],
+                        "50.0% of 'address' values contain `&AMP`": [0],
                         (
                             "50.0% of 'phone' values contain "
-                            "['.sx-prime-pricing-lo', '</h1>', '<h1>']"
+                            "`.sx-prime-pricing-lo, </h1>, <h1>`"
                         ): [0],
                     },
                 )
