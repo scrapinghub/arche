@@ -2,6 +2,7 @@ from typing import List
 
 from arche.rules.result import Outcome, Result
 import pandas as pd
+from tqdm import tqdm_notebook
 
 
 def get_difference(
@@ -89,13 +90,18 @@ def get_categories(df: pd.DataFrame, max_uniques: int = 10) -> Result:
         the number of unique values less than or equal to `max_uniques` are category columns.
 
     Returns:
-        A result with stats containing value counts.
+        A result with stats containing value counts of categorical columns.
     """
     result = Result("Categories")
 
+    columns = find_likely_cats(df, max_uniques)
     result.stats = [
         value_counts
-        for value_counts in map(lambda c: df[c].value_counts(dropna=False), df)
+        for value_counts in tqdm_notebook(
+            map(lambda c: df[c].value_counts(dropna=False), columns),
+            desc="Finding categories",
+            total=len(columns),
+        )
         if len(value_counts) <= max_uniques
     ]
     if not result.stats:
@@ -103,3 +109,28 @@ def get_categories(df: pd.DataFrame, max_uniques: int = 10) -> Result:
         return result
     result.add_info(f"{len(result.stats)} category field(s)")
     return result
+
+
+def find_likely_cats(
+    df: pd.DataFrame, max_uniques: int, sample_size: int = 5000
+) -> List[str]:
+    """Find columns which are probably categorical, including nested data.
+    In fact we filter from columns which are certainly not categorical by given `sample_size`.
+    Useful in cases with big datasets and nested data, since `value_counts`
+    performance degrades significantly (100x-10000x) in such cases.
+
+    Args:
+        df: where to find
+        max_uniques: how we decide what is a categorical column
+        sample_size: sample we look in. Defaults to 5000 since for bigger data
+        nested values make `value_counts` really slow after this number
+
+    Returns:
+        List of potential categorical column names.
+    """
+    sampled = df.sample(sample_size) if len(df) > sample_size else df
+    return [
+        c
+        for c in df.columns
+        if len(sampled[c].value_counts(dropna=False)) <= max_uniques
+    ]

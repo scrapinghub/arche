@@ -46,9 +46,10 @@ class Items:
 
     @staticmethod
     def categorize(df: pd.DataFrame) -> pd.DataFrame:
+        """Cast columns with repeating values to `category` type to save memory"""
         if len(df) < 100:
             return
-        for c in df.columns:
+        for c in tqdm_notebook(df.columns, desc="Categorizing"):
             try:
                 if df[c].nunique(dropna=False) <= 10:
                     df[c] = df[c].astype("category")
