@@ -5,42 +5,14 @@ from arche.rules.result import Result, Outcome
 import pandas as pd
 
 
-def check_items(df: pd.DataFrame, tagged_fields: TaggedFields) -> Result:
-    """Check for items with the same name and url"""
-
-    name_fields = tagged_fields.get("name_field")
-    url_fields = tagged_fields.get("product_url_field")
-    result = Result("Duplicated Items")
-    if not name_fields or not url_fields:
-        result.add_info(Outcome.SKIPPED)
-        return result
-    result.items_count = len(df)
-    errors = {}
-    name_field = name_fields[0]
-    url_field = url_fields[0]
-    df = df[[name_field, url_field]]
-    duplicates = df[df[[name_field, url_field]].duplicated(keep=False)]
-    if duplicates.empty:
-        return result
-
-    result.err_items_count = len(duplicates)
-    for _, d in duplicates.groupby([name_field, url_field]):
-        msg = f"same '{d[name_field].iloc[0]}' name and '{d[url_field].iloc[0]}' url"
-        errors[msg] = list(d.index)
-    result.add_error(
-        f"{len(duplicates)} duplicate(s) with same name and url", errors=errors
-    )
-    return result
-
-
-def check_uniqueness(df: pd.DataFrame, tagged_fields: TaggedFields) -> Result:
+def find_by_unique(df: pd.DataFrame, tagged_fields: TaggedFields) -> Result:
     """Verify if each item field tagged with `unique` is unique.
 
     Returns:
         A result containing field names and keys for non unique items
     """
     unique_fields = tagged_fields.get("unique", [])
-    result = Result("Uniqueness")
+    result = Result("Duplicates By **unique** Tag")
 
     if not unique_fields:
         result.add_info(Outcome.SKIPPED)
@@ -49,16 +21,16 @@ def check_uniqueness(df: pd.DataFrame, tagged_fields: TaggedFields) -> Result:
     err_keys = set()
     for field in unique_fields:
         result.items_count = df[field].count()
-        duplicates = df[df[field].duplicated(keep=False)][[field]]
+        duplicates = df[df.duplicated(field, keep=False)][[field]]
         errors = {}
         for _, d in duplicates.groupby([field]):
             keys = list(d.index)
-            msg = f"same '{d[field].iloc[0]}' {field}"
+            msg = f"same '{d[field].iloc[0]}' `{field}`"
             errors[msg] = keys
             err_keys = err_keys.union(keys)
         if not duplicates.empty:
             result.add_error(
-                f"'{field}' contains {len(duplicates[field].unique())} duplicated value(s)",
+                f"{field} contains {len(duplicates[field].unique())} duplicated value(s)",
                 errors=errors,
             )
 
@@ -72,22 +44,37 @@ def find_by(df: pd.DataFrame, columns: List[str]) -> Result:
     Returns:
         Any duplicates
     """
-    result = Result("Items Uniqueness By Columns")
+    result = Result(f"Duplicates")
     result.items_count = len(df)
     df = df.dropna(subset=columns, how="all")
-    duplicates = df[df[columns].duplicated(keep=False)][columns]
+    duplicates = df[df.duplicated(columns, keep=False)][columns]
     if duplicates.empty:
         return result
 
     result.err_items_count = len(duplicates)
     errors = {}
     for _, d in duplicates.groupby(columns):
-        msg = "same"
-        for c in columns:
-            msg = f"{msg} '{d[c].iloc[0]}' {c}"
-        errors[msg] = list(d.index)
+        msgs = [f"'{d[c].iloc[0]}' `{c}`" for c in columns]
+        errors[f"same {', '.join(msgs)}"] = list(d.index)
 
     result.add_error(
         f"{len(duplicates)} duplicate(s) with same {', '.join(columns)}", errors=errors
     )
+    return result
+
+
+def find_by_name_url(df: pd.DataFrame, tagged_fields: TaggedFields) -> Result:
+    """Check for items with the same name and url"""
+
+    name_fields = tagged_fields.get("name_field")
+    url_fields = tagged_fields.get("product_url_field")
+    name = "Duplicates By **name_field, product_url_field** Tags"
+    result = Result(name)
+    if not name_fields or not url_fields:
+        result.add_info(Outcome.SKIPPED)
+        return result
+    name_field = name_fields[0]
+    url_field = url_fields[0]
+    result = find_by(df, [name_field, url_field])
+    result.name = name
     return result

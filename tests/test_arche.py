@@ -142,8 +142,8 @@ def test_arche_dataframe(mocker):
         "JSON Schema Validation",
         "Tags",
         "Compare Price Was And Now",
-        "Uniqueness",
-        "Duplicated Items",
+        "Duplicates By **unique** Tag",
+        "Duplicates By **name_field, product_url_field** Tags",
         "Coverage For Scraped Categories",
         "Category Coverage Difference",
         "Compare Prices For Same Urls",
@@ -251,7 +251,7 @@ def test_validate_with_json_schema(mocker, get_job_items, get_schema):
 
 
 def test_validate_with_json_schema_fails(mocker, get_job_items, get_schema):
-    mocked_html = mocker.patch("arche.report.Markdown", autospec=True)
+    mocked_md = mocker.patch("arche.report.Markdown", autospec=True)
     url = f"{SH_URL}/112358/13/21/item/1"
     res = create_result(
         "JSON Schema Validation",
@@ -272,7 +272,7 @@ def test_validate_with_json_schema_fails(mocker, get_job_items, get_schema):
 
     assert len(a.report.results) == 1
     assert a.report.results.get("JSON Schema Validation") == res
-    mocked_html.assert_any_call(
+    mocked_md.assert_any_call(
         f"1 items affected - 'price' is a required property: [1]({url})"
     )
 
