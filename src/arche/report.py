@@ -22,7 +22,7 @@ class Report:
 
     @staticmethod
     def write_rule_name(rule_name: str) -> None:
-        print(f"\n{rule_name}:")
+        display(Markdown(f"{rule_name}:"))
 
     @classmethod
     def write(cls, text: str) -> None:
