@@ -1,6 +1,5 @@
 from functools import partial
 
-from arche.readers.items import Items
 from arche.rules.others import compare_boolean_fields, garbage_symbols
 from arche.rules.result import Level, Outcome
 from conftest import create_named_df, create_result
@@ -75,7 +74,7 @@ dirty_inputs = [
         [
             {
                 "name": " Blacky Robeburned",
-                "address": "here goes &AMP",
+                "address": "here goes &amp;",
                 "phone": "<h1>144</h1>.sx-prime-pricing-long-row { float: left; }",
                 "rank": 14441,
             },
@@ -92,8 +91,8 @@ dirty_inputs = [
                     "100.0% (2) items affected",
                     None,
                     {
+                        "50.0% of 'address' values contain `&amp;`": [0],
                         "100.0% of 'name' values contain ` , -->, <!--`": [0, 1],
-                        "50.0% of 'address' values contain `&AMP`": [0],
                         (
                             "50.0% of 'phone' values contain "
                             "`.sx-prime-pricing-lo, </h1>, <h1>`"
@@ -116,7 +115,7 @@ dirty_inputs = [
 def test_garbage_symbols(
     raw_items, expected_messages, expected_items_count, expected_err_items_count
 ):
-    assert garbage_symbols(Items.from_array(raw_items)) == create_result(
+    assert garbage_symbols(pd.DataFrame(raw_items)) == create_result(
         "Garbage Symbols",
         expected_messages,
         items_count=expected_items_count,

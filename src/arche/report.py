@@ -1,12 +1,15 @@
+from functools import partial
 from typing import Dict
 
 from arche import SH_URL
 from arche.rules.result import Level, Outcome, Result
 from colorama import Fore, Style
-from IPython.display import display, Markdown
+from IPython.display import display_markdown
 import numpy as np
 import pandas as pd
 import plotly.io as pio
+
+display_markdown = partial(display_markdown, raw=True)
 
 
 class Report:
@@ -22,7 +25,7 @@ class Report:
 
     @staticmethod
     def write_rule_name(rule_name: str) -> None:
-        display(Markdown(f"{rule_name}:"))
+        display_markdown(f"{rule_name}:")
 
     @classmethod
     def write(cls, text: str) -> None:
@@ -58,15 +61,13 @@ class Report:
     def write_details(self, short: bool = False, keys_limit: int = 10) -> None:
         for result in self.results.values():
             if result.detailed_messages_count:
-                display(
-                    Markdown(
-                        f"{result.name} ({result.detailed_messages_count} message(s)):"
-                    )
+                display_markdown(
+                    f"{result.name} ({result.detailed_messages_count} message(s)):"
                 )
                 self.write_rule_details(result, short, keys_limit)
             for f in result.figures:
                 pio.show(f)
-            display(Markdown("<br>"))
+            display_markdown("<br>")
 
     @classmethod
     def write_rule_details(
@@ -93,7 +94,9 @@ class Report:
                 keys = pd.Series(list(keys))
 
             sample = Report.sample_keys(keys, keys_limit)
-            display(Markdown(f"{len(keys)} items affected - {attribute}: {sample}"))
+            display_markdown(
+                f"{len(keys)} items affected - {attribute}: {sample}", raw=True
+            )
 
     @staticmethod
     def sample_keys(keys: pd.Series, limit: int) -> str:

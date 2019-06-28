@@ -35,7 +35,7 @@ import pytest
 )
 def test_write_details(mocker, get_df, capsys, messages, expected_details):
     mock_pio_show = mocker.patch("plotly.io.show", autospec=True)
-    md_mock = mocker.patch("arche.report.Markdown", autospec=True)
+    md_mock = mocker.patch("arche.report.display_markdown", autospec=True)
 
     r = Report()
     for m in messages:
@@ -121,9 +121,9 @@ def test_write_rule_details(capsys, message, expected_details):
 )
 def test_write_detailed_errors(mocker, errors, short, keys_limit, expected_messages):
     mocker.patch("pandas.Series.sample", return_value=pd.Series("5"), autospec=True)
-    md_mock = mocker.patch("arche.report.Markdown", autospec=True)
+    md_mock = mocker.patch("arche.report.display_markdown", autospec=True)
     Report.write_detailed_errors(errors, short, keys_limit)
-    calls = [mocker.call(m) for m in expected_messages]
+    calls = [mocker.call(m, raw=True) for m in expected_messages]
     md_mock.assert_has_calls(calls, any_order=True)
 
 

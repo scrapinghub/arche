@@ -73,7 +73,7 @@ class DataQualityReport:
         ).get_errors_count()
 
         garbage_symbols_result = self.report.results.get(
-            "Garbage Symbols", garbage_symbols(items)
+            "Garbage Symbols", garbage_symbols(items.df)
         )
 
         quality_estimation, field_accuracy = generate_quality_estimation(
