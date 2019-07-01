@@ -73,8 +73,11 @@ dirty_inputs = [
     (
         {
             "name": [" Blacky Robeburned", "\t<!--Leprous Jim-->"],
-            "address": ["<br> &amp;", "\xa0house"],
-            "phone": ["<h1>144</h1>.sx-prime-pricing-long-row { float: left; }", "11"],
+            "address": [["<br> ", {"v", "&amp;"}], "\xa0house"],
+            "phone": [
+                "<h1>144</h1>.sx-prime-pricing-long-row { float: left; }",
+                {"a": "11"},
+            ],
             "rank": [141, 2_039_857],
         },
         {
