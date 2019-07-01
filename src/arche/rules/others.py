@@ -1,3 +1,4 @@
+import codecs
 import re
 
 from arche.rules.result import Outcome, Result
@@ -99,8 +100,10 @@ def garbage_symbols(df: pd.DataFrame) -> Result:
         if not matches.empty:
             error_keys = df.loc[matches.unstack().index.values].index
             bad_texts = matches.stack().value_counts().index.sort_values().tolist()
+            # escape backslashes for markdown repr, `\n > \\n`
             bad_texts = [
-                bx.replace("\n", "\\n").replace("\t", "\\t")[:20] for bx in bad_texts
+                f"'{codecs.encode(bx, 'unicode_escape').decode()[:20]}'"
+                for bx in bad_texts
             ]
             error = (
                 f"{len(error_keys)/len(df)*100:.1f}% of '{column}' "

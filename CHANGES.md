@@ -22,6 +22,7 @@ Note that the top-most release is changes in the unreleased master branch on Git
 - `basic_json_schema()` works with `deleted` jobs
 - `start` is supported for Collections, #112
 - `enum` is counted as a `category` tag, #18
+- `Garbage Symbols` searches in str representation of nested fields instead of expanded df, #130
 ### Fixed
 - `Arche.glance()`, #88
 - Item links in Schema validation errors, #89

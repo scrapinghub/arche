@@ -71,31 +71,29 @@ def test_compare_boolean_fields(
 
 dirty_inputs = [
     (
-        [
-            {
-                "name": " Blacky Robeburned",
-                "address": "here goes &amp;",
-                "phone": "<h1>144</h1>.sx-prime-pricing-long-row { float: left; }",
-                "rank": 14441,
-            },
-            {
-                "name": "<!--Leprous Jim-->",
-                "address": "Some street",
-                "phone": "1144",
-                "rank": 2_039_857,
-            },
-        ],
+        {
+            "name": [" Blacky Robeburned", "\t<!--Leprous Jim-->"],
+            "address": ["<br> &amp;", "\xa0house"],
+            "phone": ["<h1>144</h1>.sx-prime-pricing-long-row { float: left; }", "11"],
+            "rank": [141, 2_039_857],
+        },
         {
             Level.ERROR: [
                 (
                     "100.0% (2) items affected",
                     None,
                     {
-                        "50.0% of 'address' values contain `&amp;`": [0],
-                        "100.0% of 'name' values contain ` , -->, <!--`": [0, 1],
+                        "100.0% of 'address' values contain `'&amp;', '<br>', '\\xa0'`": [
+                            0,
+                            1,
+                        ],
+                        "100.0% of 'name' values contain `'\\t', ' ', '-->', '<!--'`": [
+                            0,
+                            1,
+                        ],
                         (
                             "50.0% of 'phone' values contain "
-                            "`.sx-prime-pricing-lo, </h1>, <h1>`"
+                            "`'.sx-prime-pricing-lo', '</h1>', '<h1>'`"
                         ): [0],
                     },
                 )
