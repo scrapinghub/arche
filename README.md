@@ -7,7 +7,6 @@
 [![Codecov](https://img.shields.io/codecov/c/github/scrapinghub/arche.svg)](https://codecov.io/gh/scrapinghub/arche)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
 [![GitHub commit activity](https://img.shields.io/github/commit-activity/m/scrapinghub/arche.svg)](https://github.com/scrapinghub/arche/commits/master)
-[![Join the chat at https://gitter.im/scrapinghub/arche](https://badges.gitter.im/scrapinghub/arche.svg)](https://gitter.im/scrapinghub/arche?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
     pip install arche
 
