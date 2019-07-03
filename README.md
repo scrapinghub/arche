@@ -27,9 +27,8 @@ For JupyterLab, you will need to properly install [plotly extensions](https://gi
 
 Then just `pip install arche`
 
-## Use case
-* Checking the quality of scraped data continuously. For example, if you scraped a website, a typical approach would be to validate the data with Arche. You can also create a schema and then set up [Spidermon](https://spidermon.readthedocs.io/en/latest/item-validation.html#with-json-schema)
-* You want to use it in your application to verify scraped data
+## Why
+To check the quality of scraped data continuously. For example, if you scraped a website, a typical approach would be to validate the data with Arche. You can also create a schema and then set up [Spidermon](https://spidermon.readthedocs.io/en/latest/item-validation.html#with-json-schema)
 
 ## Developer Setup
 
