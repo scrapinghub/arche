@@ -48,14 +48,16 @@ class DataQualityReport:
                 bucket=bucket,
             )
 
-    def create_figures(self, items):
-        dup_items_result = duplicate_rules.check_items(items.df, self.schema.tags)
-        no_of_checked_duplicated_items = dup_items_result.items_count
-        no_of_duplicated_items = dup_items_result.err_items_count
+    def create_figures(self, items: CloudItems):
+        name_url_dups = self.report.results.get(
+            "Duplicates By **name_field, product_url_field** Tags",
+            duplicate_rules.find_by_name_url(items.df, self.schema.tags),
+        )
 
-        dup_skus_result = duplicate_rules.check_uniqueness(items.df, self.schema.tags)
-        no_of_checked_skus_items = dup_skus_result.items_count
-        no_of_duplicated_skus = dup_skus_result.err_items_count
+        uniques = self.report.results.get(
+            "Duplicates By **unique** Tag",
+            duplicate_rules.find_by_unique(items.df, self.schema.tags),
+        )
 
         price_was_now_result = price_rules.compare_was_now(items.df, self.schema.tags)
         no_of_price_warns = price_was_now_result.err_items_count
@@ -78,10 +80,10 @@ class DataQualityReport:
             items.job,
             crawlera_user,
             validation_errors,
-            no_of_duplicated_items,
-            no_of_checked_duplicated_items,
-            no_of_duplicated_skus,
-            no_of_checked_skus_items,
+            name_url_dups.err_items_count,
+            name_url_dups.items_count,
+            uniques.err_items_count,
+            uniques.items_count,
             no_of_price_warns,
             no_of_checked_price_items,
             tested=True,
@@ -95,11 +97,11 @@ class DataQualityReport:
             validation_errors,
             self.schema.tags.get("name_field", ""),
             self.schema.tags.get("product_url_field", ""),
-            no_of_checked_duplicated_items,
-            no_of_duplicated_items,
+            name_url_dups.items_count,
+            name_url_dups.err_items_count,
             self.schema.tags.get("unique", []),
-            no_of_checked_skus_items,
-            no_of_duplicated_skus,
+            uniques.items_count,
+            uniques.err_items_count,
             self.schema.tags.get("product_price_field", ""),
             self.schema.tags.get("product_price_was_field", ""),
             no_of_checked_price_items,

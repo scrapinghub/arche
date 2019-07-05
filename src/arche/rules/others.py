@@ -101,7 +101,7 @@ def garbage_symbols(items: Items) -> Result:
             bad_texts = matches.stack().value_counts().index.sort_values().tolist()
             error = (
                 f"{len(error_keys)/len(items)*100:.1f}% of '{original_column}' "
-                f"values contain {[t[:20] for t in bad_texts]}"
+                f"values contain `{', '.join([t[:20] for t in bad_texts])}`"
             )
             errors[error] = list(error_keys)
             row_keys = row_keys.union(error_keys)

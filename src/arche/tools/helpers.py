@@ -1,5 +1,6 @@
 import datetime as d
 import os
+from typing import Optional
 
 
 class CollectionKey:
@@ -33,10 +34,15 @@ def is_job_key(value):
     return False
 
 
-def ms_to_time(ms):
+def ms_to_time(ms: int) -> Optional[str]:
+    """Convert ms to human time, stripping ms.
+
+    >>> ms_to_time(12345678901)
+    142 days, 21:21:18
+    """
     if ms is None:
         return None
-    return str(d.timedelta(milliseconds=ms))
+    return str(d.timedelta(milliseconds=ms))[:-7]
 
 
 def ratio_diff(source, target):

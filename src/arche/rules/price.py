@@ -1,5 +1,5 @@
 from arche.readers.schema import TaggedFields
-from arche.rules.result import Result
+from arche.rules.result import Result, Outcome
 from arche.tools.helpers import is_number, ratio_diff
 import pandas as pd
 
@@ -13,59 +13,52 @@ def compare_was_now(df: pd.DataFrame, tagged_fields: TaggedFields):
 
     result = Result("Compare Price Was And Now")
 
-    if (
-        price_was_fields
-        and price_was_fields[0] in df.columns
-        and price_fields
-        and price_fields[0] in df.columns
-    ):
-        price_field = price_fields[0]
-        price_was_field = price_was_fields[0]
-        prices = df.copy()
-        prices[price_was_field] = prices[price_was_field].astype(float)
-        prices[price_field] = prices[price_field].astype(float)
+    if not price_was_fields or not price_fields:
+        result.add_info(Outcome.SKIPPED)
+        return result
 
-        df_prices_less = pd.DataFrame(
-            prices[prices[price_was_field] < prices[price_field]],
-            columns=[price_was_field, price_field],
+    price_field = price_fields[0]
+    price_was_field = price_was_fields[0]
+    prices = df.copy()
+    prices[price_was_field] = prices[price_was_field].astype(float)
+    prices[price_field] = prices[price_field].astype(float)
+
+    df_prices_less = pd.DataFrame(
+        prices[prices[price_was_field] < prices[price_field]],
+        columns=[price_was_field, price_field],
+    )
+
+    price_less_percent = "{:.2%}".format(len(df_prices_less) / items_number)
+
+    if not df_prices_less.empty:
+        error = f"Past price is less than current for {len(df_prices_less)} items"
+        result.add_error(
+            f"{price_less_percent} ({len(df_prices_less)}) of "
+            f"items with {price_was_field} < {price_field}",
+            detailed=f"{error}:\n{list(df_prices_less.index)}",
         )
 
-        price_less_percent = "{:.2%}".format(len(df_prices_less) / items_number)
+    df_prices_equals = pd.DataFrame(
+        prices[prices[price_was_field] == prices[price_field]],
+        columns=[price_was_field, price_field],
+    )
+    price_equal_percent = "{:.2%}".format(len(df_prices_equals) / items_number)
 
-        if not df_prices_less.empty:
-            error = f"Past price is less than current for {len(df_prices_less)} items"
-            result.add_error(
-                f"{price_less_percent} ({len(df_prices_less)}) of "
-                f"items with {price_was_field} < {price_field}",
-                detailed=f"{error}:\n{list(df_prices_less.index)}",
-            )
-
-        df_prices_equals = pd.DataFrame(
-            prices[prices[price_was_field] == prices[price_field]],
-            columns=[price_was_field, price_field],
+    if not df_prices_equals.empty:
+        result.add_warning(
+            (
+                f"{price_equal_percent} ({len(df_prices_equals)}) "
+                f"of items with {price_was_field} = {price_field}"
+            ),
+            detailed=(
+                f"Prices equal for {len(df_prices_equals)} items:\n"
+                f"{list(df_prices_equals.index)}"
+            ),
         )
-        price_equal_percent = "{:.2%}".format(len(df_prices_equals) / items_number)
 
-        if not df_prices_equals.empty:
-            result.add_warning(
-                (
-                    f"{price_equal_percent} ({len(df_prices_equals)}) "
-                    f"of items with {price_was_field} = {price_field}"
-                ),
-                detailed=(
-                    f"Prices equal for {len(df_prices_equals)} items:\n"
-                    f"{list(df_prices_equals.index)}"
-                ),
-            )
+    result.err_items_count = len(df_prices_equals) + len(df_prices_less)
+    result.items_count = len(df.index)
 
-        result.err_items_count = len(df_prices_equals) + len(df_prices_less)
-        result.items_count = len(df.index)
-
-    else:
-        result.add_info(
-            "product_price_field or product_price_was_field tags were not "
-            "found in schema"
-        )
     return result
 
 
@@ -83,7 +76,7 @@ def compare_prices_for_same_urls(
     result = Result("Compare Prices For Same Urls")
     url_field = tagged_fields.get("product_url_field")
     if not url_field:
-        result.add_info("product_url_field tag is not set")
+        result.add_info(Outcome.SKIPPED)
         return result
 
     url_field = url_field[0]
@@ -160,26 +153,14 @@ def compare_names_for_same_urls(
 
     result = Result("Compare Names Per Url")
     url_field = tagged_fields.get("product_url_field")
-    if not url_field:
-        result.add_info("product_url_field tag is not set")
-        return result
-
-    url_field = url_field[0]
     name_field = tagged_fields.get("name_field")
-
-    diff_names_count = 0
-    if not name_field:
-        result.add_info("name_field tag is not set")
+    if not url_field or not name_field:
+        result.add_info(Outcome.SKIPPED)
         return result
 
     name_field = name_field[0]
-    if any(
-        [
-            name_field not in source_df.columns.values,
-            name_field not in target_df.columns.values,
-        ]
-    ):
-        return
+    url_field = url_field[0]
+    diff_names_count = 0
 
     same_urls = source_df[(source_df[url_field].isin(target_df[url_field].values))][
         url_field
@@ -220,7 +201,7 @@ def compare_prices_for_same_names(
     result = Result("Compare Prices For Same Names")
     name_field = tagged_fields.get("name_field")
     if not name_field:
-        result.add_info("name_field tag is not set")
+        result.add_info(Outcome.SKIPPED)
         return result
 
     name_field = name_field[0]

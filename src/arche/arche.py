@@ -203,8 +203,8 @@ class Arche:
 
     def run_customized_rules(self, items, tagged_fields):
         self.save_result(price_rules.compare_was_now(items.df, tagged_fields))
-        self.save_result(duplicate_rules.check_uniqueness(items.df, tagged_fields))
-        self.save_result(duplicate_rules.check_items(items.df, tagged_fields))
+        self.save_result(duplicate_rules.find_by_unique(items.df, tagged_fields))
+        self.save_result(duplicate_rules.find_by_name_url(items.df, tagged_fields))
         self.save_result(
             category_rules.get_coverage_per_category(
                 items.df, tagged_fields.get("category", []) + self.schema.enums
@@ -219,7 +219,7 @@ class Arche:
     @lru_cache(maxsize=32)
     def compare_metadata(self, source_job, target_job):
         self.save_result(metadata_rules.compare_spider_names(source_job, target_job))
-        self.save_result(metadata_rules.compare_errors(source_job, target_job))
+        self.save_result(metadata_rules.check_errors(source_job, target_job))
         self.save_result(
             metadata_rules.compare_number_of_scraped_items(source_job, target_job)
         )
