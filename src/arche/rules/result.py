@@ -183,7 +183,9 @@ class Result:
                 ]
 
             layout = Result.get_layout(stat.name, len(stat))
-            layout.xaxis = go.layout.XAxis(range=[0, max(stat.values.max(), 1) * 1.05])
+            layout.xaxis = go.layout.XAxis(
+                range=[stat.values.min(), max(stat.values.max(), 1) * 1.05]
+            )
             if stat.name.startswith("Coverage"):
                 layout.xaxis.tickformat = ".2p"
             if stat.name == "Coverage for boolean fields":
