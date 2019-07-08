@@ -3,6 +3,7 @@ from enum import Enum
 from typing import Dict, List, Optional, Union
 
 import IPython
+import numpy as np
 import pandas as pd
 import plotly.graph_objs as go
 import plotly.io as pio
@@ -193,7 +194,7 @@ class Result:
 
             layout = Result.get_layout(stat.name, len(stat))
             layout.xaxis = go.layout.XAxis(
-                range=[stat.values.min(), max(stat.values.max(), 1) * 1.05]
+                range=np.array([stat.values.min(), max(stat.values.max(), 1)]) * 1.05
             )
             if stat.name.startswith("Coverage"):
                 layout.xaxis.tickformat = ".2p"
