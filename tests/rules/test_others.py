@@ -72,7 +72,7 @@ def test_compare_boolean_fields(
 dirty_inputs = [
     (
         {
-            "name": [" Blacky Robeburned", "\t<!--Leprous Jim-->"],
+            "name": [" Blacky Robeburned", "\t<!--Leprous &#9; Jim-->"],
             "address": [["<br> ", {"v", "&amp;"}], "\xa0house"],
             "phone": [
                 "<h1>144</h1>.sx-prime-pricing-long-row { float: left; }",
@@ -90,7 +90,7 @@ dirty_inputs = [
                             0,
                             1,
                         ],
-                        "100.0% of 'name' values contain `'\\t', ' ', '-->', '<!--'`": [
+                        "100.0% of 'name' values contain `'\\t', ' ', '&#9;', '-->', '<!--'`": [
                             0,
                             1,
                         ],

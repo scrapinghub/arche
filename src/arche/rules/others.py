@@ -83,10 +83,10 @@ def garbage_symbols(df: pd.DataFrame) -> Result:
     """
     garbage = (
         r"(?P<spaces>^\s|\s$)"
-        r"|(?P<html_entities>&#?\w*;)"
+        r"|(?P<html_entities>&[a-zA-Z]{2,}?;|&#\d*?;)"
         r"|(?P<css>[.#@][^\d{}#.\s][^{}#.]+?{(?:[^:;{}]+?:[^:;{}]+?;)+?[\\n \n\t]*?})"
-        r"|(?P<html_tags></?(?:h\d|b|u|i|div|ul|ol|li|table|tbody|th|tr|td|p|a|br|img|sup|SUP|"
-        r"blockquote)\s*/?>|<!--|-->)"
+        r"|(?P<html_tags></??(?:h\d|b|u|i|div|ul|ol|li|table|tbody|th|tr|td|p|a|br|img|sup|SUP|"
+        r"blockquote)\s*?/??>|<!--|-->)"
     )
 
     errors = {}
