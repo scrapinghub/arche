@@ -4,11 +4,11 @@ from typing import Dict, List, Optional, Union
 
 import IPython
 import pandas as pd
-from plotly.colors import DEFAULT_PLOTLY_COLORS
 import plotly.graph_objs as go
 import plotly.io as pio
 
 Stat = Union[pd.Series, pd.DataFrame]
+COLORS = pio.templates["seaborn"]["layout"]["colorway"]
 
 
 class Level(Enum):
@@ -175,7 +175,16 @@ class Result:
         for stat in stats:
             y = stat.index.values.astype(str)
             if isinstance(stat, pd.Series):
-                data = [go.Bar(x=stat.values, y=y, orientation="h", opacity=0.7)]
+                colors = [COLORS[0] if v > 0 else COLORS[1] for v in stat.values]
+                data = [
+                    go.Bar(
+                        x=stat.values,
+                        y=y,
+                        orientation="h",
+                        opacity=0.7,
+                        marker=dict(color=colors),
+                    )
+                ]
             else:
                 data = [
                     go.Bar(x=stat[c].values, y=y, orientation="h", opacity=0.7, name=c)
@@ -218,7 +227,7 @@ class Result:
                     orientation="h",
                     opacity=0.6,
                     legendgroup=vc.name,
-                    marker_color=DEFAULT_PLOTLY_COLORS[i % 10],
+                    marker_color=COLORS[i % 10],
                 )
                 for i, (value, counts) in enumerate(vc.items())
             ]
