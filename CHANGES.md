@@ -29,7 +29,7 @@ Note that the top-most release is changes in the unreleased master branch on Git
 - Wrong number of Collection Items if it contains item 0, #112
 ### Removed
 - **Responses Per Item Ratio** rule
-- `expand` parameter and `flat_df`
+- Deprecated `expand` parameter and removed `flat_df`, since `Garbage Rule` deal with nested data itself, #133
 
 
 ## [0.3.5] (2019-05-14)

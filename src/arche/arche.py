@@ -41,9 +41,9 @@ class Arche:
         """
         if expand:
             maintenance.deprecate(
-                "'expand' parameter is deprecated and will be removed in the next 0.3.6"
+                "'expand' parameter is deprecated and will be removed in the next 0.3.7"
                 " release. See CHANGES.md for more details.",
-                gone_in="0.3.6",
+                gone_in="0.3.7",
             )
         if isinstance(source, str) and target == source:
             raise ValueError(
