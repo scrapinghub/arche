@@ -146,7 +146,7 @@ class Arche:
 
     @lru_cache(maxsize=32)
     def run_general_rules(self):
-        self.save_result(garbage_symbols(self.source_items))
+        self.save_result(garbage_symbols(self.source_items.df))
         df = self.source_items.df
         self.save_result(
             coverage_rules.check_fields_coverage(

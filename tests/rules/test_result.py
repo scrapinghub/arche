@@ -77,7 +77,7 @@ def test_tensors_not_equal(source, target):
 )
 def test_show(mocker, capsys, message, stats, exp_md_output, exp_txt_outputs):
     mock_pio_show = mocker.patch("plotly.io.show", autospec=True)
-    mocked_md = mocker.patch("arche.report.Markdown", autospec=True)
+    mocked_md = mocker.patch("arche.report.display_markdown", autospec=True)
     mocked_print = mocker.patch("builtins.print", autospec=True)
     res = create_result("rule name here", message, stats=stats)
     res.show()

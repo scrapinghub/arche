@@ -1,9 +1,10 @@
+import codecs
 import re
 
-from arche.readers.items import Items
 from arche.rules.result import Outcome, Result
 import numpy as np
 import pandas as pd
+from tqdm import tqdm_notebook
 
 
 def compare_boolean_fields(
@@ -74,7 +75,7 @@ def fields_to_compare(source_df: pd.DataFrame, target_df: pd.DataFrame) -> bool:
     return False
 
 
-def garbage_symbols(items: Items) -> Result:
+def garbage_symbols(df: pd.DataFrame) -> Result:
     """Find unwanted symbols in `np.object` columns.
 
     Returns:
@@ -82,33 +83,38 @@ def garbage_symbols(items: Items) -> Result:
     """
     garbage = (
         r"(?P<spaces>^\s|\s$)"
-        r"|(?P<html_entities>&amp|&reg)"
-        r"|(?P<css>(?:(?:\.|#)[^#. ]+\s*){.+})"
-        r"|(?P<html_tags></?(h\d|b|u|i|div|ul|ol|li|table|tbody|th|tr|td|p|a|br|img|sup|SUP|"
-        r"blockquote)\s*/?>|<!--|-->)"
+        r"|(?P<html_entities>&[a-zA-Z]{2,}?;|&#\d*?;)"
+        r"|(?P<css>[.#@][^\d{}#.\s][^{}#.]+?{(?:[^:;{}]+?:[^:;{}]+?;)+?\s*?})"
+        r"|(?P<html_tags></??(?:h\d|b|u|i|div|ul|ol|li|table|tbody|th|tr|td|p|a|br|img|sup|SUP|"
+        r"blockquote)\s*?/??>|<!--|-->)"
     )
 
     errors = {}
     row_keys = set()
-    rule_result = Result("Garbage Symbols", items_count=len(items))
+    rule_result = Result("Garbage Symbols", items_count=len(df))
 
-    for column in items.flat_df.select_dtypes([np.object]):
-        matches = items.flat_df[column].str.extractall(garbage, flags=re.IGNORECASE)
-        matches = matches[["spaces", "html_entities", "css", "html_tags"]]
+    for column in tqdm_notebook(
+        df.select_dtypes([np.object]).columns, desc="Garbage Symbols"
+    ):
+        matches = df[column].apply(str).str.extractall(garbage, flags=re.IGNORECASE)
         if not matches.empty:
-            error_keys = items.flat_df.loc[matches.unstack().index.values].index
-            original_column = items.origin_column_name(column)
+            error_keys = df.loc[matches.unstack().index.values].index
             bad_texts = matches.stack().value_counts().index.sort_values().tolist()
+            # escape backslashes for markdown repr, `\n > \\n`
+            bad_texts = [
+                f"'{codecs.encode(bx, 'unicode_escape').decode()[:20]}'"
+                for bx in bad_texts
+            ]
             error = (
-                f"{len(error_keys)/len(items)*100:.1f}% of '{original_column}' "
-                f"values contain `{', '.join([t[:20] for t in bad_texts])}`"
+                f"{len(error_keys)/len(df)*100:.1f}% of '{column}' "
+                f"values contain `{', '.join(bad_texts)}`"
             )
+
             errors[error] = list(error_keys)
             row_keys = row_keys.union(error_keys)
-
     if errors:
         rule_result.add_error(
-            f"{len(row_keys)/len(items) * 100:.1f}% ({len(row_keys)}) items affected",
+            f"{len(row_keys)/len(df) * 100:.1f}% ({len(row_keys)}) items affected",
             errors=errors,
         )
         rule_result.err_items_count = len(row_keys)
