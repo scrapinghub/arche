@@ -34,7 +34,7 @@ def compare_boolean_fields(
     target_counts = pd.concat(
         [dummy, target_bool.apply(pd.value_counts, normalize=True).T], sort=False
     ).fillna(0.0)
-    difs = (source_counts - target_counts).abs()[True]
+    difs = (source_counts - target_counts)[True]
 
     bool_covs = pd.concat(
         [
@@ -45,14 +45,14 @@ def compare_boolean_fields(
     bool_covs.name = "Coverage for boolean fields"
     result.stats.append(bool_covs)
 
-    err_diffs = difs[difs > err_thr]
+    err_diffs = difs[difs.abs() > err_thr]
     if not err_diffs.empty:
         result.add_error(
             f"{', '.join(err_diffs.index)} relative frequencies differ "
             f"by more than {err_thr:.0%}"
         )
 
-    warn_diffs = difs[(difs > warn_thr) & (difs <= err_thr)]
+    warn_diffs = difs[(difs.abs() > warn_thr) & (difs.abs() <= err_thr)]
     if not warn_diffs.empty:
         result.add_warning(
             f"{', '.join(warn_diffs.index)} relative frequencies differ by "
