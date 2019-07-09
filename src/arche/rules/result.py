@@ -3,12 +3,13 @@ from enum import Enum
 from typing import Dict, List, Optional, Union
 
 import IPython
+import numpy as np
 import pandas as pd
-from plotly.colors import DEFAULT_PLOTLY_COLORS
 import plotly.graph_objs as go
 import plotly.io as pio
 
 Stat = Union[pd.Series, pd.DataFrame]
+COLORS = pio.templates["seaborn"]["layout"]["colorway"]
 
 
 class Level(Enum):
@@ -175,7 +176,16 @@ class Result:
         for stat in stats:
             y = stat.index.values.astype(str)
             if isinstance(stat, pd.Series):
-                data = [go.Bar(x=stat.values, y=y, orientation="h", opacity=0.7)]
+                colors = [COLORS[0] if v > 0 else COLORS[1] for v in stat.values]
+                data = [
+                    go.Bar(
+                        x=stat.values,
+                        y=y,
+                        orientation="h",
+                        opacity=0.7,
+                        marker=dict(color=colors),
+                    )
+                ]
             else:
                 data = [
                     go.Bar(x=stat[c].values, y=y, orientation="h", opacity=0.7, name=c)
@@ -183,7 +193,9 @@ class Result:
                 ]
 
             layout = Result.get_layout(stat.name, len(stat))
-            layout.xaxis = go.layout.XAxis(range=[0, max(stat.values.max(), 1) * 1.05])
+            layout.xaxis = go.layout.XAxis(
+                range=np.array([stat.values.min(), max(stat.values.max(), 1)]) * 1.05
+            )
             if stat.name.startswith("Coverage"):
                 layout.xaxis.tickformat = ".2p"
             if stat.name == "Coverage for boolean fields":
@@ -216,7 +228,7 @@ class Result:
                     orientation="h",
                     opacity=0.6,
                     legendgroup=vc.name,
-                    marker_color=DEFAULT_PLOTLY_COLORS[i % 10],
+                    marker_color=COLORS[i % 10],
                 )
                 for i, (value, counts) in enumerate(vc.items())
             ]

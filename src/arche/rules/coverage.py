@@ -63,15 +63,15 @@ def get_difference(
     f_counts.name = "Coverage from job stats fields counts"
     result.stats.append(f_counts)
 
-    coverage_difs = (f_counts[source_job.key] - f_counts[target_job.key]).abs()
-    coverage_difs = coverage_difs[coverage_difs > warn_thr].sort_values(
+    coverage_difs = f_counts[source_job.key] - f_counts[target_job.key]
+    coverage_difs = coverage_difs[coverage_difs.abs() > warn_thr].sort_values(
         kind="mergesoft"
     )
     coverage_difs.name = f"Coverage difference more than {warn_thr:.0%}"
     if not coverage_difs.empty:
         result.stats.append(coverage_difs)
 
-    errs = coverage_difs[coverage_difs > err_thr]
+    errs = coverage_difs[coverage_difs.abs() > err_thr]
     if not errs.empty:
         result.add_error(
             f"The difference is greater than {err_thr:.0%} for {len(errs)} field(s)"

@@ -1,3 +1,4 @@
+import codecs
 import re
 
 from arche.rules.result import Outcome, Result
@@ -34,7 +35,7 @@ def compare_boolean_fields(
     target_counts = pd.concat(
         [dummy, target_bool.apply(pd.value_counts, normalize=True).T], sort=False
     ).fillna(0.0)
-    difs = (source_counts - target_counts).abs()[True]
+    difs = (source_counts - target_counts)[True]
 
     bool_covs = pd.concat(
         [
@@ -45,14 +46,14 @@ def compare_boolean_fields(
     bool_covs.name = "Coverage for boolean fields"
     result.stats.append(bool_covs)
 
-    err_diffs = difs[difs > err_thr]
+    err_diffs = difs[difs.abs() > err_thr]
     if not err_diffs.empty:
         result.add_error(
             f"{', '.join(err_diffs.index)} relative frequencies differ "
             f"by more than {err_thr:.0%}"
         )
 
-    warn_diffs = difs[(difs > warn_thr) & (difs <= err_thr)]
+    warn_diffs = difs[(difs.abs() > warn_thr) & (difs.abs() <= err_thr)]
     if not warn_diffs.empty:
         result.add_warning(
             f"{', '.join(warn_diffs.index)} relative frequencies differ by "
@@ -82,10 +83,10 @@ def garbage_symbols(df: pd.DataFrame) -> Result:
     """
     garbage = (
         r"(?P<spaces>^\s|\s$)"
-        r"|(?P<html_entities>&#?(?:\w*;|\d*;))"
-        r"|(?P<css>(?:\.|#|@)[^0-9{}#. ][^{}#.]+{(?:[^:;{}]+:[^:;{}]+;)+[\\n \n\t]*})"
-        r"|(?P<html_tags></?(?:h\d|b|u|i|div|ul|ol|li|table|tbody|th|tr|td|p|a|br|img|sup|SUP|"
-        r"blockquote)\s*/?>|<!--|-->)"
+        r"|(?P<html_entities>&[a-zA-Z]{2,}?;|&#\d*?;)"
+        r"|(?P<css>[.#@][^\d{}#.\s][^{}#.]+?{(?:[^:;{}]+?:[^:;{}]+?;)+?\s*?})"
+        r"|(?P<html_tags></??(?:h\d|b|u|i|div|ul|ol|li|table|tbody|th|tr|td|p|a|br|img|sup|SUP|"
+        r"blockquote)\s*?/??>|<!--|-->)"
     )
 
     errors = {}
@@ -99,8 +100,10 @@ def garbage_symbols(df: pd.DataFrame) -> Result:
         if not matches.empty:
             error_keys = df.loc[matches.unstack().index.values].index
             bad_texts = matches.stack().value_counts().index.sort_values().tolist()
+            # escape backslashes for markdown repr, `\n > \\n`
             bad_texts = [
-                bx.replace("\n", "\\n").replace("\t", "\\t")[:20] for bx in bad_texts
+                f"'{codecs.encode(bx, 'unicode_escape').decode()[:20]}'"
+                for bx in bad_texts
             ]
             error = (
                 f"{len(error_keys)/len(df)*100:.1f}% of '{column}' "
