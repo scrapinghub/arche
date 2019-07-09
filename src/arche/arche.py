@@ -13,7 +13,7 @@ import arche.rules.json_schema as schema_rules
 import arche.rules.metadata as metadata_rules
 from arche.rules.others import compare_boolean_fields, garbage_symbols
 import arche.rules.price as price_rules
-from arche.tools import api, helpers
+from arche.tools import api, helpers, maintenance
 import IPython
 import pandas as pd
 
@@ -30,7 +30,7 @@ class Arche:
         count: Optional[int] = None,
         start: Union[str, int] = None,
         filters: Optional[api.Filters] = None,
-        expand: bool = True,
+        expand: bool = None,
     ):
         """
         Args:
@@ -41,8 +41,13 @@ class Arche:
             start: an item key to start reading from
             filters: Scrapinghub filtering, see
             https://python-scrapinghub.readthedocs.io/en/latest/client/apidocs.html#scrapinghub.client.items.Items # noqa
-            expand: if True, use flattened data in garbage rules
         """
+        if expand:
+            maintenance.deprecate(
+                "'expand' parameter is deprecated and will be removed in the next 0.3.7"
+                " release. See CHANGES.md for more details.",
+                gone_in="0.3.7",
+            )
         if isinstance(source, str) and target == source:
             raise ValueError(
                 "'target' is equal to 'source'. Data to compare should have different sources."
@@ -64,7 +69,6 @@ class Arche:
         self.start = start
         self.count = count
         self.filters = filters
-        self.expand = expand
         self._source_items = None
         self._target_items = None
         self.report = Report()
@@ -73,7 +77,7 @@ class Arche:
     def source_items(self):
         if not self._source_items:
             self._source_items = self.get_items(
-                self.source, self.count, self.start, self.filters, self.expand
+                self.source, self.count, self.start, self.filters
             )
         return self._source_items
 
@@ -83,7 +87,7 @@ class Arche:
             return None
         if not self._target_items:
             self._target_items = self.get_items(
-                self.target, self.count, self.start, self.filters, self.expand
+                self.target, self.count, self.start, self.filters
             )
         return self._target_items
 
@@ -104,16 +108,15 @@ class Arche:
         count: Optional[int],
         start: Union[str, int],
         filters: Optional[api.Filters],
-        expand: bool,
     ) -> Items:
         if isinstance(source, pd.DataFrame):
-            return Items.from_df(source, expand=expand)
+            return Items.from_df(source)
         elif isinstance(source, Iterable) and not isinstance(source, str):
-            return Items.from_array(source, expand=expand)
+            return Items.from_array(source)
         elif helpers.is_job_key(source):
-            return JobItems(source, count, start or 0, filters, expand)
+            return JobItems(source, count, start or 0, filters)
         elif helpers.is_collection_key(source):
-            return CollectionItems(source, count, start, filters, expand)
+            return CollectionItems(source, count, start, filters)
         else:
             raise ValueError(f"'{source}' is not a valid job or collection key")
 

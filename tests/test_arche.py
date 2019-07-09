@@ -62,14 +62,14 @@ def test_schema_setter(passed_schema_source, set_schema_source, expected_schema)
 
 
 @pytest.mark.parametrize(
-    "source, count, start, filters, expand, expected_start",
+    "source, count, start, filters, expected_start",
     [
-        ("112358/13/21", 50, 1, None, False, 1),
-        ("112358/13/22", None, None, [("_type", ["CityItem"])], True, 0),
+        ("112358/13/21", 50, 1, None, 1),
+        ("112358/13/22", None, None, [("_type", ["CityItem"])], 0),
     ],
 )
 def test_get_items(
-    mocker, get_raw_items, source, start, count, filters, expand, expected_start
+    mocker, get_raw_items, source, start, count, filters, expected_start
 ):
     mocker.patch(
         "arche.readers.items.JobItems.fetch_data",
@@ -82,47 +82,37 @@ def test_get_items(
         autospec=True,
     )
     mocker.patch("arche.readers.items.JobItems.job", autospec=True)
-    items = Arche.get_items(
-        source=source, start=start, count=count, filters=filters, expand=expand
-    )
+    items = Arche.get_items(source=source, start=start, count=count, filters=filters)
     assert items.key == source
     assert items.count == count or len(get_raw_items)
     assert items.filters == filters
-    assert items.expand == expand
     assert items.start_index == expected_start
     assert items.start == f"{source}/{expected_start}"
 
 
 def test_get_items_from_iterable(get_cloud_items):
-    items = Arche.get_items(
-        get_cloud_items, start=None, count=None, filters=None, expand=True
-    )
+    items = Arche.get_items(get_cloud_items, start=None, count=None, filters=None)
     assert items.raw == get_cloud_items
 
 
 @pytest.mark.parametrize(
-    "source, count, filters, expand", [("112358/collections/s/pages", 5, None, True)]
+    "source, count, filters", [("112358/collections/s/pages", 5, None)]
 )
-def test_get_items_from_collection(
-    mocker, get_raw_items, source, count, filters, expand
-):
+def test_get_items_from_collection(mocker, get_raw_items, source, count, filters):
     mocker.patch(
         "arche.readers.items.CollectionItems.fetch_data",
         return_value=get_raw_items,
         autospec=True,
     )
-    items = Arche.get_items(
-        source=source, count=count, start=0, filters=filters, expand=expand
-    )
+    items = Arche.get_items(source=source, count=count, start=0, filters=filters)
     assert items.key == source
     assert items.count == 5
     assert items.filters == filters
-    assert items.expand == expand
 
 
 def test_get_items_from_bad_source():
     with pytest.raises(ValueError) as excinfo:
-        Arche.get_items(source="bad_key", count=1, start=1, filters=None, expand=None)
+        Arche.get_items(source="bad_key", count=1, start=1, filters=None)
     assert str(excinfo.value) == f"'bad_key' is not a valid job or collection key"
 
 

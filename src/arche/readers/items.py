@@ -4,7 +4,6 @@ from typing import Any, Dict, Iterable, Optional
 
 from arche import SH_URL
 from arche.tools import api
-from flatten_json import flatten
 import numpy as np
 import pandas as pd
 from scrapinghub import ScrapinghubClient
@@ -15,27 +14,12 @@ RawItems = Iterable[Dict[str, Any]]
 
 
 class Items:
-    def __init__(self, raw: RawItems, df: pd.DataFrame, expand: bool):
+    def __init__(self, raw: RawItems, df: pd.DataFrame):
         self.raw = raw
         self.df = self.process_df(df)
-        self._flat_df = None
-        self.expand = expand
 
     def __len__(self) -> int:
         return len(self.df)
-
-    @property
-    def flat_df(self) -> pd.DataFrame:
-        if self._flat_df is None:
-            if self.expand:
-                flat_df = pd.DataFrame(
-                    flatten(i) for i in tqdm_notebook(self.raw, desc="Flattening")
-                )
-                flat_df.index = self.df.index
-                self._flat_df = flat_df.drop(columns=["_key", "_type"], errors="ignore")
-            else:
-                self._flat_df = self.df
-        return self._flat_df
 
     @staticmethod
     def process_df(df: pd.DataFrame) -> pd.DataFrame:
@@ -65,12 +49,12 @@ class Items:
                 return column
 
     @classmethod
-    def from_df(cls, df: pd.DataFrame, expand: bool = True):
-        return cls(raw=np.array(df.to_dict("records")), df=df, expand=expand)
+    def from_df(cls, df: pd.DataFrame):
+        return cls(raw=np.array(df.to_dict("records")), df=df)
 
     @classmethod
-    def from_array(cls, iterable: RawItems, expand: bool = True):
-        return cls(raw=iterable, df=pd.DataFrame(list(iterable)), expand=expand)
+    def from_array(cls, iterable: RawItems):
+        return cls(raw=iterable, df=pd.DataFrame(list(iterable)))
 
 
 class CloudItems(Items):
@@ -79,19 +63,17 @@ class CloudItems(Items):
         key: str,
         count: Optional[int] = None,
         filters: Optional[api.Filters] = None,
-        expand: bool = True,
     ):
         self.key = key
         self._count = count
         self._limit = None
         self.filters = filters
-        self.expand = expand
         raw = self.fetch_data()
         df = pd.DataFrame(list(raw))
         df.index = self.format_keys(df["_key"])
         df.index.name = None
         df = df.drop(columns=["_key", "_type"], errors="ignore")
-        super().__init__(raw=raw, df=df, expand=expand)
+        super().__init__(raw=raw, df=df)
 
     @property
     @abstractmethod
@@ -120,12 +102,11 @@ class JobItems(CloudItems):
         count: Optional[int] = None,
         start_index: int = 0,
         filters: Optional[api.Filters] = None,
-        expand: bool = True,
     ):
         self.start_index = start_index
         self.start: int = f"{key}/{start_index}"
         self._job: Job = None
-        super().__init__(key, count, filters, expand)
+        super().__init__(key, count, filters)
 
     @property
     def limit(self) -> int:
@@ -171,10 +152,9 @@ class CollectionItems(CloudItems):
         count: Optional[int] = None,
         start: Optional[str] = None,
         filters: Optional[api.Filters] = None,
-        expand: bool = True,
     ):
         self.start = start
-        super().__init__(key, count, filters, expand)
+        super().__init__(key, count, filters)
 
     @property
     def limit(self) -> int:

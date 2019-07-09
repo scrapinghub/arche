@@ -16,7 +16,6 @@ Note that the top-most release is changes in the unreleased master branch on Git
 - Category documentation
 ### Changed
 - `Arche.report_all()` does not shorten report by default, added `short` parameter.
-- `expand=True` which enables nested data flattening is more than 100x faster and consumes ~2x less memory than before, #94
 - Data is consistent with Dash and Spidermon: `_type, _key` fields are dropped from dataframe, raw data, basic schema, #104, #106
 - `df.index` now stores `_key` instead
 - `basic_json_schema()` works with `deleted` jobs
@@ -32,6 +31,7 @@ Note that the top-most release is changes in the unreleased master branch on Git
 - Wrong number of Collection Items if it contains item 0, #112
 ### Removed
 - **Responses Per Item Ratio** rule
+- Deprecated `expand` parameter and removed `flat_df`, since `Garbage Rule` deal with nested data itself, #133
 
 
 ## [0.3.5] (2019-05-14)

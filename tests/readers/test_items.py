@@ -59,10 +59,9 @@ expected_col_df = pd.DataFrame(
 
 
 @pytest.mark.parametrize(
-    "count, start, filters, expand, expected_count",
-    [(1, "1", None, False, 1), (None, None, None, True, 4)],
+    "count, start, filters, expected_count", [(1, "1", None, 1), (None, None, None, 4)]
 )
-def test_collection_items(mocker, count, start, filters, expand, expected_count):
+def test_collection_items(mocker, count, start, filters, expected_count):
     mocker.patch(
         "arche.tools.api.get_collection",
         return_value=Collection(len(collection_items)),
@@ -73,14 +72,12 @@ def test_collection_items(mocker, count, start, filters, expand, expected_count)
         return_value=collection_items[:expected_count],
         autospec=True,
     )
-    items = CollectionItems("key", count, start, filters, expand)
+    items = CollectionItems("key", count, start, filters)
     assert items.key == "key"
     assert items.start == start
     assert items.filters == filters
-    assert items.expand == expand
     np.testing.assert_array_equal(items.raw, collection_items[:expected_count])
     pd.testing.assert_frame_equal(items.df, expected_col_df.iloc[:expected_count])
-    pd.testing.assert_frame_equal(items.flat_df, items.df)
     assert len(items) == expected_count
     assert items.limit == len(collection_items)
     assert items.count == expected_count
@@ -108,9 +105,7 @@ def test_job_items(mocker):
     mocker.patch(
         "arche.tools.api.get_items", return_value=job_items[1:3], autospec=True
     )
-    items = JobItems(
-        key="112358/13/21", count=2, start_index=1, filters=None, expand=False
-    )
+    items = JobItems(key="112358/13/21", count=2, start_index=1, filters=None)
     np.testing.assert_array_equal(items.raw, job_items[1:3])
     pd.testing.assert_frame_equal(items.df, expected_job_df.iloc[1:3])
     assert items.count == 2
@@ -151,70 +146,3 @@ def test_no_categorize():
     df = pd.DataFrame({"a": [i for i in range(99)]})
     Items.categorize(df)
     assert df.select_dtypes(["category"]).empty
-
-
-flat_df_inputs = [
-    (
-        [{"name": "Bob", "alive": True, "following": None}],
-        {"alive": [True], "following": [None], "name": ["Bob"]},
-        {"name": "name", "alive": "alive", "following": "following"},
-    ),
-    (
-        [{"tags": ["western", "comedy"]}, {"tags": ["drama", "history"]}],
-        {"tags_0": ["western", "drama"], "tags_1": ["comedy", "history"]},
-        {"tags_0": "tags", "tags_1": "tags"},
-    ),
-    (
-        [
-            {
-                "links": [
-                    {"Instagram": "http://www.instagram.com"},
-                    {"ITW website": "http://www.itw.com"},
-                ]
-            }
-        ],
-        {
-            "links_0_Instagram": ["http://www.instagram.com"],
-            "links_1_ITW website": ["http://www.itw.com"],
-        },
-        {"links_0_Instagram": "links", "links_1_ITW website": "links"},
-    ),
-    (
-        [
-            {
-                "links": [
-                    {"Instagram": ["http://www.instagram.com"]},
-                    {"ITW website": ["http://www.itw.com"]},
-                ]
-            }
-        ],
-        {
-            "links_0_Instagram_0": ["http://www.instagram.com"],
-            "links_1_ITW website_0": ["http://www.itw.com"],
-        },
-        {"links_0_Instagram_0": "links", "links_1_ITW website_0": "links"},
-    ),
-    # Corner case https://github.com/amirziai/flatten/issues/48
-    (
-        [
-            {"type": [0], "str": "k", "type_0": 5},
-            {"type": [0, [2, 3]], "str": "s", "type_0": 6},
-        ],
-        {
-            "str": ["k", "s"],
-            "type_0": [5, 6],
-            "type_1_0": [np.nan, 2.0],
-            "type_1_1": [np.nan, 3.0],
-        },
-        {"type_0": "type_0", "str": "str", "type_1_0": "type", "type_1_1": "type"},
-    ),
-    ([{"_type": "XItem", "_key": "0/0/0", "a": 0}], {"a": [0]}, {}),
-]
-
-
-@pytest.mark.parametrize("data, expected_data, expected_map", flat_df_inputs)
-def test_flat_df(data, expected_data, expected_map):
-    i = Items.from_array(data, expand=True)
-    pd.testing.assert_frame_equal(i.flat_df, pd.DataFrame(expected_data))
-    for new, old in expected_map.items():
-        assert i.origin_column_name(new) == old
