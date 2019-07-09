@@ -18,6 +18,9 @@ import IPython
 import pandas as pd
 
 
+logger = logging.getLogger("arche")
+
+
 class Arche:
     def __init__(
         self,
@@ -45,7 +48,7 @@ class Arche:
                 "'target' is equal to 'source'. Data to compare should have different sources."
             )
         if isinstance(source, pd.DataFrame):
-            logging.warning(
+            logger.warning(
                 "Pandas stores `NA` (missing) data differently, "
                 "which might affect schema validation. "
                 "Should you care, consider passing raw data in array-like types.\n"

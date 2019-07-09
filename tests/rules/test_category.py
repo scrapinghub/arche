@@ -57,7 +57,7 @@ def test_get_coverage_per_category(data, cat_names, expected_messages, expected_
                     name="Coverage for sex",
                 ),
                 pd.Series(
-                    [0.250000, 0.166667],
+                    [0.250000, -0.166667],
                     index=[np.nan, "male"],
                     name="Coverage difference more than 10% for sex",
                 ),
@@ -67,7 +67,7 @@ def test_get_coverage_per_category(data, cat_names, expected_messages, expected_
                     name="Coverage for country",
                 ),
                 pd.Series(
-                    [0.25, 0.25],
+                    [0.25, -0.25],
                     index=["us", "uk"],
                     name="Coverage difference more than 10% for country",
                 ),

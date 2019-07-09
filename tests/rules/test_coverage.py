@@ -52,8 +52,8 @@ def test_check_fields_coverage(df, expected_messages, expected_stats):
                     name="Coverage from job stats fields counts",
                 ),
                 pd.Series(
-                    [0.5, 1.0, 1.5],
-                    index=["f2", "f1", "f3"],
+                    [-1.5, 0.5, 1.0],
+                    index=["f3", "f2", "f1"],
                     name="Coverage difference more than 5%",
                 ),
             ],
