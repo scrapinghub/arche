@@ -77,6 +77,11 @@ class Source:
     ):
         self.items = items
         if stats:
+            # add `_type` to not care about it in tests
+            if stats.get("counts"):
+                stats["counts"]["_type"] = 1
+            else:
+                stats["counts"] = {"_type": 1}
             self._stats = stats
         else:
             if self.items:

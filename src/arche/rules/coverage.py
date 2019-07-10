@@ -51,6 +51,7 @@ def get_difference(
                 target_job.key: target_job.items.stats().get("counts", None),
             }
         )
+        .drop(index=["_type"])
         .fillna(0)
         .sort_values(by=[source_job.key], kind="mergesort")
     )
