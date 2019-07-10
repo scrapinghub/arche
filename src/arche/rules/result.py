@@ -21,6 +21,7 @@ class Level(Enum):
 class Outcome(Enum):
     SKIPPED = 0
     PASSED = 1
+    FAILED = 2
 
 
 @dataclass

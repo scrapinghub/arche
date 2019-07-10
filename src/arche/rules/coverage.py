@@ -1,4 +1,6 @@
-from arche.rules.result import Result
+from typing import List
+
+from arche.rules.result import Result, Outcome
 from arche.tools.api import get_items_count
 import pandas as pd
 from scrapinghub.client.jobs import Job
@@ -43,7 +45,6 @@ def get_difference(
         A Result instance with huge dif and stats with fields counts coverage and dif
     """
     result = Result("Coverage Difference")
-
     f_counts = (
         pd.DataFrame(
             {
@@ -98,4 +99,29 @@ def compare_scraped_fields(source_df: pd.DataFrame, target_df: pd.DataFrame) -> 
     if new_fields.array:
         result.add_info(f"New - {', '.join(new_fields)}")
 
+    return result
+
+
+def anomalies(jobs: List[Job]) -> Result:
+    result = Result("Anomalies")
+    raw_stats = [job.items.stats() for job in jobs]
+
+    stats = (
+        pd.DataFrame(stats["counts"] for stats in raw_stats)
+        .fillna(0)
+        .drop(columns=["_type"])
+    )
+    input_values = [s["totals"]["input_values"] for s in raw_stats]
+    stats = stats.apply(lambda x: x / input_values)
+    last, sample = stats.iloc[-1], stats.iloc[:-1]
+    suspicious_change = last[
+        (last < sample.mean() - 2 * sample.std())
+        | (last > sample.mean() + 2 * sample.std())
+    ].dropna()
+    errors = [
+        f"{i} - {v:.2%} coverage deviates on `{v-sample[i].mean():.2%}` from mean"
+        for i, v in suspicious_change.items()
+    ]
+    if not suspicious_change.empty:
+        result.add_error(Outcome.FAILED, detailed="\n".join(errors))
     return result

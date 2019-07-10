@@ -1,5 +1,7 @@
+from typing import Dict
+
 import arche.rules.coverage as cov
-from arche.rules.result import Level
+from arche.rules.result import Level, Outcome
 from conftest import create_result, create_named_df, Job
 import pandas as pd
 import pytest
@@ -132,3 +134,38 @@ def test_compare_scraped_fields(source_cols, target_cols, expected_messages):
         pd.DataFrame([], columns=source_cols), pd.DataFrame([], columns=target_cols)
     )
     assert result == create_result("Scraped Fields", expected_messages)
+
+
+@pytest.mark.parametrize(
+    "jobs_stats, expected_messages",
+    [
+        (
+            [
+                ({"c1": 99, "c2": 150, "c3": 10, "c4": 150}, 100),
+                ({"c1": 101, "c2": 100, "c3": 9, "c4": 150}, 100),
+                ({"c1": 98, "c2": 200, "c3": 11, "c4": 150}, 100),
+                ({"c1": 97, "c2": 175, "c3": 12, "c4": 150}, 100),
+                ({"c1": 200, "c2": 500, "c3": 8}, 200),
+            ],
+            {
+                Level.ERROR: [
+                    (
+                        Outcome.FAILED,
+                        (
+                            "c2 - 250.00% coverage deviates on `93.75%` from mean\n"
+                            "c3 - 4.00% coverage deviates on `-6.50%` from mean\n"
+                            "c4 - 0.00% coverage deviates on `-150.00%` from mean"
+                        ),
+                    )
+                ]
+            },
+        )
+    ],
+)
+def test_anomalies(jobs_stats: Dict, expected_messages):
+    jobs = [
+        Job(stats={"counts": counts, "totals": {"input_values": input_values}})
+        for counts, input_values in jobs_stats
+    ]
+    result = cov.anomalies(jobs)
+    assert result == create_result("Anomalies", expected_messages)
