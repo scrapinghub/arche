@@ -1,6 +1,6 @@
 """AWS methods. Credentials are expected to be set in environment"""
 import io
-from urllib.parse import quote
+from urllib.parse import quote, urlparse
 import urllib.request
 
 import boto3
@@ -42,5 +42,7 @@ def get_contents_as_string(bucket: str, filepath: str) -> str:
 
 
 def get_contents(url: str) -> str:
+    if urlparse(url).scheme == "file":
+        raise ValueError("'file:' scheme is not allowed")
     with urllib.request.urlopen(url) as f:
         return f.read().decode("utf-8")
