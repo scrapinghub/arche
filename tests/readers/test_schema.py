@@ -23,7 +23,6 @@ def test_read_schema(mocker, source, downloaded, expected):
     mocker.patch(
         "arche.readers.schema.Schema.from_url", return_value=downloaded, autospec=True
     )
-
     assert Schema.read(source) == expected
 
 
@@ -71,41 +70,11 @@ def test_get_schema_fails_on_type():
 )
 def test_schema_from_url(schema_path, schema_contents, expected, mocker):
     mocker.patch(
-        "arche.readers.schema.s3.get_contents_as_string",
-        return_value=schema_contents,
-        autospec=True,
-    )
-    mocker.patch(
         "arche.readers.schema.s3.get_contents",
         return_value=schema_contents,
         autospec=True,
     )
     assert Schema.from_url(schema_path) == expected
-
-
-@pytest.mark.parametrize(
-    "path, expected_message",
-    [
-        ("s3://bucket", "'s3://bucket' is not an s3 path or URL to a schema"),
-        ("bucket/file.json", "'bucket/file.json' is not an s3 path or URL to a schema"),
-    ],
-)
-def test_schema_from_url_fails(path, expected_message):
-    with pytest.raises(ValueError) as excinfo:
-        Schema.from_url(path)
-    assert str(excinfo.value) == expected_message
-
-
-def test_schema_from_url_request_fails(mocker):
-    cm = mocker.MagicMock()
-    cm.__enter__.return_value = cm
-    cm.read.side_effect = ValueError("'ValueError' object has no attribute 'decode'")
-    mocker.patch(
-        "arche.tools.s3.urllib.request.urlopen", return_value=cm, autospec=True
-    )
-    with pytest.raises(ValueError) as excinfo:
-        Schema.from_url("https://example.com/schema.json")
-    assert str(excinfo.value) == "'ValueError' object has no attribute 'decode'"
 
 
 def test_schema_json(capsys):
