@@ -50,7 +50,7 @@ def get_contents(url: str) -> str:
     if not netloc or not relative_path:
         raise ValueError(f"'{url}' is not a valid s3 or URL path to a file")
     if o.scheme not in ["s3", "https"]:
-        raise ValueError(f"'{o.scheme}' scheme is not allowed")
+        raise ValueError(f"'{o.scheme}://' scheme is not allowed")
     if o.scheme == "s3":
         return get_contents_from_bucket(netloc, relative_path)
     with urllib.request.urlopen(url) as f:

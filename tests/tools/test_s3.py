@@ -27,8 +27,8 @@ def test_get_contents_fails_on_bad_file(mocker):
     [
         ("s3://bucket", "'s3://bucket' is not a valid s3 or URL path to a file"),
         ("bucket/file", "'bucket/file' is not a valid s3 or URL path to a file"),
-        ("file://bucket/file", "'file' scheme is not allowed"),
-        ("http://bucket/file", "'http' scheme is not allowed"),
+        ("file://bucket/file", "'file://' scheme is not allowed"),
+        ("http://bucket/file", "'http://' scheme is not allowed"),
     ],
 )
 def test_get_contents_fails_on_bad_path(path, expected_message):
