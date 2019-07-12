@@ -42,16 +42,21 @@ def get_contents_from_bucket(bucket: str, filepath: str) -> str:
 
 
 def get_contents(url: str) -> str:
-    """Fetch file contents from the remote source. Only s3, https schemes are allowed
+    """Fetch file contents from the remote source.
+
+    Args:
+        url: uri path to a file. Allows only s3, https.
+    Returns:
+        utf-8 decoded string
     """
     o = urlparse(url)
     netloc = o.netloc
     relative_path = o.path.lstrip("/")
     if not netloc or not relative_path:
         raise ValueError(f"'{url}' is not a valid s3 or URL path to a file")
-    if o.scheme not in ["s3", "https"]:
-        raise ValueError(f"'{o.scheme}://' scheme is not allowed")
     if o.scheme == "s3":
         return get_contents_from_bucket(netloc, relative_path)
-    with urllib.request.urlopen(url) as f:
-        return f.read().decode("utf-8")
+    if o.scheme == "https":
+        with urllib.request.urlopen(url) as f:
+            return f.read().decode("utf-8")
+    raise ValueError(f"'{o.scheme}://' scheme is not allowed")
