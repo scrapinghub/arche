@@ -194,7 +194,8 @@ class Result:
 
             layout = Result.get_layout(stat.name, len(stat))
             layout.xaxis = go.layout.XAxis(
-                range=np.array([stat.values.min(), max(stat.values.max(), 1)]) * 1.05
+                range=np.array([min(stat.values.min(), 0), max(stat.values.max(), 1)])
+                * 1.05
             )
             if stat.name.startswith("Coverage"):
                 layout.xaxis.tickformat = ".2p"

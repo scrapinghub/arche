@@ -57,6 +57,7 @@ def get_contents(url: str) -> str:
     if o.scheme == "s3":
         return get_contents_from_bucket(netloc, relative_path)
     if o.scheme == "https":
-        with urllib.request.urlopen(url) as f:
-            return f.read().decode("utf-8")
+        req = urllib.request.Request(url)
+        with urllib.request.urlopen(req) as response:
+            return response.read().decode("utf-8")
     raise ValueError(f"'{o.scheme}://' scheme is not allowed")
