@@ -1,6 +1,6 @@
 import logging
 
-__version__ = "0.3.5"
+__version__ = "0.3.6"
 SH_URL = "https://app.scrapinghub.com/p"  # noqa
 
 from _plotly_future_ import v4  # noqa
