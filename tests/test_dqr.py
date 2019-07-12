@@ -1,4 +1,5 @@
 from arche.data_quality_report import DataQualityReport
+from arche.readers.schema import Schema
 from arche.report import Report
 
 
@@ -14,5 +15,7 @@ def test_dqr_empty_report(mocker, get_job_items, get_schema):
     mocker.patch("arche.tools.api.get_runtime_s", return_value=60, autospec=True)
     mocker.patch("arche.tools.api.get_items_count", return_value=1000, autospec=True)
     mocker.patch("arche.tools.api.get_requests_count", return_value=1000, autospec=True)
-    dqr = DataQualityReport(items=get_job_items, schema=get_schema, report=Report())
+    dqr = DataQualityReport(
+        items=get_job_items, schema=Schema(get_schema), report=Report()
+    )
     assert len(dqr.figures) == 4

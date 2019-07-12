@@ -27,20 +27,23 @@ def check_fields_coverage(df: pd.DataFrame) -> Result:
     return result
 
 
-def get_difference(source_job: Job, target_job: Job) -> Result:
+def get_difference(
+    source_job: Job, target_job: Job, err_thr: float = 0.10, warn_thr: float = 0.05
+) -> Result:
     """Get difference between jobs coverages. The coverage is job fields counts
     divided on the job size.
 
     Args:
         source_job: a base job, the difference is calculated from it
         target_job: a job to compare
+        err_thr: a threshold for errors
+        warn_thr: a threshold for warnings
 
     Returns:
         A Result instance with huge dif and stats with fields counts coverage and dif
     """
     result = Result("Coverage Difference")
-    warn_thr = 0.05
-    err_thr = 0.10
+
     f_counts = (
         pd.DataFrame(
             {
@@ -60,15 +63,15 @@ def get_difference(source_job: Job, target_job: Job) -> Result:
     f_counts.name = "Coverage from job stats fields counts"
     result.stats.append(f_counts)
 
-    coverage_difs = (f_counts[source_job.key] - f_counts[target_job.key]).abs()
-    coverage_difs = coverage_difs[coverage_difs > warn_thr].sort_values(
+    coverage_difs = f_counts[source_job.key] - f_counts[target_job.key]
+    coverage_difs = coverage_difs[coverage_difs.abs() > warn_thr].sort_values(
         kind="mergesoft"
     )
     coverage_difs.name = f"Coverage difference more than {warn_thr:.0%}"
     if not coverage_difs.empty:
         result.stats.append(coverage_difs)
 
-    errs = coverage_difs[coverage_difs > err_thr]
+    errs = coverage_difs[coverage_difs.abs() > err_thr]
     if not errs.empty:
         result.add_error(
             f"The difference is greater than {err_thr:.0%} for {len(errs)} field(s)"

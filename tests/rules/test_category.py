@@ -49,27 +49,32 @@ def test_get_coverage_per_category(data, cat_names, expected_messages, expected_
             },
             [
                 create_named_df(
-                    {"s": [0.25, 0.25, 0.5], "t": [0.000000, 0.333333, 0.666667]},
+                    {
+                        "source": [0.25, 0.25, 0.5],
+                        "target": [0.000000, 0.333333, 0.666667],
+                    },
                     index=[np.nan, "female", "male"],
                     name="Coverage for sex",
                 ),
                 pd.Series(
-                    [0.250000, 0.166667],
+                    [0.250000, -0.166667],
                     index=[np.nan, "male"],
                     name="Coverage difference more than 10% for sex",
                 ),
                 create_named_df(
-                    {"s": [0.25, 0.75], "t": [0.0, 1.0]},
+                    {"source": [0.25, 0.75], "target": [0.0, 1.0]},
                     index=["us", "uk"],
                     name="Coverage for country",
                 ),
                 pd.Series(
-                    [0.25, 0.25],
+                    [0.25, -0.25],
                     index=["us", "uk"],
                     name="Coverage difference more than 10% for country",
                 ),
                 create_named_df(
-                    {"s": [1.0], "t": [1.0]}, index=[26], name="Coverage for age"
+                    {"source": [1.0], "target": [1.0]},
+                    index=[26],
+                    name="Coverage for age",
                 ),
             ],
         )
@@ -77,7 +82,7 @@ def test_get_coverage_per_category(data, cat_names, expected_messages, expected_
 )
 def test_get_difference(source, target, categories, expected_messages, expected_stats):
     assert c.get_difference(
-        pd.DataFrame(source), pd.DataFrame(target), categories, "s", "t"
+        pd.DataFrame(source), pd.DataFrame(target), categories
     ) == create_result(
         "Category Coverage Difference", expected_messages, stats=expected_stats
     )
@@ -120,6 +125,7 @@ def test_get_no_categories(data, expected_message):
             ],
             "2 category field(s)",
         ),
+        ({"a": range(100)}, 1, [], "Categories were not found"),
     ],
 )
 def test_get_categories(data, max_uniques, expected_stats, expected_message):
@@ -127,3 +133,30 @@ def test_get_categories(data, max_uniques, expected_stats, expected_message):
     assert result == create_result(
         "Categories", {Level.INFO: [(expected_message,)]}, stats=expected_stats
     )
+
+
+@pytest.mark.parametrize(
+    "data, max_uniques, sample, expected_cats",
+    [
+        ({"a": np.zeros(100)}, 1, 100, ["a"]),
+        ({"a": np.zeros(200)}, 1, 100, ["a"]),
+        (
+            {"a": np.concatenate([np.zeros(199), [np.nan]]), "b": list(range(200))},
+            2,
+            100,
+            ["a"],
+        ),
+        (
+            {
+                "a": np.repeat({"k": "v"}, 10_000),
+                "b": pd.Series([[{"x": 0}]]).repeat(10_000),
+            },
+            10,
+            5000,
+            ["a", "b"],
+        ),
+        ({"a": range(100)}, 1, 10, []),
+    ],
+)
+def test_find_likely_cats(data, max_uniques, sample, expected_cats):
+    assert c.find_likely_cats(pd.DataFrame(data), max_uniques, sample) == expected_cats

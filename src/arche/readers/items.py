@@ -4,36 +4,22 @@ from typing import Any, Dict, Iterable, Optional
 
 from arche import SH_URL
 from arche.tools import api
-from flatten_json import flatten
 import numpy as np
 import pandas as pd
 from scrapinghub import ScrapinghubClient
 from scrapinghub.client.jobs import Job
+from tqdm import tqdm_notebook
 
 RawItems = Iterable[Dict[str, Any]]
 
 
 class Items:
-    def __init__(self, raw: RawItems, df: pd.DataFrame, expand: bool):
+    def __init__(self, raw: RawItems, df: pd.DataFrame):
         self.raw = raw
         self.df = self.process_df(df)
-        self._flat_df = None
-        self.expand = expand
 
     def __len__(self) -> int:
         return len(self.df)
-
-    @property
-    def flat_df(self) -> pd.DataFrame:
-        if self._flat_df is None:
-            if self.expand:
-                self._flat_df = pd.DataFrame(flatten(i) for i in self.raw)
-                self._flat_df["_key"] = self.df.get(
-                    "_key", [str(i) for i in range(len(self))]
-                )
-            else:
-                self._flat_df = self.df
-        return self._flat_df
 
     @staticmethod
     def process_df(df: pd.DataFrame) -> pd.DataFrame:
@@ -44,9 +30,10 @@ class Items:
 
     @staticmethod
     def categorize(df: pd.DataFrame) -> pd.DataFrame:
+        """Cast columns with repeating values to `category` type to save memory"""
         if len(df) < 100:
             return
-        for c in df.columns:
+        for c in tqdm_notebook(df.columns, desc="Categorizing"):
             try:
                 if df[c].nunique(dropna=False) <= 10:
                     df[c] = df[c].astype("category")
@@ -62,15 +49,12 @@ class Items:
                 return column
 
     @classmethod
-    def from_df(cls, df: pd.DataFrame, expand: bool = True):
-        if "_key" not in df.columns:
-            df["_key"] = df.index
-            df["_key"] = df["_key"].apply(str)
-        return cls(raw=np.array(df.to_dict("records")), df=df, expand=expand)
+    def from_df(cls, df: pd.DataFrame):
+        return cls(raw=np.array(df.to_dict("records")), df=df)
 
     @classmethod
-    def from_array(cls, iterable: RawItems, expand: bool = True):
-        return cls(raw=iterable, df=pd.DataFrame(list(iterable)), expand=expand)
+    def from_array(cls, iterable: RawItems):
+        return cls(raw=iterable, df=pd.DataFrame(list(iterable)))
 
 
 class CloudItems(Items):
@@ -79,17 +63,17 @@ class CloudItems(Items):
         key: str,
         count: Optional[int] = None,
         filters: Optional[api.Filters] = None,
-        expand: bool = True,
     ):
         self.key = key
         self._count = count
         self._limit = None
         self.filters = filters
-        self.expand = expand
         raw = self.fetch_data()
         df = pd.DataFrame(list(raw))
-        df["_key"] = self.format_keys(df["_key"])
-        super().__init__(raw=raw, df=df, expand=expand)
+        df.index = self.format_keys(df["_key"])
+        df.index.name = None
+        df = df.drop(columns=["_key", "_type"], errors="ignore")
+        super().__init__(raw=raw, df=df)
 
     @property
     @abstractmethod
@@ -115,14 +99,14 @@ class JobItems(CloudItems):
     def __init__(
         self,
         key: str,
-        start: int = 0,
         count: Optional[int] = None,
+        start_index: int = 0,
         filters: Optional[api.Filters] = None,
-        expand: bool = True,
     ):
-        self.start_index: int = start
+        self.start_index = start_index
+        self.start: int = f"{key}/{start_index}"
         self._job: Job = None
-        super().__init__(key, count, filters, expand)
+        super().__init__(key, count, filters)
 
     @property
     def limit(self) -> int:
@@ -141,13 +125,15 @@ class JobItems(CloudItems):
         if not self._job:
             job = ScrapinghubClient().get_job(self.key)
             if job.metadata.get("state") == "deleted":
-                raise ValueError(f"{self.key} has 'deleted' state")
+                raise ValueError(f"'{self.key}' has 'deleted' state")
             self._job = job
         return self._job
 
     def fetch_data(self) -> np.ndarray:
         if self.filters or self.count < 200_000:
-            return api.get_items(self.key, self.count, self.start_index, self.filters)
+            return api.get_items(
+                self.key, self.count, self.start_index, self.start, self.filters
+            )
         else:
             return api.get_items_with_pool(self.key, self.count, self.start_index)
 
@@ -160,6 +146,16 @@ class JobItems(CloudItems):
 
 
 class CollectionItems(CloudItems):
+    def __init__(
+        self,
+        key: str,
+        count: Optional[int] = None,
+        start: Optional[str] = None,
+        filters: Optional[api.Filters] = None,
+    ):
+        self.start = start
+        super().__init__(key, count, filters)
+
     @property
     def limit(self) -> int:
         if not self._limit:
@@ -173,7 +169,10 @@ class CollectionItems(CloudItems):
         return self._count
 
     def fetch_data(self) -> np.ndarray:
-        return api.get_items(self.key, self.count, 0, self.filters)
+        desc = f"Fetching from '{self.key.rsplit('/')[-1]}'"
+        return api.get_items(
+            self.key, self.count, 0, self.start, self.filters, desc=desc
+        )
 
     def format_keys(self, keys: pd.Series) -> pd.Series:
         """Get full Scrapy Cloud url from `_key`

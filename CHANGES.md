@@ -13,15 +13,25 @@ Note that the top-most release is changes in the unreleased master branch on Git
 ## [0.3.6dev] (Work In Progress)
 ### Added
 - **Categories** rule with a plot showing unique values and count per field. By default, `report_all()` only includes fields which have less or equal to 10 unique values. See https://arche.readthedocs.io/en/latest/nbs/Rules.html#Category-fields, #100
+- Category documentation
 ### Changed
 - `Arche.report_all()` does not shorten report by default, added `short` parameter.
-- `expand=True` which enables nested data flattening is more than 100x faster and consumes ~2x less memory than before, #94
+- Data is consistent with Dash and Spidermon: `_type, _key` fields are dropped from dataframe, raw data, basic schema, #104, #106
+- `df.index` now stores `_key` instead
+- `basic_json_schema()` works with `deleted` jobs
+- `start` is supported for Collections, #112
+- `enum` is counted as a `category` tag, #18
+- `Garbage Symbols` searches in str representation of nested fields instead of expanded df, #130
+- Show real coverage difference (negative\positive) instead of absolute, #114
 ### Fixed
 - `Arche.glance()`, #88
 - Item links in Schema validation errors, #89
 - Empty NAN bars on category graphs, #93
 - `data_quality_report()`, #95
+- Wrong number of Collection Items if it contains item 0, #112
 ### Removed
+- **Responses Per Item Ratio** rule
+- Deprecated `expand` parameter and removed `flat_df`, since `Garbage Rule` deal with nested data itself, #133
 
 
 ## [0.3.5] (2019-05-14)

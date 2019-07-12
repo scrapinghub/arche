@@ -1,3 +1,4 @@
+from copy import deepcopy
 from itertools import zip_longest
 from typing import Dict, List, Optional
 
@@ -8,38 +9,35 @@ import pandas as pd
 import pytest
 
 
-cloud_items = [
-    {"_key": "112358/13/21/0", "price": 0, "name": "Elizabeth"},
-    {"_key": "112358/13/21/1", "name": "Margaret"},
-    {"_key": "112358/13/21/2", "price": 10, "name": "Yulia"},
-    {"_key": "112358/13/21/3", "price": 11, "name": "Vivien"},
+CLOUD_ITEMS = [
+    {"_key": "112358/13/21/0", "_type": "Type", "price": 0, "name": "Elizabeth"},
+    {"_key": "112358/13/21/1", "_type": "Type", "name": "Margaret"},
+    {"_key": "112358/13/21/2", "_type": "Type", "price": 10, "name": "Yulia"},
+    {"_key": "112358/13/21/3", "_type": "Type", "price": 11, "name": "Vivien"},
 ]
-default_schema = {
+
+DEFAULT_SCHEMA = {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "required": ["_key", "name"],
+    "required": ["name"],
     "type": "object",
-    "properties": {
-        "_key": {"type": "string"},
-        "price": {"type": "integer"},
-        "name": {"type": "string"},
-    },
+    "properties": {"price": {"type": "integer"}, "name": {"type": "string"}},
     "additionalProperties": False,
 }
 
 
 @pytest.fixture(scope="session")
 def get_cloud_items(request):
-    return cloud_items
+    return CLOUD_ITEMS
 
 
 @pytest.fixture(scope="session")
 def get_raw_items(request):
-    return np.array(cloud_items)
+    return np.array(CLOUD_ITEMS)
 
 
 @pytest.fixture(scope="session")
 def get_schema():
-    return default_schema
+    return DEFAULT_SCHEMA
 
 
 @pytest.fixture(scope="function")
@@ -67,8 +65,16 @@ class Collection:
         return self._count
 
 
+def _is_filtered(x, by):
+    if by:
+        return x.get(by[0][0]) == by[0][1][0]
+    return True
+
+
 class Source:
-    def __init__(self, items=None, stats=None):
+    def __init__(
+        self, items: Optional[List[Dict]] = None, stats: Optional[Dict] = None
+    ):
         self.items = items
         if stats:
             self._stats = stats
@@ -84,42 +90,50 @@ class Source:
 
     def iter(self, **kwargs):
         start = kwargs.get("start", 0)
+        count = kwargs.get("count", None)
+        counter = 0
         if start:
             start = int(start.split("/")[-1])
-        count = kwargs.get("count", len(self.items) - start)
 
-        # Scrapinghub API returns all posible items even if `count` greater than possible
-        if start + count > len(self.items):
-            limit = len(self.items)
-        else:
-            limit = start + count
+        for item in self.items[start:]:
+            if counter == count:
+                return
+            if _is_filtered(item, kwargs.get("filter")):
+                counter += 1
+                yield item
 
-        if kwargs.get("filter"):
-            field_name = kwargs.get("filter")[0][0]
-            value = kwargs.get("filter")[0][1][0]
-            filtered_items = []
 
-            counter = 0
-            for index in range(start, limit):
-                if counter == limit:
-                    return
-                if self.items[index].get(field_name) == value:
-                    filtered_items.append(self.items[index])
-                    counter += 1
+class StoreSource:
+    def __init__(self, items: List[Dict] = None):
+        self.items = items
 
-            for filtered_item in filtered_items:
-                yield filtered_item
-        else:
-            for index in range(start, limit):
-                yield self.items[index]
+    def count(self):
+        return len(self.items)
+
+    def iter(self, **kwargs):
+        start = kwargs.get("start", self.items[0].get("_key"))
+
+        def start_idx():
+            for i, item in enumerate(self.items):
+                if item.get("_key") == start:
+                    return i
+
+        count = kwargs.get("count", None)
+        counter = 0
+        for item in self.items[start_idx() :]:
+            if counter == count:
+                return
+            if _is_filtered(item, kwargs.get("filter")):
+                counter += 1
+                yield item
 
 
 @pytest.fixture(scope="function")
 def get_source():
-    return Source(items=cloud_items)
+    return Source(items=CLOUD_ITEMS)
 
 
-@pytest.fixture(scope="function", params=[(cloud_items, None, None)])
+@pytest.fixture(scope="function", params=[(CLOUD_ITEMS, None, None)])
 def get_job(request):
     return Job(*request.param)
 
@@ -147,34 +161,34 @@ def get_client():
     return ScrapinghubClient()
 
 
-@pytest.fixture(scope="function", params=[cloud_items])
-def get_job_items(request, mocker):
+@pytest.fixture(scope="function")
+def get_job_items(mocker):
     mocker.patch(
         "arche.readers.items.JobItems.job", return_value=get_job, autospec=True
     )
+    raw_data = deepcopy(CLOUD_ITEMS)
     mocker.patch(
         "arche.readers.items.JobItems.fetch_data",
-        return_value=np.array(request.param),
+        return_value=np.array(raw_data),
         autospec=True,
     )
-
-    job_items = JobItems(key="112358/13/21", count=len(request.param))
+    job_items = JobItems(key="112358/13/21", count=len(raw_data))
     return job_items
 
 
-@pytest.fixture(scope="function", params=[cloud_items])
-def get_collection_items(request, mocker):
+@pytest.fixture(scope="function")
+def get_collection_items(mocker):
     mocker.patch(
         "arche.tools.api.get_collection", return_value=get_collection, autospec=True
     )
     mocker.patch(
         "arche.readers.items.CollectionItems.fetch_data",
-        return_value=np.array(request.param),
+        return_value=np.array(CLOUD_ITEMS),
         autospec=True,
     )
 
     collection_items = CollectionItems(
-        key="112358/collections/s/pages", count=len(request.param)
+        key="112358/collections/s/pages", count=len(CLOUD_ITEMS)
     )
     return collection_items
 

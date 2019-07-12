@@ -13,6 +13,7 @@ script:
 after_success:
   - tox -e pep8
   - tox -e codecov
+  - tox -e docs
 deploy:
   provider: pypi
   on:

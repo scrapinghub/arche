@@ -2,7 +2,6 @@ from arche import SH_URL
 from arche.rules.metadata import (
     check_errors,
     check_outcome,
-    check_response_ratio,
     compare_finish_time,
     compare_response_ratio,
 )
@@ -13,21 +12,17 @@ import pytest
 
 error_input = [
     (
-        {"log_count/ERROR": 10},
+        {"log_count/ERROR": 5},
         {
             Level.ERROR: [
                 (
-                    "10 error(s)",
-                    (
-                        f"Errors for 112358/13/21 - {SH_URL}/112358/13/21/"
-                        f"log?filterType=error&filterAndHigher"
-                    ),
+                    f"5 error(s) - {SH_URL}/112358/13/21/log?filterType=error&filterAndHigher",
                 )
             ]
         },
     ),
-    ({}, {Level.INFO: [("No errors",)]}),
-    ({"log_count/ERROR": 0}, {Level.INFO: [("No errors",)]}),
+    ({}, {}),
+    ({"log_count/ERROR": 0}, {}),
 ]
 
 
@@ -37,8 +32,7 @@ def test_check_errors(get_job, error_count, expected_messages):
     job.metadata = {"scrapystats": error_count}
     job.key = "112358/13/21"
 
-    result = check_errors(job)
-    assert result == create_result("Job Errors", expected_messages)
+    assert check_errors(job) == create_result("Job Errors", expected_messages)
 
 
 outcome_input = [
@@ -67,7 +61,7 @@ outcome_input = [
         {Level.ERROR: [("Job has 'finished' state, 'None' close reason",)]},
     ),
     ({}, {Level.ERROR: [("Job has 'None' state, 'None' close reason",)]}),
-    ({"state": "finished", "close_reason": "finished"}, {Level.INFO: [("Finished",)]}),
+    ({"state": "finished", "close_reason": "finished"}, {}),
 ]
 
 
@@ -78,21 +72,6 @@ def test_check_outcome(get_job, metadata, expected_messages):
 
     result = check_outcome(job)
     assert result == create_result("Job Outcome", expected_messages)
-
-
-response_ratio_inputs = [
-    (
-        {"totals": {"input_values": 1000}},
-        {"scrapystats": {"downloader/response_count": 2000}},
-        {Level.INFO: [("Number of responses / Number of scraped items - 2.0",)]},
-    )
-]
-
-
-@pytest.mark.parametrize("stats, metadata, expected_messages", response_ratio_inputs)
-def test_check_response_ratio(stats, metadata, expected_messages):
-    result = check_response_ratio(Job(metadata=metadata, stats=stats))
-    assert result == create_result("Responses Per Item Ratio", expected_messages)
 
 
 time_inputs = [
@@ -162,14 +141,14 @@ compare_response_ratio_inputs = [
         {"scrapystats": {"downloader/response_count": 2000}},
         {"totals": {"input_values": 1000}},
         {"scrapystats": {"downloader/response_count": 4000}},
-        {Level.ERROR: [("Difference is 50.0% - 2.0 and 4.0",)]},
+        {Level.ERROR: [("Difference is 50.00% - 2.0 and 4.0",)]},
     ),
     (
         {"totals": {"input_values": 1000}},
         {"scrapystats": {"downloader/response_count": 2000}},
         {"totals": {"input_values": 1000}},
         {"scrapystats": {"downloader/response_count": 2300}},
-        {Level.WARNING: [("Difference is 13.0% - 2.0 and 2.3",)]},
+        {Level.WARNING: [("Difference is 13.00% - 2.0 and 2.3",)]},
     ),
 ]
 

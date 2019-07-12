@@ -43,9 +43,6 @@ def get_job_close_reason(job):
 
 
 def get_items_count(job):
-    if job.metadata.get("state") == "deleted":
-        return 0
-
     return job.items.stats().get("totals", {}).get("input_values", 0)
 
 
@@ -125,7 +122,7 @@ def get_source(source_key):
 
 
 def get_items_with_pool(
-    source_key: str, count: int, start_index: int = 0, workers: int = 4
+    source_key: str, count: int, start_index: int, workers: int = 4
 ) -> np.ndarray:
     """Concurrently reads items from API using Pool
 
@@ -142,10 +139,12 @@ def get_items_with_pool(
     processes_count = min(max(helpers.cpus_count(), workers), active_connections_limit)
     batch_size = math.ceil(count / processes_count)
 
+    start_idxs = range(start_index, start_index + count, batch_size)
+    start = [f"{source_key}/{i}" for i in start_idxs]
     with Pool(processes_count) as p:
         results = p.starmap(
             partial(get_items, source_key, batch_size, p_bar=tqdm),
-            zip([i for i in range(start_index, start_index + count, batch_size)]),
+            zip(start_idxs, start),
         )
         return np.concatenate(results)
 
@@ -154,18 +153,16 @@ def get_items(
     key: str,
     count: int,
     start_index: int,
+    start: Optional[str],
     filters: Optional[Filters] = None,
     p_bar: Union[tqdm, tqdm_notebook] = tqdm_notebook,
+    desc: Optional[str] = None,
 ) -> np.ndarray:
     source = get_source(key)
-    items_iter = source.iter(
-        start=f"{key}/{start_index}", count=count, filter=filters, meta="_key"
-    )
+    items_iter = source.iter(start=start, count=count, filter=filters, meta="_key")
+
     if p_bar:
-        items_iter = p_bar(
-            items_iter,
-            desc=f"Fetching {start_index}:{start_index+count} from {key}",
-            total=count,
-            unit_scale=1,
-        )
+        if not desc:
+            desc = f"Fetching {start_index}:{start_index+count} from {key}"
+        items_iter = p_bar(items_iter, desc=desc, total=count, unit_scale=1)
     return np.asarray(list(items_iter))

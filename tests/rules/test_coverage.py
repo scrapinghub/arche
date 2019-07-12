@@ -9,9 +9,9 @@ import pytest
     "df, expected_messages, expected_stats",
     [
         (
-            pd.DataFrame({"_key": [n for n in range(1000)]}),
+            pd.DataFrame({"id": [n for n in range(1000)]}),
             {},
-            [pd.Series([1000], index=["_key"], name="Fields coverage for 1_000 items")],
+            [pd.Series([1000], index=["id"], name="Fields coverage for 1_000 items")],
         ),
         (
             pd.DataFrame([("Jordan", None)], columns=["Name", "Field"]),
@@ -52,8 +52,8 @@ def test_check_fields_coverage(df, expected_messages, expected_stats):
                     name="Coverage from job stats fields counts",
                 ),
                 pd.Series(
-                    [0.5, 1.0, 1.5],
-                    index=["f2", "f1", "f3"],
+                    [-1.5, 0.5, 1.0],
+                    index=["f3", "f2", "f1"],
                     name="Coverage difference more than 5%",
                 ),
             ],

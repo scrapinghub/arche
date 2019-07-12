@@ -1,20 +1,25 @@
+import codecs
 import re
 
-from arche.readers.items import Items
 from arche.rules.result import Outcome, Result
 import numpy as np
 import pandas as pd
+from tqdm import tqdm_notebook
 
 
-def compare_boolean_fields(source_df: pd.DataFrame, target_df: pd.DataFrame) -> Result:
+def compare_boolean_fields(
+    source_df: pd.DataFrame,
+    target_df: pd.DataFrame,
+    err_thr: float = 0.10,
+    warn_thr: float = 0.05,
+) -> Result:
     """Compare booleans distribution between two dataframes
 
     Returns:
         A result containing dataframe with distributions and messages if differences
         are in thresholds
     """
-    warn_thr = 0.05
-    err_thr = 0.10
+
     source_bool = source_df.select_dtypes(include="bool")
     target_bool = target_df.select_dtypes(include="bool")
 
@@ -30,7 +35,7 @@ def compare_boolean_fields(source_df: pd.DataFrame, target_df: pd.DataFrame) -> 
     target_counts = pd.concat(
         [dummy, target_bool.apply(pd.value_counts, normalize=True).T], sort=False
     ).fillna(0.0)
-    difs = (source_counts - target_counts).abs()[True]
+    difs = (source_counts - target_counts)[True]
 
     bool_covs = pd.concat(
         [
@@ -41,14 +46,14 @@ def compare_boolean_fields(source_df: pd.DataFrame, target_df: pd.DataFrame) -> 
     bool_covs.name = "Coverage for boolean fields"
     result.stats.append(bool_covs)
 
-    err_diffs = difs[difs > err_thr]
+    err_diffs = difs[difs.abs() > err_thr]
     if not err_diffs.empty:
         result.add_error(
             f"{', '.join(err_diffs.index)} relative frequencies differ "
             f"by more than {err_thr:.0%}"
         )
 
-    warn_diffs = difs[(difs > warn_thr) & (difs <= err_thr)]
+    warn_diffs = difs[(difs.abs() > warn_thr) & (difs.abs() <= err_thr)]
     if not warn_diffs.empty:
         result.add_warning(
             f"{', '.join(warn_diffs.index)} relative frequencies differ by "
@@ -70,7 +75,7 @@ def fields_to_compare(source_df: pd.DataFrame, target_df: pd.DataFrame) -> bool:
     return False
 
 
-def garbage_symbols(items: Items) -> Result:
+def garbage_symbols(df: pd.DataFrame) -> Result:
     """Find unwanted symbols in `np.object` columns.
 
     Returns:
@@ -78,33 +83,38 @@ def garbage_symbols(items: Items) -> Result:
     """
     garbage = (
         r"(?P<spaces>^\s|\s$)"
-        r"|(?P<html_entities>&amp|&reg)"
-        r"|(?P<css>(?:(?:\.|#)[^#. ]+\s*){.+})"
-        r"|(?P<html_tags></?(h\d|b|u|i|div|ul|ol|li|table|tbody|th|tr|td|p|a|br|img|sup|SUP|"
-        r"blockquote)\s*/?>|<!--|-->)"
+        r"|(?P<html_entities>&[a-zA-Z]{2,}?;|&#\d*?;)"
+        r"|(?P<css>[.#@][^\d{}#.\s][^{}#.]+?{(?:[^:;{}]+?:[^:;{}]+?;)+?\s*?})"
+        r"|(?P<html_tags></??(?:h\d|b|u|i|div|ul|ol|li|table|tbody|th|tr|td|p|a|br|img|sup|SUP|"
+        r"blockquote)\s*?/??>|<!--|-->)"
     )
 
     errors = {}
     row_keys = set()
-    rule_result = Result("Garbage Symbols", items_count=len(items))
+    rule_result = Result("Garbage Symbols", items_count=len(df))
 
-    for column in items.flat_df.select_dtypes([np.object]):
-        matches = items.flat_df[column].str.extractall(garbage, flags=re.IGNORECASE)
-        matches = matches[["spaces", "html_entities", "css", "html_tags"]]
+    for column in tqdm_notebook(
+        df.select_dtypes([np.object]).columns, desc="Garbage Symbols"
+    ):
+        matches = df[column].apply(str).str.extractall(garbage, flags=re.IGNORECASE)
         if not matches.empty:
-            error_keys = items.flat_df.iloc[matches.unstack().index.values]["_key"]
-            original_column = items.origin_column_name(column)
+            error_keys = df.loc[matches.unstack().index.values].index
             bad_texts = matches.stack().value_counts().index.sort_values().tolist()
+            # escape backslashes for markdown repr, `\n > \\n`
+            bad_texts = [
+                f"'{codecs.encode(bx, 'unicode_escape').decode()[:20]}'"
+                for bx in bad_texts
+            ]
             error = (
-                f"{len(error_keys)/len(items)*100:.1f}% of '{original_column}' "
-                f"values contain {[t[:20] for t in bad_texts]}"
+                f"{len(error_keys)/len(df)*100:.1f}% of '{column}' "
+                f"values contain `{', '.join(bad_texts)}`"
             )
+
             errors[error] = list(error_keys)
             row_keys = row_keys.union(error_keys)
-
     if errors:
         rule_result.add_error(
-            f"{len(row_keys)/len(items) * 100:.1f}% ({len(row_keys)}) items affected",
+            f"{len(row_keys)/len(df) * 100:.1f}% ({len(row_keys)}) items affected",
             errors=errors,
         )
         rule_result.err_items_count = len(row_keys)

@@ -20,26 +20,31 @@ import pytest
                     {Level.INFO: [("summary", "other detailed message")]},
                 ),
             ],
-            (
-                "\nrule name here (1 message(s)):\nvery detailed message\n"
-                "\nother result there (1 message(s)):\nother detailed message\n"
-            ),
+            [
+                "rule name here (1 message(s)):",
+                "<br>",
+                "other result there (1 message(s)):",
+                "<br>",
+            ],
         ),
         (
             [("everything is fine", {Level.INFO: [("summary",)]})],
-            "\neverything is fine (1 message(s)):\n",
+            ["everything is fine (1 message(s)):"],
         ),
     ],
 )
 def test_write_details(mocker, get_df, capsys, messages, expected_details):
     mock_pio_show = mocker.patch("plotly.io.show", autospec=True)
+    md_mock = mocker.patch("arche.report.display_markdown", autospec=True)
+
     r = Report()
     for m in messages:
         result = create_result(*m, stats=[get_df])
         r.save(result)
     r.write_details()
     mock_pio_show.assert_called_with(result.figures[0])
-    assert capsys.readouterr().out == expected_details
+    calls = [mocker.call(e) for e in expected_details]
+    md_mock.assert_has_calls(calls, any_order=True)
 
 
 @pytest.mark.parametrize(
@@ -109,20 +114,17 @@ def test_write_rule_details(capsys, message, expected_details):
             {"something happened": set(["https://app.scrapinghub.com/p/1/1/1/item/0"])},
             False,
             10,
-            [
-                f"1 items affected - something happened: <a href='{SH_URL}/1/1/1/item/0'>0</a>"
-            ],
+            [f"1 items affected - something happened: [0]({SH_URL}/1/1/1/item/0)"],
         ),
+        ({"html '</br>'": [1]}, False, 10, ["1 items affected - html '</br>': 1"]),
     ],
 )
 def test_write_detailed_errors(mocker, errors, short, keys_limit, expected_messages):
-    mocker.patch("pandas.Series.sample", return_value=["5"], autospec=True)
-    html_mock = mocker.patch("arche.report.HTML", autospec=True)
+    mocker.patch("pandas.Series.sample", return_value=pd.Series("5"), autospec=True)
+    md_mock = mocker.patch("arche.report.display_markdown", autospec=True)
     Report.write_detailed_errors(errors, short, keys_limit)
-    calls = []
-    for m in expected_messages:
-        calls.append(mocker.call(m))
-    html_mock.assert_has_calls(calls, any_order=True)
+    calls = [mocker.call(m, raw=True) for m in expected_messages]
+    md_mock.assert_has_calls(calls, any_order=True)
 
 
 @pytest.mark.parametrize(
@@ -132,21 +134,21 @@ def test_write_detailed_errors(mocker, errors, short, keys_limit, expected_messa
             pd.Series(f"{SH_URL}/112358/13/21/item/0"),
             5,
             pd.Series(f"{SH_URL}/112358/13/21/item/5"),
-            f"<a href='{SH_URL}/112358/13/21/item/0'>0</a>",
+            f"[0]({SH_URL}/112358/13/21/item/0)",
         ),
         (
             pd.Series([f"{SH_URL}/112358/13/21/item/{i}" for i in range(20)]),
             10,
             pd.Series(f"{SH_URL}/112358/13/21/item/5"),
-            f"<a href='{SH_URL}/112358/13/21/item/5'>5</a>",
+            f"[5]({SH_URL}/112358/13/21/item/5)",
         ),
-        (pd.Series([str(i) for i in range(5)]), 1, ["0"], "0"),
         (
             pd.Series("112358/13/21/0"),
             1,
             pd.Series("112358/13/21/0"),
-            f"<a href='{SH_URL}/112358/13/21/item/0'>0</a>",
+            f"[0]({SH_URL}/112358/13/21/item/0)",
         ),
+        (pd.Series([0, 1]), 1, pd.Series([0, 1]), "0, 1"),
     ],
 )
 def test_sample_keys(mocker, keys, limit, sample_mock, expected_sample):

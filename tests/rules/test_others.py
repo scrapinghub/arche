@@ -1,6 +1,5 @@
 from functools import partial
 
-from arche import SH_URL
 from arche.rules.others import compare_boolean_fields, garbage_symbols
 from arche.rules.result import Level, Outcome
 from conftest import create_named_df, create_result
@@ -72,39 +71,33 @@ def test_compare_boolean_fields(
 
 dirty_inputs = [
     (
-        [
-            {
-                "_key": f"{SH_URL}/112358/13/21/item/0",
-                "name": " Blacky Robeburned",
-                "address": "here goes &AMP",
-                "phone": "<h1>144</h1>.sx-prime-pricing-row { float: left; }",
-                "rank": 14441,
-            },
-            {
-                "_key": f"{SH_URL}/112358/13/21/item/1",
-                "name": "<!--Leprous Jim-->",
-                "address": "Some street",
-                "phone": "1144",
-                "rank": 2_039_857,
-            },
-        ],
+        {
+            "name": [" Blacky Robeburned", "\t<!--Leprous &#9; Jim-->"],
+            "address": [["<br> ", {"v", "&amp;"}], "\xa0house"],
+            "phone": [
+                "<h1>144</h1>.sx-prime-pricing-long-row { float: left; }",
+                {"a": "11"},
+            ],
+            "rank": [141, 2_039_857],
+        },
         {
             Level.ERROR: [
                 (
                     "100.0% (2) items affected",
                     None,
                     {
-                        "100.0% of 'name' values contain [' ', '-->', '<!--']": [
-                            f"{SH_URL}/112358/13/21/item/0",
-                            f"{SH_URL}/112358/13/21/item/1",
+                        "100.0% of 'address' values contain `'&amp;', '<br>', '\\xa0'`": [
+                            0,
+                            1,
                         ],
-                        "50.0% of 'address' values contain ['&AMP']": [
-                            f"{SH_URL}/112358/13/21/item/0"
+                        "100.0% of 'name' values contain `'\\t', ' ', '&#9;', '-->', '<!--'`": [
+                            0,
+                            1,
                         ],
                         (
                             "50.0% of 'phone' values contain "
-                            "['.sx-prime-pricing-ro', '</h1>', '<h1>']"
-                        ): [f"{SH_URL}/112358/13/21/item/0"],
+                            "`'.sx-prime-pricing-lo', '</h1>', '<h1>'`"
+                        ): [0],
                     },
                 )
             ]
@@ -112,19 +105,18 @@ dirty_inputs = [
         2,
         2,
     ),
-    ([{"_key": "{SH_URL}/112358/13/21/item/0"}], {}, 1, 0),
+    ([{"id": "0"}], {}, 1, 0),
 ]
 
 
 @pytest.mark.parametrize(
-    "get_job_items, expected_messages, expected_items_count, expected_err_items_count",
+    "raw_items, expected_messages, expected_items_count, expected_err_items_count",
     dirty_inputs,
-    indirect=["get_job_items"],
 )
 def test_garbage_symbols(
-    get_job_items, expected_messages, expected_items_count, expected_err_items_count
+    raw_items, expected_messages, expected_items_count, expected_err_items_count
 ):
-    assert garbage_symbols(get_job_items) == create_result(
+    assert garbage_symbols(pd.DataFrame(raw_items)) == create_result(
         "Garbage Symbols",
         expected_messages,
         items_count=expected_items_count,

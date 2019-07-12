@@ -17,11 +17,12 @@ def test_origin_column_name(get_cloud_items, name, expected_name):
 @pytest.mark.parametrize(
     "df, expected_raw, expected_df",
     [
+        (pd.DataFrame({"0": [0]}), [{"0": 0}], pd.DataFrame({"0": [0]})),
         (
-            pd.DataFrame({"0": [0]}),
+            pd.DataFrame({"0": [0], "_key": ["0"]}),
             [{"0": 0, "_key": "0"}],
             pd.DataFrame({"0": [0], "_key": ["0"]}),
-        )
+        ),
     ],
 )
 def test_items_from_df(df, expected_raw, expected_df):
@@ -33,8 +34,8 @@ def test_items_from_df(df, expected_raw, expected_df):
 @pytest.mark.parametrize(
     "raw",
     [
-        ([{"0": 0, "_key": "0"}, {"_key": "1"}]),
-        (np.array([{"0": 0, "_key": "0"}, {"_key": "1"}])),
+        [{"0": 0, "_key": "0"}, {"_key": "1"}],
+        np.array([{"0": 0, "_key": "0"}, {"_key": "1"}]),
     ],
 )
 def test_items_from_array(raw):
@@ -45,27 +46,22 @@ def test_items_from_array(raw):
 
 collection_items = np.array(
     [
-        {"_key": "0", "name": "Book"},
-        {"_key": "1", "name": "Movie"},
-        {"_key": "2", "name": "Guitar"},
-        {"_key": "3", "name": "Dog"},
+        {"_key": "10", "name": "Book", "_type": "Book"},
+        {"_key": "1", "name": "Movie", "_type": "Book"},
+        {"_key": "2", "name": "Guitar", "_type": "Book"},
+        {"_key": "3", "name": "Dog", "_type": "Book"},
     ]
 )
-expected_col_items = pd.DataFrame(
-    [
-        {"_key": f"{SH_URL}/key/0", "name": "Book"},
-        {"_key": f"{SH_URL}/key/1", "name": "Movie"},
-        {"_key": f"{SH_URL}/key/2", "name": "Guitar"},
-        {"_key": f"{SH_URL}/key/3", "name": "Dog"},
-    ]
+expected_col_df = pd.DataFrame(
+    {"name": ["Book", "Movie", "Guitar", "Dog"]},
+    index=[f"{SH_URL}/key/{i}" for i in [10, 1, 2, 3]],
 )
 
 
 @pytest.mark.parametrize(
-    "count, filters, expand, expected_count",
-    [(1, None, False, 1), (None, None, True, 4)],
+    "count, start, filters, expected_count", [(1, "1", None, 1), (None, None, None, 4)]
 )
-def test_collection_items(mocker, count, filters, expand, expected_count):
+def test_collection_items(mocker, count, start, filters, expected_count):
     mocker.patch(
         "arche.tools.api.get_collection",
         return_value=Collection(len(collection_items)),
@@ -76,18 +72,18 @@ def test_collection_items(mocker, count, filters, expand, expected_count):
         return_value=collection_items[:expected_count],
         autospec=True,
     )
-    items = CollectionItems("key", count, filters, expand)
+    items = CollectionItems("key", count, start, filters)
     assert items.key == "key"
+    assert items.start == start
     assert items.filters == filters
-    assert items.expand == expand
     np.testing.assert_array_equal(items.raw, collection_items[:expected_count])
-    pd.testing.assert_frame_equal(items.df, expected_col_items.iloc[:expected_count])
-    pd.testing.assert_frame_equal(items.flat_df, items.df)
-
-    assert len(items) == len(expected_col_items.iloc[:expected_count])
+    pd.testing.assert_frame_equal(items.df, expected_col_df.iloc[:expected_count])
+    assert len(items) == expected_count
     assert items.limit == len(collection_items)
     assert items.count == expected_count
-    get_items_mock.assert_called_once_with("key", expected_count, 0, filters)
+    get_items_mock.assert_called_once_with(
+        "key", expected_count, 0, start, filters, desc="Fetching from 'key'"
+    )
 
 
 job_items = np.array(
@@ -98,39 +94,29 @@ job_items = np.array(
         {"_key": "112358/13/21/3", "name": "Vivien"},
     ]
 )
-expected_job_items = pd.DataFrame(
-    [
-        {"_key": f"{SH_URL}/112358/13/21/item/0", "name": "Elizabeth"},
-        {"_key": f"{SH_URL}/112358/13/21/item/1", "name": "Margaret"},
-        {"_key": f"{SH_URL}/112358/13/21/item/2", "name": "Yulia"},
-        {"_key": f"{SH_URL}/112358/13/21/item/3", "name": "Vivien"},
-    ]
+expected_job_df = pd.DataFrame(
+    {"name": ["Elizabeth", "Margaret", "Yulia", "Vivien"]},
+    index=[f"{SH_URL}/112358/13/21/item/{i}" for i in range(4)],
 )
 
 
-@pytest.mark.parametrize("start, count, expected_count", [(1, 2, 2)])
-def test_job_items(mocker, start, count, expected_count):
+def test_job_items(mocker):
     mocker.patch("arche.readers.items.JobItems.job", return_value=Job(), autospec=True)
     mocker.patch(
-        "arche.tools.api.get_items",
-        return_value=job_items[start:expected_count],
-        autospec=True,
+        "arche.tools.api.get_items", return_value=job_items[1:3], autospec=True
     )
-    items = JobItems(
-        key="112358/13/21", start=start, count=count, filters=None, expand=False
-    )
-    np.testing.assert_array_equal(items.raw, job_items[start:count])
-    pd.testing.assert_frame_equal(
-        items.df, expected_job_items.iloc[start:count].reset_index(drop=True)
-    )
-    assert items.count == count
+    items = JobItems(key="112358/13/21", count=2, start_index=1, filters=None)
+    np.testing.assert_array_equal(items.raw, job_items[1:3])
+    pd.testing.assert_frame_equal(items.df, expected_job_df.iloc[1:3])
+    assert items.count == 2
+    assert items.start == "112358/13/21/1"
 
 
 def test_process_df():
     df = Items.process_df(
-        pd.DataFrame([[dict(), list(), "NameItem"]], columns=["a", "b", "_type"])
+        pd.DataFrame([[dict(), list(), [10]]], columns=["a", "b", "ages"])
     )
-    exp_df = pd.DataFrame([[np.nan, np.nan, "NameItem"]], columns=["a", "b", "_type"])
+    exp_df = pd.DataFrame([[np.nan, np.nan, [10]]], columns=["a", "b", "ages"])
     pd.testing.assert_frame_equal(df, exp_df)
 
 
@@ -160,78 +146,3 @@ def test_no_categorize():
     df = pd.DataFrame({"a": [i for i in range(99)]})
     Items.categorize(df)
     assert df.select_dtypes(["category"]).empty
-
-
-flat_df_inputs = [
-    (
-        [{"name": "Bob", "alive": True, "_key": 0, "following": None}],
-        {"_key": [0], "alive": [True], "following": [None], "name": ["Bob"]},
-        {"name": "name", "alive": "alive", "_key": "_key", "following": "following"},
-    ),
-    (
-        [{"tags": ["western", "comedy"]}, {"tags": ["drama", "history"]}],
-        {
-            "tags_0": ["western", "drama"],
-            "tags_1": ["comedy", "history"],
-            "_key": ["0", "1"],
-        },
-        {"tags_0": "tags", "tags_1": "tags"},
-    ),
-    (
-        [
-            {
-                "links": [
-                    {"Instagram": "http://www.instagram.com"},
-                    {"ITW website": "http://www.itw.com"},
-                ]
-            }
-        ],
-        {
-            "links_0_Instagram": ["http://www.instagram.com"],
-            "links_1_ITW website": ["http://www.itw.com"],
-            "_key": ["0"],
-        },
-        {"links_0_Instagram": "links", "links_1_ITW website": "links"},
-    ),
-    (
-        [
-            {
-                "links": [
-                    {"Instagram": ["http://www.instagram.com"]},
-                    {"ITW website": ["http://www.itw.com"]},
-                ]
-            }
-        ],
-        {
-            "links_0_Instagram_0": ["http://www.instagram.com"],
-            "links_1_ITW website_0": ["http://www.itw.com"],
-            "_key": ["0"],
-        },
-        {"links_0_Instagram_0": "links", "links_1_ITW website_0": "links"},
-    ),
-    # Corner case https://github.com/amirziai/flatten/issues/48
-    (
-        [
-            {"type": [0], "str": "k", "type_0": 5},
-            {"type": [0, [2, 3]], "str": "s", "type_0": 6},
-        ],
-        {
-            "str": ["k", "s"],
-            "type_0": [5, 6],
-            "type_1_0": [np.nan, 2.0],
-            "type_1_1": [np.nan, 3.0],
-            "_key": ["0", "1"],
-        },
-        {"type_0": "type_0", "str": "str", "type_1_0": "type", "type_1_1": "type"},
-    ),
-]
-
-
-@pytest.mark.parametrize("data, expected_data, expected_map", flat_df_inputs)
-def test_flat_df(data, expected_data, expected_map):
-    i = Items.from_array(data, expand=True)
-    pd.testing.assert_frame_equal(
-        i.flat_df, pd.DataFrame(expected_data), check_like=False
-    )
-    for new, old in expected_map.items():
-        assert i.origin_column_name(new) == old

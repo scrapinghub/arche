@@ -1,19 +1,26 @@
+from typing import Optional
+
 from arche import SH_URL
 from arche.rules.result import Result
 from arche.tools import api, helpers
 from scrapinghub.client.jobs import Job
 
 
-def check_errors(job: Job) -> Result:
-    errors_count = api.get_errors_count(job)
+def check_errors(source_job: Job, target_job: Optional[Job] = None) -> Result:
+    source_errs = api.get_errors_count(source_job)
     result = Result("Job Errors")
-    if errors_count:
-        url = f"{SH_URL}/{job.key}/log?filterType=error&filterAndHigher"
+    if not source_errs:
+        return result
+
+    errors_url = "{}/{}/log?filterType=error&filterAndHigher"
+    result.add_error(
+        f"{source_errs} error(s) - {errors_url.format(SH_URL, source_job.key)}"
+    )
+    if target_job:
+        target_errs = api.get_errors_count(target_job)
         result.add_error(
-            f"{errors_count} error(s)", detailed=f"Errors for {job.key} - {url}"
+            f"{target_errs} error(s) - {errors_url.format(SH_URL, target_job.key)}"
         )
-    else:
-        result.add_info(f"No errors")
     return result
 
 
@@ -23,34 +30,20 @@ def check_outcome(job: Job) -> Result:
     result = Result("Job Outcome")
     if state != "finished" or reason != "finished":
         result.add_error(f"Job has '{state}' state, '{reason}' close reason")
-    else:
-        result.add_info("Finished")
-    return result
-
-
-def check_response_ratio(job: Job) -> Result:
-    requests_number = api.get_requests_count(job)
-    items_count = api.get_items_count(job)
-    result = Result("Responses Per Item Ratio")
-    result.add_info(
-        f"Number of responses / Number of scraped items - "
-        f"{round(requests_number / items_count, 2)}"
-    )
     return result
 
 
 def compare_response_ratio(source_job: Job, target_job: Job) -> Result:
     """Compare request with response per item ratio"""
-    items_count1 = api.get_items_count(source_job)
-    items_count2 = api.get_items_count(target_job)
-
-    source_ratio = round(api.get_requests_count(source_job) / items_count1, 2)
-    target_ratio = round(api.get_requests_count(target_job) / items_count2, 2)
-
-    response_ratio_diff = helpers.ratio_diff(source_ratio, target_ratio)
-    msg = "Difference is {}% - {} and {}".format(
-        response_ratio_diff * 100, source_ratio, target_ratio
+    s_ratio = round(
+        api.get_requests_count(source_job) / api.get_items_count(source_job), 2
     )
+    t_ratio = round(
+        api.get_requests_count(target_job) / api.get_items_count(target_job), 2
+    )
+
+    response_ratio_diff = helpers.ratio_diff(s_ratio, t_ratio)
+    msg = f"Difference is {response_ratio_diff:.2%} - {s_ratio} and {t_ratio}"
 
     result = Result("Compare Responses Per Item Ratio")
     if response_ratio_diff > 0.2:
@@ -60,36 +53,19 @@ def compare_response_ratio(source_job: Job, target_job: Job) -> Result:
     return result
 
 
-def compare_errors(source_job: Job, target_job: Job) -> Result:
-    errors_count1 = api.get_errors_count(source_job)
-    errors_count2 = api.get_errors_count(target_job)
-
-    result = Result("Compare Job Errors")
-    if errors_count1:
-        errors_url = "{}/{}/log?filterType=error&filterAndHigher"
-        detailed_msg = (
-            f"{errors_count1} error(s) for {source_job.key} - "
-            f"{errors_url.format(SH_URL, source_job.key)}\n"
-            f"{errors_count2} error(s) for {target_job.key} - "
-            f"{errors_url.format(SH_URL, target_job.key)}"
-        )
-        result.add_error(f"{errors_count1} and {errors_count2} errors", detailed_msg)
-    return result
-
-
 def compare_number_of_scraped_items(source_job: Job, target_job: Job) -> Result:
-    items_count1 = api.get_items_count(source_job)
-    items_count2 = api.get_items_count(target_job)
-    diff = helpers.ratio_diff(items_count1, items_count2)
+    s_count = api.get_items_count(source_job)
+    t_count = api.get_items_count(target_job)
+    diff = helpers.ratio_diff(s_count, t_count)
     result = Result("Total Scraped Items")
     if 0 <= diff < 0.05:
         if diff == 0:
             msg = "Same number of items"
         else:
-            msg = f"Almost the same number of items - {items_count1} and {items_count2}"
+            msg = f"Almost the same number of items - {s_count} and {t_count}"
         result.add_info(msg)
     else:
-        msg = f"{items_count1} differs from {items_count2} on {diff * 100}%"
+        msg = f"{s_count} differs from {t_count} on {diff:.2%}"
         if 0.05 <= diff < 0.10:
             result.add_warning(msg)
         elif diff >= 0.10:
@@ -98,13 +74,13 @@ def compare_number_of_scraped_items(source_job: Job, target_job: Job) -> Result:
 
 
 def compare_spider_names(source_job: Job, target_job: Job) -> Result:
-    name1 = source_job.metadata.get("spider")
-    name2 = target_job.metadata.get("spider")
+    s_name = source_job.metadata.get("spider")
+    t_name = target_job.metadata.get("spider")
 
     result = Result("Spider Names")
-    if name1 != name2:
+    if s_name != t_name:
         result.add_warning(
-            f"{source_job.key} spider is {name1}, {target_job.key} spider is {name2}"
+            f"{source_job.key} spider is {s_name}, {target_job.key} spider is {t_name}"
         )
     return result
 

@@ -6,7 +6,7 @@ from typing import Optional
 from arche.figures import tables
 from arche.quality_estimation_algorithm import generate_quality_estimation
 from arche.readers.items import CloudItems
-from arche.readers.schema import Schema, Tags
+from arche.readers.schema import Schema
 from arche.report import Report
 import arche.rules.coverage as coverage_rules
 import arche.rules.duplicates as duplicate_rules
@@ -37,7 +37,7 @@ class DataQualityReport:
         self.schema = schema
         self.report = report
         self.figures = []
-        self.appendix = self.create_appendix(self.schema)
+        self.appendix = self.create_appendix(self.schema.raw)
         self.create_figures(items)
         self.plot_to_notebook()
 
@@ -48,18 +48,18 @@ class DataQualityReport:
                 bucket=bucket,
             )
 
-    def create_figures(self, items):
-        tagged_fields = Tags().get(self.schema)
+    def create_figures(self, items: CloudItems):
+        name_url_dups = self.report.results.get(
+            "Duplicates By **name_field, product_url_field** Tags",
+            duplicate_rules.find_by_name_url(items.df, self.schema.tags),
+        )
 
-        dup_items_result = duplicate_rules.check_items(items.df, tagged_fields)
-        no_of_checked_duplicated_items = dup_items_result.items_count
-        no_of_duplicated_items = dup_items_result.err_items_count
+        uniques = self.report.results.get(
+            "Duplicates By **unique** Tag",
+            duplicate_rules.find_by_unique(items.df, self.schema.tags),
+        )
 
-        dup_skus_result = duplicate_rules.check_uniqueness(items.df, tagged_fields)
-        no_of_checked_skus_items = dup_skus_result.items_count
-        no_of_duplicated_skus = dup_skus_result.err_items_count
-
-        price_was_now_result = price_rules.compare_was_now(items.df, tagged_fields)
+        price_was_now_result = price_rules.compare_was_now(items.df, self.schema.tags)
         no_of_price_warns = price_was_now_result.err_items_count
         no_of_checked_price_items = price_was_now_result.items_count
 
@@ -67,21 +67,23 @@ class DataQualityReport:
 
         validation_errors = self.report.results.get(
             "JSON Schema Validation",
-            schema_rules.validate(self.schema, raw_items=items.raw, fast=False),
+            schema_rules.validate(
+                self.schema.raw, raw_items=items.raw, keys=items.df.index, fast=False
+            ),
         ).get_errors_count()
 
         garbage_symbols_result = self.report.results.get(
-            "Garbage Symbols", garbage_symbols(items)
+            "Garbage Symbols", garbage_symbols(items.df)
         )
 
         quality_estimation, field_accuracy = generate_quality_estimation(
             items.job,
             crawlera_user,
             validation_errors,
-            no_of_duplicated_items,
-            no_of_checked_duplicated_items,
-            no_of_duplicated_skus,
-            no_of_checked_skus_items,
+            name_url_dups.err_items_count,
+            name_url_dups.items_count,
+            uniques.err_items_count,
+            uniques.items_count,
             no_of_price_warns,
             no_of_checked_price_items,
             tested=True,
@@ -93,21 +95,21 @@ class DataQualityReport:
         self.rules_summary_table(
             items.df,
             validation_errors,
-            tagged_fields.get("name_field", ""),
-            tagged_fields.get("product_url_field", ""),
-            no_of_checked_duplicated_items,
-            no_of_duplicated_items,
-            tagged_fields.get("unique", []),
-            no_of_checked_skus_items,
-            no_of_duplicated_skus,
-            tagged_fields.get("product_price_field", ""),
-            tagged_fields.get("product_price_was_field", ""),
+            self.schema.tags.get("name_field", ""),
+            self.schema.tags.get("product_url_field", ""),
+            name_url_dups.items_count,
+            name_url_dups.err_items_count,
+            self.schema.tags.get("unique", []),
+            uniques.items_count,
+            uniques.err_items_count,
+            self.schema.tags.get("product_price_field", ""),
+            self.schema.tags.get("product_price_was_field", ""),
             no_of_checked_price_items,
             no_of_price_warns,
             garbage_symbols=garbage_symbols_result,
         )
         self.scraped_fields_coverage(items.df)
-        self.coverage_by_categories(items.df, tagged_fields)
+        self.coverage_by_categories(items.df, self.schema.tags)
 
     def plot_to_notebook(self) -> None:
         IPython.display.clear_output()
@@ -190,16 +192,16 @@ class DataQualityReport:
         )
         self.figures.extend(coverage_res.figures)
 
-    def coverage_by_categories(self, df, tagged_fields):
+    def coverage_by_categories(self, df, tags):
         """Make tables which show the number of items per category,
         set up with a category tag
 
         Args:
             df: a dataframe of items
-            tagged_fields: a dict of tags
+            tags: a dict of tags
         """
-        category_fields = tagged_fields.get("category", list())
-        product_url_fields = tagged_fields.get("product_url_field")
+        category_fields = tags.get("category", list())
+        product_url_fields = tags.get("product_url_field")
 
         for category_field in category_fields:
             cat_table = tables.coverage_by_categories(
