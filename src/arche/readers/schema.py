@@ -4,7 +4,6 @@ import json
 import os
 import pprint
 from typing import Dict, List, Union
-from urllib.parse import urlparse
 import urllib.request
 
 from arche.tools import s3
@@ -117,15 +116,7 @@ class Schema:
 
     @staticmethod
     def from_url(path: str) -> RawSchema:
-        o = urlparse(path)
-        netloc = o.netloc
-        relative_path = o.path.lstrip("/")
-        if not netloc or not relative_path:
-            raise ValueError(f"'{path}' is not an s3 path or URL to a schema")
-        if o.scheme == "s3":
-            return json.loads(s3.get_contents_as_string(netloc, relative_path))
-        else:
-            return json.loads(s3.get_contents(path))
+        return json.loads(s3.get_contents(path))
 
 
 set_auth()
