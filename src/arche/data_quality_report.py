@@ -113,8 +113,7 @@ class DataQualityReport:
 
     def plot_to_notebook(self) -> None:
         IPython.display.clear_output()
-        for fig in self.figures:
-            pio.show(fig)
+        [fig.show() for fig in self.figures]
 
     def plot_html_to_stream(self) -> StringIO:
         output = StringIO()

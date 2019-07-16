@@ -7,9 +7,9 @@ from typing import Dict, List, Optional, Union
 import IPython
 import numpy as np
 import pandas as pd
-from plotly import tools
-import plotly.graph_objs as go
+import plotly.graph_objects as go
 import plotly.io as pio
+from plotly.subplots import make_subplots
 
 Stat = Union[pd.Series, pd.DataFrame]
 COLORS = pio.templates["seaborn"]["layout"]["colorway"]
@@ -166,8 +166,7 @@ class Result:
         IPython.display.clear_output()
         Report.write_summary(self)
         Report.write_rule_details(self, short=short, keys_limit=keys_limit)
-        for f in self.figures:
-            pio.show(f)
+        [f.show() for f in self.figures]
 
     @staticmethod
     def create_figures(stats: List[Stat], name: str) -> List[go.FigureWidget]:
@@ -189,7 +188,7 @@ class Result:
                         y=y,
                         orientation="h",
                         opacity=0.7,
-                        marker=dict(color=colors),
+                        marker_color=colors,
                     )
                 ]
             else:
@@ -292,7 +291,7 @@ class Result:
         ]
         cols = 4
         rows = math.ceil(len(stat) / cols)
-        fig = tools.make_subplots(rows=rows, cols=cols)
+        fig = make_subplots(rows=rows, cols=cols)
         x = 0
         for i, j in itertools.product(range(1, rows + 1), range(1, cols + 1)):
             if x == len(traces):
@@ -300,8 +299,6 @@ class Result:
             fig.append_trace(traces[x], i, j)
             x += 1
 
-        fig.layout.update(height=rows * 300 + 200, width=cols * 300, showlegend=False)
-        layouts = [fig.layout[e] for e in fig.layout if e.startswith("yaxis")]
-        for layout in layouts:
-            layout.tickformat = ".4p"
+        fig.update_layout(height=rows * 300 + 200, width=cols * 300, showlegend=False)
+        fig.update_yaxes(tickformat=".4p")
         return fig

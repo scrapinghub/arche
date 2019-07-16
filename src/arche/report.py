@@ -7,7 +7,6 @@ from colorama import Fore, Style
 from IPython.display import display_markdown
 import numpy as np
 import pandas as pd
-import plotly.io as pio
 
 display_markdown = partial(display_markdown, raw=True)
 
@@ -65,8 +64,7 @@ class Report:
                     f"{result.name} ({result.detailed_messages_count} message(s)):"
                 )
                 self.write_rule_details(result, short, keys_limit)
-            for f in result.figures:
-                pio.show(f)
+            [f.show() for f in result.figures]
             display_markdown("<br>")
 
     @classmethod
