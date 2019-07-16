@@ -137,35 +137,47 @@ def test_compare_scraped_fields(source_cols, target_cols, expected_messages):
 
 
 @pytest.mark.parametrize(
-    "jobs_stats, expected_messages",
+    "jobs_stats, expected_messages, stats",
     [
         (
             [
-                ({"c1": 99, "c2": 150, "c3": 10, "c4": 150}, 100),
-                ({"c1": 101, "c2": 100, "c3": 9, "c4": 150}, 100),
-                ({"c1": 98, "c2": 200, "c3": 11, "c4": 150}, 100),
-                ({"c1": 97, "c2": 175, "c3": 12, "c4": 150}, 100),
-                ({"c1": 200, "c2": 500, "c3": 8}, 200),
+                ("0", {"c1": 99, "c2": 150, "c3": 10, "c4": 150}, 100),
+                ("1", {"c1": 101, "c2": 100, "c3": 9, "c4": 150}, 100),
+                ("2", {"c1": 98, "c2": 200, "c3": 11, "c4": 150}, 100),
+                ("3", {"c1": 97, "c2": 175, "c3": 12, "c4": 150}, 100),
+                ("4", {"c1": 200, "c2": 500, "c3": 8}, 200),
             ],
             {
                 Level.ERROR: [
-                    (
-                        Outcome.FAILED,
-                        (
-                            "c2 - 250.00% coverage deviates on `93.75%` from mean\n"
-                            "c3 - 4.00% coverage deviates on `-6.50%` from mean\n"
-                            "c4 - 0.00% coverage deviates on `-150.00%` from mean"
-                        ),
-                    )
+                    (Outcome.FAILED, "3 field(s) with significant coverage deviation")
                 ]
             },
-        )
+            [
+                pd.DataFrame(
+                    [
+                        [1.5, 1, 2, 1.75, 2.5, 1.5625, 0.426956, 0.9375],
+                        [0.1, 0.09, 0.11, 0.12, 0.04, 0.105, 0.01291, -0.065],
+                        [1.5, 1.5, 1.5, 1.5, 0.0, 1.5, 0, -1.5],
+                    ],
+                    columns=["0", "1", "2", "3", "last", "mean", "std", "last std"],
+                    index=["c2", "c3", "c4"],
+                )
+            ],
+        ),
+        (
+            [
+                ("0", {"c1": 99, "c2": 150, "c3": 10, "c4": 150}, 100),
+                ("1", {"c1": 101, "c2": 145, "c3": 9, "c4": 150}, 100),
+            ],
+            {},
+            None,
+        ),
     ],
 )
-def test_anomalies(jobs_stats: Dict, expected_messages):
+def test_anomalies(jobs_stats: Dict, expected_messages: Dict, stats: pd.DataFrame):
     jobs = [
-        Job(stats={"counts": counts, "totals": {"input_values": input_values}})
-        for counts, input_values in jobs_stats
+        Job(key=key, stats={"counts": counts, "totals": {"input_values": input_values}})
+        for key, counts, input_values in jobs_stats
     ]
     result = cov.anomalies(jobs)
-    assert result == create_result("Anomalies", expected_messages)
+    assert result == create_result("Anomalies", expected_messages, stats=stats)

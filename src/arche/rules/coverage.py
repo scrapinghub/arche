@@ -103,25 +103,37 @@ def compare_scraped_fields(source_df: pd.DataFrame, target_df: pd.DataFrame) -> 
 
 
 def anomalies(jobs: List[Job]) -> Result:
+    """Find fields with significant deviation. Significant means `> 2 * std()`
+
+    Args:
+        jobs: a list of jobs (a sample). The last job is where deviation is checked.
+        It's not included in the sample.
+
+    Returns:
+        A Result with a dataframe of significant deviations
+    """
     result = Result("Anomalies")
     raw_stats = [job.items.stats() for job in jobs]
 
-    stats = (
-        pd.DataFrame(stats["counts"] for stats in raw_stats)
+    counts = (
+        pd.DataFrame(rs.get("counts") for rs in raw_stats)
         .fillna(0)
-        .drop(columns=["_type"])
+        .drop(columns="_type")
     )
-    input_values = [s["totals"]["input_values"] for s in raw_stats]
-    stats = stats.apply(lambda x: x / input_values)
-    last, sample = stats.iloc[-1], stats.iloc[:-1]
-    suspicious_change = last[
-        (last < sample.mean() - 2 * sample.std())
-        | (last > sample.mean() + 2 * sample.std())
-    ].dropna()
-    errors = [
-        f"{i} - {v:.2%} coverage deviates on `{v-sample[i].mean():.2%}` from mean"
-        for i, v in suspicious_change.items()
-    ]
-    if not suspicious_change.empty:
-        result.add_error(Outcome.FAILED, detailed="\n".join(errors))
+    items_len = [rs["totals"]["input_values"] for rs in raw_stats]
+    sample = counts.apply(lambda x: x / items_len)
+    keys = [job.key for job in jobs]
+    sample.index = keys
+    sample.rename(index={keys[-1]: "last"}, inplace=True)
+    sample.loc["mean"] = sample.loc[keys[:-1]].mean()
+    sample.loc["std"] = sample.loc[keys[:-1]].std()
+    sample = sample.T
+    sample["last std"] = sample["last"] - sample["mean"]
+    devs = sample[(sample[f"last std"].abs() > 2 * sample["std"])]
+    devs.name = "Anomalies"
+    errors = f"{len(devs.index)} field(s) with significant coverage deviation"
+    if not devs.empty:
+        result.add_error(Outcome.FAILED, detailed=errors)
+        result.stats = [devs]
+
     return result
