@@ -166,7 +166,8 @@ class Result:
         IPython.display.clear_output()
         Report.write_summary(self)
         Report.write_rule_details(self, short=short, keys_limit=keys_limit)
-        [f.show() for f in self.figures]
+        for f in self.figures:
+            f.show()
 
     @staticmethod
     def create_figures(stats: List[Stat], name: str) -> List[go.FigureWidget]:

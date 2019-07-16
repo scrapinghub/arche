@@ -64,7 +64,8 @@ class Report:
                     f"{result.name} ({result.detailed_messages_count} message(s)):"
                 )
                 self.write_rule_details(result, short, keys_limit)
-            [f.show() for f in result.figures]
+            for f in result.figures:
+                f.show()
             display_markdown("<br>")
 
     @classmethod
