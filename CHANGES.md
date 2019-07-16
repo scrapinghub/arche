@@ -12,6 +12,7 @@ Note that the top-most release is changes in the unreleased master branch on Git
 
 ## [0.3.7dev] (Work In Progress)
 ### Added
+- **Anomalies** to see significant deviations in fields coverage across multiple jobs, #138
 
 
 ## [0.3.6] (2019-07-12)
