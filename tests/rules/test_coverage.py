@@ -183,10 +183,14 @@ def test_compare_scraped_fields(source_cols, target_cols, expected_messages):
         ),
     ],
 )
-def test_anomalies(jobs_stats: Dict, expected_messages: Dict, stats: pd.DataFrame):
+def test_anomalies(
+    mocker, jobs_stats: Dict, expected_messages: Dict, stats: pd.DataFrame
+):
     jobs = [
         Job(key=key, stats={"counts": counts, "totals": {"input_values": input_values}})
         for key, counts, input_values in jobs_stats
     ]
-    result = cov.anomalies(jobs)
+    mocker.patch("arche.rules.coverage.api.get_jobs", return_value=jobs)
+
+    result = cov.anomalies([key for key, *_ in jobs_stats])
     assert result == create_result("Anomalies", expected_messages, stats=stats)

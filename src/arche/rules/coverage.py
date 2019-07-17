@@ -1,7 +1,7 @@
 from typing import List
 
 from arche.rules.result import Result, Outcome
-from arche.tools.api import get_items_count
+import arche.tools.api as api
 import pandas as pd
 from scrapinghub.client.jobs import Job
 
@@ -48,8 +48,8 @@ def get_difference(
     f_counts = (
         pd.DataFrame(
             {
-                source_job.key: source_job.items.stats().get("counts", None),
-                target_job.key: target_job.items.stats().get("counts", None),
+                source_job.key: api.get_counts(source_job),
+                target_job.key: api.get_counts(target_job),
             }
         )
         .drop(index=["_type"])
@@ -57,10 +57,10 @@ def get_difference(
         .sort_values(by=[source_job.key], kind="mergesort")
     )
     f_counts[source_job.key] = f_counts[source_job.key].divide(
-        get_items_count(source_job)
+        api.get_items_count(source_job)
     )
     f_counts[target_job.key] = f_counts[target_job.key].divide(
-        get_items_count(target_job)
+        api.get_items_count(target_job)
     )
     f_counts.name = "Coverage from job stats fields counts"
     result.stats.append(f_counts)
@@ -102,18 +102,18 @@ def compare_scraped_fields(source_df: pd.DataFrame, target_df: pd.DataFrame) -> 
     return result
 
 
-def anomalies(jobs: List[Job]) -> Result:
-    """Find fields with significant deviation. Significant means `> 2 * std()`
+def anomalies(jobs_keys: List[str]) -> Result:
+    """Find fields with significant deviation. Significant means `dev > 2 * std()`
 
     Args:
-        jobs: a list of jobs (a sample). The last job is where deviation is checked.
+        jobs_keys: a list of jobs keys (a sample). The last job is where deviation is checked.
         It's not included in the sample.
 
     Returns:
         A Result with a dataframe of significant deviations
     """
     result = Result("Anomalies")
-    raw_stats = [job.items.stats() for job in jobs]
+    raw_stats = [job.items.stats() for job in api.get_jobs(jobs_keys)]
 
     counts = (
         pd.DataFrame(rs.get("counts") for rs in raw_stats)
@@ -122,11 +122,10 @@ def anomalies(jobs: List[Job]) -> Result:
     )
     items_len = [rs["totals"]["input_values"] for rs in raw_stats]
     sample = counts.apply(lambda x: x / items_len)
-    keys = [job.key for job in jobs]
-    sample.index = keys
-    sample.rename(index={keys[-1]: "last"}, inplace=True)
-    sample.loc["mean"] = sample.loc[keys[:-1]].mean()
-    sample.loc["std"] = sample.loc[keys[:-1]].std()
+    sample.index = jobs_keys
+    sample.rename(index={jobs_keys[-1]: "last"}, inplace=True)
+    sample.loc["mean"] = sample.loc[jobs_keys[:-1]].mean()
+    sample.loc["std"] = sample.loc[jobs_keys[:-1]].std()
     sample = sample.T
     sample["last deviation"] = sample["last"] - sample["mean"]
     devs = sample[(sample["last deviation"].abs() > 2 * sample["std"])]
