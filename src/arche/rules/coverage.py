@@ -128,8 +128,8 @@ def anomalies(jobs: List[Job]) -> Result:
     sample.loc["mean"] = sample.loc[keys[:-1]].mean()
     sample.loc["std"] = sample.loc[keys[:-1]].std()
     sample = sample.T
-    sample["last std"] = sample["last"] - sample["mean"]
-    devs = sample[(sample[f"last std"].abs() > 2 * sample["std"])]
+    sample["last deviation"] = sample["last"] - sample["mean"]
+    devs = sample[(sample["last deviation"].abs() > 2 * sample["std"])]
     devs.name = "Anomalies"
     errors = f"{len(devs.index)} field(s) with significant coverage deviation"
     if not devs.empty:

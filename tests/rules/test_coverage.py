@@ -159,7 +159,16 @@ def test_compare_scraped_fields(source_cols, target_cols, expected_messages):
                         [0.1, 0.09, 0.11, 0.12, 0.04, 0.105, 0.01291, -0.065],
                         [1.5, 1.5, 1.5, 1.5, 0.0, 1.5, 0, -1.5],
                     ],
-                    columns=["0", "1", "2", "3", "last", "mean", "std", "last std"],
+                    columns=[
+                        "0",
+                        "1",
+                        "2",
+                        "3",
+                        "last",
+                        "mean",
+                        "std",
+                        "last deviation",
+                    ],
                     index=["c2", "c3", "c4"],
                 )
             ],
