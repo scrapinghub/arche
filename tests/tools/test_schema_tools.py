@@ -91,11 +91,11 @@ def test_create_json_schema(mocker, get_job, get_raw_items):
             "'s' does not match any of the regexes: '^spec(_\\w.+){1,}$'",
         ),
         (
-            "Additional properties are not allowed ('delivery_options')",
+            "Additional properties are not allowed ('price_was', 'stock' were unexpected)",
             [],
             [],
             "additionalProperties",
-            "Additional properties are not allowed",
+            "Additional properties are not allowed ('price_was', 'stock' were unexpected)",
         ),
         (
             "https://sto' is not a 'date-time'",

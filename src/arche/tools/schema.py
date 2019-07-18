@@ -143,7 +143,7 @@ def format_validation_message(
             return f"'schema/{schema_path}' failed"
 
     if "Additional properties are not allowed" in error_msg:
-        return error_msg[: error_msg.index(" (")]
+        return error_msg
 
     if not str_path:
         return error_msg
