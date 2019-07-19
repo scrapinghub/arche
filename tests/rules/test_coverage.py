@@ -164,10 +164,10 @@ def test_compare_scraped_fields(source_cols, target_cols, expected_messages):
                         "1",
                         "2",
                         "3",
-                        "last",
+                        "target",
                         "mean",
                         "std",
-                        "last deviation",
+                        "target deviation",
                     ],
                     index=["c2", "c3", "c4"],
                 )
@@ -191,6 +191,5 @@ def test_anomalies(
         for key, counts, input_values in jobs_stats
     ]
     mocker.patch("arche.rules.coverage.api.get_jobs", return_value=jobs)
-
-    result = cov.anomalies([key for key, *_ in jobs_stats])
+    result = cov.anomalies(jobs_stats[-1][0], [key for key, *_ in jobs_stats[:-1]])
     assert result == create_result("Anomalies", expected_messages, stats=stats)

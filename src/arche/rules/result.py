@@ -278,7 +278,7 @@ class Result:
         Returns:
             A figure with box subplots
         """
-        stat = stat.drop(columns=["std", "mean", "last deviation"])
+        stat = stat.drop(columns=["std", "mean", "target deviation"])
         traces = [
             go.Box(
                 y=row[1],

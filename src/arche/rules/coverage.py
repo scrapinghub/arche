@@ -102,18 +102,18 @@ def compare_scraped_fields(source_df: pd.DataFrame, target_df: pd.DataFrame) -> 
     return result
 
 
-def anomalies(jobs_keys: List[str]) -> Result:
+def anomalies(target: str, sample: List[str]) -> Result:
     """Find fields with significant deviation. Significant means `dev > 2 * std()`
 
     Args:
-        jobs_keys: a list of jobs keys (a sample). The last job is where deviation is checked.
-        It's not included in the sample.
+        target: where to look for anomalies
+        sample: a list of jobs keys to infer metadata from
 
     Returns:
         A Result with a dataframe of significant deviations
     """
     result = Result("Anomalies")
-    raw_stats = [job.items.stats() for job in api.get_jobs(jobs_keys)]
+    raw_stats = [job.items.stats() for job in api.get_jobs(sample + [target])]
 
     counts = (
         pd.DataFrame(rs.get("counts") for rs in raw_stats)
@@ -121,14 +121,14 @@ def anomalies(jobs_keys: List[str]) -> Result:
         .drop(columns="_type")
     )
     items_len = [rs["totals"]["input_values"] for rs in raw_stats]
-    sample = counts.apply(lambda x: x / items_len)
-    sample.index = jobs_keys
-    sample.rename(index={jobs_keys[-1]: "last"}, inplace=True)
-    sample.loc["mean"] = sample.loc[jobs_keys[:-1]].mean()
-    sample.loc["std"] = sample.loc[jobs_keys[:-1]].std()
-    sample = sample.T
-    sample["last deviation"] = sample["last"] - sample["mean"]
-    devs = sample[(sample["last deviation"].abs() > 2 * sample["std"])]
+    stats = counts.apply(lambda x: x / items_len)
+    stats.index = sample + [target]
+    stats.rename(index={target: "target"}, inplace=True)
+    stats.loc["mean"] = stats.loc[sample].mean()
+    stats.loc["std"] = stats.loc[sample].std()
+    stats = stats.T
+    stats["target deviation"] = stats["target"] - stats["mean"]
+    devs = stats[(stats["target deviation"].abs() > 2 * stats["std"])]
     devs.name = "Anomalies"
     errors = f"{len(devs.index)} field(s) with significant coverage deviation"
     if not devs.empty:
