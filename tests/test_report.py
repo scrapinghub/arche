@@ -95,19 +95,18 @@ def test_write_rule_details(capsys, message, expected_details):
             {
                 "err1": ["1"],
                 "err2": ["2"],
-                "err3": ["3"],
-                "err4": ["4"],
-                "err5": ["5", "7"],
-                "err6": ["6", "7"],
+                "err3": ["3", "4"],
+                "err4": ["5", "6", "7"],
+                "err5": ["7", "8"],
             },
             True,
             1,
             [
+                "3 items affected - err4: 5, 6, 7",
+                "2 items affected - err3: 3, 4",
+                "2 items affected - err5: 7, 8",
                 "1 items affected - err1: 1",
                 "1 items affected - err2: 2",
-                "1 items affected - err3: 3",
-                "1 items affected - err4: 4",
-                "2 items affected - err5: 5, 7",
             ],
         ),
         (
@@ -124,7 +123,7 @@ def test_write_detailed_errors(mocker, errors, short, keys_limit, expected_messa
     md_mock = mocker.patch("arche.report.display_markdown", autospec=True)
     Report.write_detailed_errors(errors, short, keys_limit)
     calls = [mocker.call(m, raw=True) for m in expected_messages]
-    md_mock.assert_has_calls(calls, any_order=True)
+    md_mock.assert_has_calls(calls)
 
 
 @pytest.mark.parametrize(

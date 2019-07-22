@@ -82,11 +82,12 @@ class Report:
 
     @classmethod
     def write_detailed_errors(cls, errors: Dict, short: bool, keys_limit: int) -> None:
+        error_messages = sorted(errors.items(), key=lambda i: len(i[1]), reverse=True)
+
         if short:
             keys_limit = 5
-            error_messages = list(errors.items())[:5]
-        else:
-            error_messages = list(errors.items())
+            error_messages = error_messages[:5]
+
         for attribute, keys in error_messages:
             if isinstance(keys, list):
                 keys = pd.Series(keys)
