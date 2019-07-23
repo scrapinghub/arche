@@ -1,5 +1,7 @@
-from arche.rules.result import Result
-from arche.tools.api import get_items_count
+from typing import List
+
+from arche.rules.result import Result, Outcome
+import arche.tools.api as api
 import pandas as pd
 from scrapinghub.client.jobs import Job
 
@@ -43,22 +45,22 @@ def get_difference(
         A Result instance with huge dif and stats with fields counts coverage and dif
     """
     result = Result("Coverage Difference")
-
     f_counts = (
         pd.DataFrame(
             {
-                source_job.key: source_job.items.stats().get("counts", None),
-                target_job.key: target_job.items.stats().get("counts", None),
+                source_job.key: api.get_counts(source_job),
+                target_job.key: api.get_counts(target_job),
             }
         )
+        .drop(index=["_type"])
         .fillna(0)
         .sort_values(by=[source_job.key], kind="mergesort")
     )
     f_counts[source_job.key] = f_counts[source_job.key].divide(
-        get_items_count(source_job)
+        api.get_items_count(source_job)
     )
     f_counts[target_job.key] = f_counts[target_job.key].divide(
-        get_items_count(target_job)
+        api.get_items_count(target_job)
     )
     f_counts.name = "Coverage from job stats fields counts"
     result.stats.append(f_counts)
@@ -96,5 +98,41 @@ def compare_scraped_fields(source_df: pd.DataFrame, target_df: pd.DataFrame) -> 
     new_fields = source_df.columns.difference(target_df.columns)
     if new_fields.array:
         result.add_info(f"New - {', '.join(new_fields)}")
+
+    return result
+
+
+def anomalies(target: str, sample: List[str]) -> Result:
+    """Find fields with significant deviation. Significant means `dev > 2 * std()`
+
+    Args:
+        target: where to look for anomalies
+        sample: a list of jobs keys to infer metadata from
+
+    Returns:
+        A Result with a dataframe of significant deviations
+    """
+    result = Result("Anomalies")
+    raw_stats = [job.items.stats() for job in api.get_jobs(sample + [target])]
+
+    counts = (
+        pd.DataFrame(rs.get("counts") for rs in raw_stats)
+        .fillna(0)
+        .drop(columns="_type")
+    )
+    items_len = [rs["totals"]["input_values"] for rs in raw_stats]
+    stats = counts.apply(lambda x: x / items_len)
+    stats.index = sample + [target]
+    stats.rename(index={target: "target"}, inplace=True)
+    stats.loc["mean"] = stats.loc[sample].mean()
+    stats.loc["std"] = stats.loc[sample].std()
+    stats = stats.T
+    stats["target deviation"] = stats["target"] - stats["mean"]
+    devs = stats[(stats["target deviation"].abs() > 2 * stats["std"])]
+    devs.name = "Anomalies"
+    errors = f"{len(devs.index)} field(s) with significant coverage deviation"
+    if not devs.empty:
+        result.add_error(Outcome.FAILED, detailed=errors)
+        result.stats = [devs]
 
     return result

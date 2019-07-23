@@ -3,7 +3,7 @@ from functools import partial
 import math
 from multiprocessing import Pool
 import time
-from typing import List, Tuple, Optional, Union
+from typing import Dict, List, Tuple, Optional, Union
 
 from arche.tools import helpers
 from dateutil.relativedelta import relativedelta
@@ -18,6 +18,10 @@ Filters = List[Tuple[str, str, str]]
 
 def get_job(key: str) -> Job:
     return ScrapinghubClient().get_job(key)
+
+
+def get_jobs(keys: List[str]) -> List[Job]:
+    return [get_job(key) for key in keys]
 
 
 def get_collection(key):
@@ -44,6 +48,10 @@ def get_job_close_reason(job):
 
 def get_items_count(job):
     return job.items.stats().get("totals", {}).get("input_values", 0)
+
+
+def get_counts(job: Job) -> Optional[Dict[str, int]]:
+    return job.items.stats().get("counts", None)
 
 
 def get_finish_time_difference_in_days(job1, job2):
