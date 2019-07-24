@@ -1,7 +1,7 @@
 from arche import SH_URL
 from arche.tools import api, helpers
 import pandas as pd
-import plotly.graph_objs as go
+import plotly.graph_objects as go
 
 
 def score_table(quality_estimation, field_accuracy) -> go.FigureWidget:

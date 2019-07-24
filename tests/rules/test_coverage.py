@@ -1,5 +1,7 @@
+from typing import Dict
+
 import arche.rules.coverage as cov
-from arche.rules.result import Level
+from arche.rules.result import Level, Outcome
 from conftest import create_result, create_named_df, Job
 import pandas as pd
 import pytest
@@ -132,3 +134,62 @@ def test_compare_scraped_fields(source_cols, target_cols, expected_messages):
         pd.DataFrame([], columns=source_cols), pd.DataFrame([], columns=target_cols)
     )
     assert result == create_result("Scraped Fields", expected_messages)
+
+
+@pytest.mark.parametrize(
+    "jobs_stats, expected_messages, stats",
+    [
+        (
+            [
+                ("0", {"c1": 99, "c2": 150, "c3": 10, "c4": 150}, 100),
+                ("1", {"c1": 101, "c2": 100, "c3": 9, "c4": 150}, 100),
+                ("2", {"c1": 98, "c2": 200, "c3": 11, "c4": 150}, 100),
+                ("3", {"c1": 97, "c2": 175, "c3": 12, "c4": 150}, 100),
+                ("4", {"c1": 200, "c2": 500, "c3": 8}, 200),
+            ],
+            {
+                Level.ERROR: [
+                    (Outcome.FAILED, "3 field(s) with significant coverage deviation")
+                ]
+            },
+            [
+                pd.DataFrame(
+                    [
+                        [1.5, 1, 2, 1.75, 2.5, 1.5625, 0.426956, 0.9375],
+                        [0.1, 0.09, 0.11, 0.12, 0.04, 0.105, 0.01291, -0.065],
+                        [1.5, 1.5, 1.5, 1.5, 0.0, 1.5, 0, -1.5],
+                    ],
+                    columns=[
+                        "0",
+                        "1",
+                        "2",
+                        "3",
+                        "target",
+                        "mean",
+                        "std",
+                        "target deviation",
+                    ],
+                    index=["c2", "c3", "c4"],
+                )
+            ],
+        ),
+        (
+            [
+                ("0", {"c1": 99, "c2": 150, "c3": 10, "c4": 150}, 100),
+                ("1", {"c1": 101, "c2": 145, "c3": 9, "c4": 150}, 100),
+            ],
+            {},
+            None,
+        ),
+    ],
+)
+def test_anomalies(
+    mocker, jobs_stats: Dict, expected_messages: Dict, stats: pd.DataFrame
+):
+    jobs = [
+        Job(key=key, stats={"counts": counts, "totals": {"input_values": input_values}})
+        for key, counts, input_values in jobs_stats
+    ]
+    mocker.patch("arche.rules.coverage.api.get_jobs", return_value=jobs)
+    result = cov.anomalies(jobs_stats[-1][0], [key for key, *_ in jobs_stats[:-1]])
+    assert result == create_result("Anomalies", expected_messages, stats=stats)

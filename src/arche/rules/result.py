@@ -1,12 +1,15 @@
 from dataclasses import dataclass, field
 from enum import Enum
+import itertools
+import math
 from typing import Dict, List, Optional, Union
 
 import IPython
 import numpy as np
 import pandas as pd
-import plotly.graph_objs as go
+import plotly.graph_objects as go
 import plotly.io as pio
+from plotly.subplots import make_subplots
 
 Stat = Union[pd.Series, pd.DataFrame]
 COLORS = pio.templates["seaborn"]["layout"]["colorway"]
@@ -21,6 +24,7 @@ class Level(Enum):
 class Outcome(Enum):
     SKIPPED = 0
     PASSED = 1
+    FAILED = 2
 
 
 @dataclass
@@ -163,7 +167,7 @@ class Result:
         Report.write_summary(self)
         Report.write_rule_details(self, short=short, keys_limit=keys_limit)
         for f in self.figures:
-            pio.show(f)
+            f.show()
 
     @staticmethod
     def create_figures(stats: List[Stat], name: str) -> List[go.FigureWidget]:
@@ -172,6 +176,8 @@ class Result:
             layout = Result.get_layout("Category fields", len(stats))
             layout.barmode = "stack"
             return [go.FigureWidget(data, layout)]
+        if name == "Anomalies":
+            return [Result.build_box_subplots(stats[0])]
         figures = []
         for stat in stats:
             y = stat.index.values.astype(str)
@@ -183,7 +189,7 @@ class Result:
                         y=y,
                         orientation="h",
                         opacity=0.7,
-                        marker=dict(color=colors),
+                        marker_color=colors,
                     )
                 ]
             else:
@@ -211,7 +217,7 @@ class Result:
     def build_stack_bar_data(values_counts: List[pd.Series]) -> List[go.Bar]:
         """Create data for plotly stack bar chart with consistent colors between
         bars. Each bar values have indexes unique to the bar, without any correlation
-        to other obars.
+        to other bars.
 
         Args:
             values_counts: an array of value_counts series
@@ -261,3 +267,39 @@ class Result:
                 )
             )
         return annotations
+
+    @staticmethod
+    def build_box_subplots(stat: pd.DataFrame) -> go.Figure:
+        """Create a figure with box subplots showing fields coverages for jobs.
+
+        Args:
+            stat: a dataframe with field coverages
+
+        Returns:
+            A figure with box subplots
+        """
+        stat = stat.drop(columns=["std", "mean", "target deviation"])
+        traces = [
+            go.Box(
+                y=row[1],
+                name=row[0],
+                boxpoints="all",
+                jitter=0.3,
+                boxmean="sd",
+                hoverinfo="y",
+            )
+            for row in stat.iterrows()
+        ]
+        cols = 4
+        rows = math.ceil(len(stat) / cols)
+        fig = make_subplots(rows=rows, cols=cols)
+        x = 0
+        for i, j in itertools.product(range(1, rows + 1), range(1, cols + 1)):
+            if x == len(traces):
+                break
+            fig.append_trace(traces[x], i, j)
+            x += 1
+
+        fig.update_layout(height=rows * 300 + 200, width=cols * 300, showlegend=False)
+        fig.update_yaxes(tickformat=".4p")
+        return fig
