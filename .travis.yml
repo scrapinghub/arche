@@ -13,7 +13,6 @@ install:
   - pip install tox-travis pip -U --no-cache-dir
 script:
   - tox
-  - tox -e 
   - HOME=$HOME tox -e docs
 after_success:
   - tox -e codecov
