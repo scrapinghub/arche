@@ -21,9 +21,7 @@
         },
         "availability": {
             "description": "class Availability(Enum):UNKNOWN = 0 IN_STOCK = 1 OUT_OF_STOCK = 2 IN_STORE_ONLY = 3 BACKORDERED = 4 SHIP_FROM_STORE = 5 LIMITED_DELIVERY = 6",
-            "type": "integer",
-            "enum": [0, 1, 2, 3, 4, 5, 6],
-            "tag": ["category"]
+            "enum": [0, 1, 2, 3, 4, 5, 6]
         },
         "url": {
             "description": "The target url being scraped",
@@ -67,7 +65,6 @@
         },
         "uom": {
             "description": "Units of measure. Ideally normalized, e.g. 5.5 Oz (Pack of 24) - uom is oz, quantity is 132",
-            "type": "string",
             "enum": ["pill", "tab", "ml", "mg", "g", "lb", "ds", "cnt", "pk",
                 "oz", "cc", "fl-oz", "cap", "each", "ct", "gm",
                 "case", "pack", "l"
