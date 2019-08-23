@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 import itertools
 import math
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional, Set, Union
 
 import IPython
 import numpy as np
@@ -34,11 +34,20 @@ class Message:
         summary: a concise outcome
         detailed: detailed message
         errors: error messages grouped by attributes
+        _err_keys: keys of items with error
     """
 
     summary: str
     detailed: Optional[str] = None
-    errors: Optional[dict] = None
+    errors: Optional[Dict[str, Set]] = None
+    _err_keys: Optional[Set[Union[str, int]]] = field(default_factory=set)
+
+    @property
+    def err_keys(self):
+        if not self._err_keys and self.errors:
+            self._err_keys = set(itertools.chain.from_iterable(self.errors.values()))
+
+        return self._err_keys
 
 
 @dataclass
@@ -47,8 +56,9 @@ class Result:
     Args:
         name: a rule name
         messages: messages separated by severity
-        _stats: pandas data to plot
+        stats: pandas data to plot
         items_count: the count of verified items
+        err_keys: keys of all error items
         err_items_count: the number of error items
         _figures: a list of graphs created from stats
     """
@@ -57,7 +67,8 @@ class Result:
     messages: Dict[Level, List[Message]] = field(default_factory=dict)
     _stats: Optional[List[Stat]] = field(default_factory=list)
     items_count: Optional[int] = 0
-    err_items_count: Optional[int] = 0
+    _err_keys: Set[Union[str, int]] = field(default_factory=set)
+    _err_items_count: Optional[int] = 0
     _figures: Optional[List[go.FigureWidget]] = field(default_factory=list)
 
     def __eq__(self, other):
@@ -103,6 +114,20 @@ class Result:
     @stats.setter
     def stats(self, value):
         self._stats = value
+
+    @property
+    def err_keys(self):
+        if not self._err_keys:
+            err_messages = self.messages.get(Level.ERROR)
+            if err_messages:
+                self._err_keys = set(
+                    itertools.chain.from_iterable([m.err_keys for m in err_messages])
+                )
+        return self._err_keys
+
+    @property
+    def err_items_count(self):
+        return len(self.err_keys)
 
     @property
     def figures(self):

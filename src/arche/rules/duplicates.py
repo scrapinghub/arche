@@ -34,7 +34,6 @@ def find_by_unique(df: pd.DataFrame, tagged_fields: TaggedFields) -> Result:
                 errors=errors,
             )
 
-    result.err_items_count = len(err_keys)
     return result
 
 
@@ -51,7 +50,6 @@ def find_by(df: pd.DataFrame, columns: List[str]) -> Result:
     if duplicates.empty:
         return result
 
-    result.err_items_count = len(duplicates)
     errors = {}
     for _, d in duplicates.groupby(columns):
         msgs = [f"'{d[c].iloc[0]}' `{c}`" for c in columns]
