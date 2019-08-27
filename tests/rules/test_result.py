@@ -55,13 +55,12 @@ def test_tensors_not_equal(source, target):
 
 
 @pytest.mark.parametrize(
-    "message, stats, exp_md_output, exp_txt_outputs",
+    "message, stats, outputs",
     [
         (
             {Level.INFO: [("summary", "very detailed message")]},
             [pd.Series([1, 2], name="Fields coverage")],
-            "rule name here:",
-            ["\tsummary", "very detailed message"],
+            ["rule name here:", "\tsummary", "very detailed message"],
         ),
         (
             {Level.INFO: [("summary",)]},
@@ -70,20 +69,17 @@ def test_tensors_not_equal(source, target):
                     {"s": [0.25]}, index=["us"], name="Coverage for boolean fields"
                 )
             ],
-            "rule name here:",
-            ["\tsummary"],
+            ["rule name here:", "\tsummary"],
         ),
     ],
 )
-def test_show(mocker, capsys, message, stats, exp_md_output, exp_txt_outputs):
+def test_show(mocker, capsys, message, stats, outputs):
     mock_pio_show = mocker.patch("plotly.io.show", autospec=True)
     mocked_md = mocker.patch("arche.report.display_markdown", autospec=True)
-    mocked_print = mocker.patch("builtins.print", autospec=True)
     res = create_result("rule name here", message, stats=stats)
     res.show()
     mock_pio_show.assert_called_once_with(res.figures[0])
-    mocked_md.assert_called_with(exp_md_output)
-    mocked_print.assert_has_calls(mocker.call(o) for o in exp_txt_outputs)
+    mocked_md.assert_has_calls(mocker.call(o) for o in outputs)
 
 
 @pytest.mark.parametrize(

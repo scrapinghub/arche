@@ -3,7 +3,6 @@ from typing import Dict
 
 from arche import SH_URL
 from arche.rules.result import Level, Outcome, Result
-from colorama import Fore, Style
 from IPython.display import display_markdown
 import numpy as np
 import pandas as pd
@@ -19,8 +18,8 @@ class Report:
         self.results[result.name] = result
 
     @staticmethod
-    def write_color_text(text: str, color: Fore = Fore.RED) -> None:
-        print(color + text + Style.RESET_ALL)
+    def write_color_text(text: str, color: str = "#8A0808") -> None:
+        display_markdown(f"<font style='color:{color};'>{text}</font>")
 
     @staticmethod
     def write_rule_name(rule_name: str) -> None:
@@ -28,7 +27,7 @@ class Report:
 
     @classmethod
     def write(cls, text: str) -> None:
-        print(text)
+        display_markdown(text)
 
     def write_summaries(self) -> None:
         for result in self.results.values():
@@ -51,9 +50,9 @@ class Report:
         if level == Level.ERROR:
             cls.write_color_text(msg)
         elif level == Level.WARNING:
-            cls.write_color_text(msg, color=Fore.YELLOW)
+            cls.write_color_text(msg, color="#CCCC00")
         elif outcome == Outcome.PASSED.name:
-            cls.write_color_text(msg, color=Fore.GREEN)
+            cls.write_color_text(msg, color="#0B6121")
         else:
             cls.write(msg)
 
@@ -76,7 +75,7 @@ class Report:
             for rule_msg in rule_msgs:
                 if rule_msg.errors:
                     cls.write_detailed_errors(rule_msg.errors, short, keys_limit)
-                elif rule_msg.detailed:
+                if rule_msg.detailed:
                     cls.write(rule_msg.detailed)
 
     @classmethod

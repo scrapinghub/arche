@@ -49,18 +49,18 @@ def test_write_details(mocker, get_df, capsys, messages, expected_details):
 
 @pytest.mark.parametrize(
     "message, expected_details",
-    [
-        (
-            {Level.INFO: [("summary", "very detailed message")]},
-            "very detailed message\n",
-        ),
-        ({Level.INFO: [("summary",)]}, ""),
-    ],
+    [({Level.INFO: [("summary", "very detailed message")]}, "very detailed message")],
 )
 def test_write_rule_details(capsys, message, expected_details):
     outcome = create_result("rule name here", message)
     Report.write_rule_details(outcome)
-    assert capsys.readouterr().out == expected_details
+    assert capsys.readouterr().out == f"{{'text/markdown': '{expected_details}'}}\n"
+
+
+def test_write_none_rule_details(capsys):
+    outcome = create_result("rule name here", {Level.INFO: [("summary",)]})
+    Report.write_rule_details(outcome)
+    assert not capsys.readouterr().out
 
 
 @pytest.mark.parametrize(
