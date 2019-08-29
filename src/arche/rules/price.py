@@ -80,7 +80,6 @@ def compare_prices_for_same_urls(
         return result
 
     url_field = url_field[0]
-    price_field = tagged_fields.get("product_price_field")
 
     source_df = source_df.dropna(subset=[url_field])
     target_df = target_df.dropna(subset=[url_field])
@@ -95,19 +94,20 @@ def compare_prices_for_same_urls(
         url_field
     ]
 
-    missing_detailed_messages = []
-    for url in missing_urls:
-        key = target_df.loc[target_df[url_field] == url].index[0]
-        missing_detailed_messages.append(f"Missing {url} from {key}")
+    errors = {}
+    for url, group in missing_urls.groupby(missing_urls):
+        errors[f"Missing {url}"] = pd.Series(group.index)
 
-    result.add_info(
-        f"{len(missing_urls)} urls missing from the tested job",
-        detailed="\n".join(missing_detailed_messages),
-    )
-    result.add_info(f"{len(new_urls)} new urls in the tested job")
+    if not missing_urls.empty:
+        result.add_info(
+            f"{len(missing_urls)} urls missing from the tested job", errors=errors
+        )
+    if not new_urls.empty:
+        result.add_info(f"{len(new_urls)} new urls in the tested job")
     result.add_info(f"{len(same_urls)} same urls in both jobs")
 
     diff_prices_count = 0
+    price_field = tagged_fields.get("product_price_field")
     if not price_field:
         result.add_info("product_price_field tag is not set")
     else:
@@ -224,21 +224,16 @@ def compare_prices_for_same_names(
         ~(target_df[name_field].isin(source_df[name_field].values))
     ][name_field]
 
-    detailed_messages = []
-    for name in missing_names:
-        target_key = target_df.loc[target_df[name_field] == name].index[0]
-        msg = f"Missing {name} from {target_key}"
-        if product_url_field:
-            url = target_df.loc[target_df[name_field] == name][product_url_field].iloc[
-                0
-            ]
-            detailed_messages.append(f"{msg}\n{url}")
+    errors = {}
+    for name, group in missing_names.groupby(missing_names):
+        errors[f"Missing {name}"] = pd.Series(group.index)
 
-    result.add_info(
-        f"{len(missing_names)} names missing from the tested job",
-        detailed="\n".join(detailed_messages),
-    )
-    result.add_info(f"{len(new_names)} new names in the tested job")
+    if missing_names:
+        result.add_info(
+            f"{len(missing_names)} names missing from the tested job", errors=errors
+        )
+    if new_names:
+        result.add_info(f"{len(new_names)} new names in the tested job")
     result.add_info(f"{len(same_names)} same names in both jobs")
 
     price_tag = "product_price_field"

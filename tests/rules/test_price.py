@@ -70,11 +70,7 @@ compare_prices_inputs = [
         {"price": [1.15, "2.3", 6], "url": ["http://1", "http://2", np.nan]},
         {"product_price_field": ["price"], "product_url_field": ["url"]},
         {
-            Level.INFO: [
-                ("0 urls missing from the tested job", ""),
-                ("0 new urls in the tested job",),
-                ("2 same urls in both jobs",),
-            ],
+            Level.INFO: [("2 same urls in both jobs",)],
             Level.ERROR: [
                 (
                     "2 checked, 2 errors",
