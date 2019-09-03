@@ -30,6 +30,7 @@ class Report:
         display_markdown(text)
 
     def write_summaries(self) -> None:
+        display_markdown(f"# Executed {len(self.results)} rules")
         for result in self.results.values():
             self.write_summary(result)
 
@@ -57,15 +58,18 @@ class Report:
             cls.write(msg)
 
     def write_details(self, short: bool = False, keys_limit: int = 10) -> None:
+        display_markdown("# Details")
         for result in self.results.values():
             if result.detailed_messages_count:
                 display_markdown(
                     f"{result.name} ({result.detailed_messages_count} message(s)):"
                 )
                 self.write_rule_details(result, short, keys_limit)
+                display_markdown("<br>")
+        display_markdown("# Plots")
+        for result in self.results.values():
             for f in result.figures:
                 f.show()
-            display_markdown("<br>")
 
     @classmethod
     def write_rule_details(

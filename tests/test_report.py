@@ -21,15 +21,19 @@ import pytest
                 ),
             ],
             [
+                "# Details",
                 "rule name here (1 message(s)):",
+                "very detailed message",
                 "<br>",
                 "other result there (1 message(s)):",
+                "other detailed message",
                 "<br>",
+                "# Plots",
             ],
         ),
         (
             [("everything is fine", {Level.INFO: [("summary",)]})],
-            ["everything is fine (1 message(s)):"],
+            ["# Details", "# Plots"],
         ),
     ],
 )

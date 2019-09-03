@@ -162,7 +162,6 @@ class Result:
         return (
             self.get_errors_count()
             or self.get_detailed_messages_count()
-            or len(self.stats)
         )
 
     def get_errors_count(self):
