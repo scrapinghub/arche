@@ -144,10 +144,6 @@ def test_arche_dataframe(mocker):
         assert a.report.results.get(e)
     assert a.report.results.get("JSON Schema Validation").errors is None
     assert (
-        a.report.results.get("JSON Schema Validation").info[0].summary
-        == "2 items were checked, 0 error(s)"
-    )
-    assert (
         Arche(
             pd.DataFrame({"_key": ["0", "1"], "c": [0, 1]}),
             schema={"properties": {"c": {"type": "string"}}},
@@ -226,9 +222,7 @@ def test_run_all_rules_collection(mocker, get_collection_items):
 
 
 def test_validate_with_json_schema(mocker, get_job_items, get_schema):
-    res = create_result(
-        "JSON Schema Validation", {Level.INFO: [("4 items were checked, 0 error(s)",)]}
-    )
+    res = create_result("JSON Schema Validation", {})
     mocked_show = mocker.patch("arche.rules.result.Result.show", autospec=True)
 
     a = Arche("source", schema=get_schema)
@@ -248,7 +242,7 @@ def test_validate_with_json_schema_fails(mocker, get_job_items, get_schema):
         {
             Level.ERROR: [
                 (
-                    "4 items were checked, 1 error(s)",
+                    "1 (25%) items have 1 errors",
                     None,
                     {"'price' is a required property": {url}},
                 )

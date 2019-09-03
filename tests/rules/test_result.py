@@ -27,6 +27,37 @@ def test_message_not_eq(source, target):
 
 
 @pytest.mark.parametrize(
+    "errors, true_err_keys",
+    [
+        ({"a": {1, 2, 3}, "b": {2, 3, 4}}, {1, 2, 3, 4}),
+        ({"a": {"2"}, "b": {"3"}}, {"2", "3"}),
+        (None, set()),
+    ],
+)
+def test_message_err_keys(errors, true_err_keys):
+    assert Message("x", errors=errors).err_keys == true_err_keys
+
+
+@pytest.mark.parametrize(
+    "messages, true_err_keys",
+    [
+        (
+            {
+                Level.ERROR: [
+                    Message("x", errors={"a": {1, 2, 3}, "b": {2, 3}}),
+                    Message("x", errors={"a": {3, 5}, "b": {3}}),
+                ]
+            },
+            {1, 2, 3, 5},
+        ),
+        (dict(), set()),
+    ],
+)
+def test_result_err_keys(messages, true_err_keys):
+    assert Result("x", messages=messages).err_keys == true_err_keys
+
+
+@pytest.mark.parametrize(
     "source, target",
     [
         (

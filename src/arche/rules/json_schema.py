@@ -1,3 +1,5 @@
+import itertools
+
 from arche.readers.items import RawItems
 from arche.readers.schema import RawSchema, Tag, TaggedFields
 from arche.rules.result import Result
@@ -20,14 +22,12 @@ def validate(
     validate_func = fast_validate if fast else full_validate
     errors = validate_func(schema, raw_items, keys)
     result = Result("JSON Schema Validation")
-
-    schema_result_message = (
-        f"{len(raw_items)} items were checked, {len(errors)} error(s)"
-    )
+    err_items = len(set(itertools.chain.from_iterable(errors.values())))
     if errors:
-        result.add_error(schema_result_message, errors=errors)
-    else:
-        result.add_info(schema_result_message)
+        result.add_error(
+            f"{err_items} ({err_items/len(raw_items):.0%}) items have {len(errors)} errors",
+            errors=errors,
+        )
     return result
 
 

@@ -35,7 +35,7 @@ def compare_was_now(df: pd.DataFrame, tagged_fields: TaggedFields):
         result.add_error(
             f"{price_less_percent} ({len(df_prices_less)}) of "
             f"items with {price_was_field} < {price_field}",
-            detailed=f"{error}:\n{list(df_prices_less.index)}",
+            errors={error: list(df_prices_less.index)},
         )
 
     df_prices_equals = pd.DataFrame(
@@ -50,13 +50,15 @@ def compare_was_now(df: pd.DataFrame, tagged_fields: TaggedFields):
                 f"{price_equal_percent} ({len(df_prices_equals)}) "
                 f"of items with {price_was_field} = {price_field}"
             ),
-            detailed=(
-                f"Prices equal for {len(df_prices_equals)} items:\n"
-                f"{list(df_prices_equals.index)}"
+            errors=(
+                {
+                    f"Prices equal for {len(df_prices_equals)} items": list(
+                        df_prices_equals.index
+                    )
+                }
             ),
         )
 
-    result.err_items_count = len(df_prices_equals) + len(df_prices_less)
     result.items_count = len(df.index)
 
     return result

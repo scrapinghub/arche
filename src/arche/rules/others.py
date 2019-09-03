@@ -117,6 +117,4 @@ def garbage_symbols(df: pd.DataFrame) -> Result:
             f"{len(row_keys)/len(df) * 100:.1f}% ({len(row_keys)}) items affected",
             errors=errors,
         )
-        rule_result.err_items_count = len(row_keys)
-
     return rule_result

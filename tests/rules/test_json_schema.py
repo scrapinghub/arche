@@ -1,4 +1,4 @@
-from arche.rules.json_schema import check_tags
+from arche.rules.json_schema import check_tags, validate
 from arche.rules.result import Level
 from conftest import create_result
 import pytest
@@ -116,3 +116,41 @@ tags_inputs = [
 def test_check_tags(source_columns, target_columns, tags, expected_messages):
     result = check_tags(source_columns, target_columns, tags)
     assert result == create_result("Tags", expected_messages)
+
+
+@pytest.mark.parametrize(
+    "schema, expected_messages",
+    [
+        (
+            {"type": "number"},
+            {
+                Level.ERROR: [
+                    (
+                        "4 (100%) items have 4 errors",
+                        None,
+                        {
+                            "{'price': 0, 'name': 'Elizabeth'} is not of type 'number'": {
+                                0
+                            },
+                            "{'name': 'Margaret'} is not of type 'number'": {1},
+                            "{'price': 10, 'name': 'Yulia'} is not of type 'number'": {
+                                2
+                            },
+                            "{'price': 11, 'name': 'Vivien'} is not of type 'number'": {
+                                3
+                            },
+                        },
+                    )
+                ]
+            },
+        )
+    ],
+)
+def test_validate(get_raw_items, schema, expected_messages):
+    result = validate(schema, get_raw_items, range(len(get_raw_items)))
+    assert result == create_result("JSON Schema Validation", expected_messages)
+
+
+def test_validate_passed(get_schema, get_raw_items):
+    result = validate(get_schema, get_raw_items, range(len(get_raw_items)))
+    assert result == create_result("JSON Schema Validation", {})
