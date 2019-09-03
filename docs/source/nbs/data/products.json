@@ -1,0 +1,94 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "type": "object",
+    "definitions": { "url": { "pattern": "^https?://(www\\.)?[a-z0-9.-]*\\.[a-z]{2,}([^<>%\\x20\\x00-\\x1f\\x7F]|%[0-9a-fA-F]{2})*$" } },
+    "additionalProperties": false,
+    "properties": {
+        "_type": {},
+        "_key": {},
+        "part_number": {
+            "description": "The part number of the product",
+            "type": "string"
+        },
+        "name": {
+            "description": "name of the product",
+            "type": "string"
+        },
+        "price": {
+            "description": "The main price if product is available. If not, it should be 0.0",
+            "examples": [20.05, 0.0],
+            "type": ["number"]
+        },
+        "availability": {
+            "description": "class Availability(Enum):UNKNOWN = 0 IN_STOCK = 1 OUT_OF_STOCK = 2 IN_STORE_ONLY = 3 BACKORDERED = 4 SHIP_FROM_STORE = 5 LIMITED_DELIVERY = 6",
+            "enum": [0, 1, 2, 3, 4, 5, 6]
+        },
+        "url": {
+            "description": "The target url being scraped",
+            "$ref": "#/definitions/url"
+        },
+        "thirdparty": {
+            "description": "True is this product is provided by a 3rd party seller (in the case of a market place)",
+            "type": "boolean"
+        },
+        "list_price": {
+            "description": "The list price of the product. If not available, 0.0",
+            "examples": [20.05, 0.0],
+            "type": ["number"]
+        },
+        "rating": {
+            "description": "Product rating on the site",
+            "type": "number",
+            "minimum": 0.0,
+            "maximum": 5.0
+        },
+        "rating_count": {
+            "description": "Number of times the item has been rated",
+            "type": "integer"
+        },
+        "category": {
+            "description": "Primary category of the product",
+            "examples": ["Kitchenware"],
+            "type": "string",
+            "tag": ["category"]
+        },
+        "subcategory": {
+            "description": "Secondary category of the product",
+            "examples": ["Cups"],
+            "type": "string",
+            "tag": ["category"]
+        },
+        "quantity": {
+            "description": "Count of units. Ideally normalized, e.g. 5.5 Oz (Pack of 24) - quantity is 132.0",
+            "examples": [500],
+            "type": "number"
+        },
+        "uom": {
+            "description": "Units of measure. Ideally normalized, e.g. 5.5 Oz (Pack of 24) - uom is oz, quantity is 132",
+            "enum": ["pill", "tab", "ml", "mg", "g", "lb", "ds", "cnt", "pk",
+                "oz", "cc", "fl-oz", "cap", "each", "ct", "gm",
+                "case", "pack", "l"
+            ]
+        },
+        "seller": {
+            "description": "Name of the seller, should be the actual seller's name in case of a marketplace",
+            "type": "string"
+        }
+    },
+    "if": {
+        "properties": { "thirdparty": { "const": true } }
+    },
+    "then": {
+        "required": ["seller"]
+    },
+    "else": {
+        "required": [
+            "part_number",
+            "name",
+            "price",
+            "list_price",
+            "availability",
+            "url"
+        ]
+    }
+}

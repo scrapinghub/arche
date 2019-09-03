@@ -1,9 +1,9 @@
 from copy import deepcopy
 from itertools import zip_longest
-from typing import Dict, List, Optional
+from typing import Dict, Iterable, List, Optional
 
 from arche.readers.items import CollectionItems, JobItems
-from arche.rules.result import Result
+from arche.rules.result import Level, Message, Result, Stat
 import numpy as np
 import pandas as pd
 import pytest
@@ -48,7 +48,13 @@ def get_df():
 
 
 class Job:
-    def __init__(self, items=None, metadata=None, stats=None, key="112358/13/21"):
+    def __init__(
+        self,
+        items: Optional[Iterable] = None,
+        metadata: Optional[Dict] = None,
+        stats: Optional[Dict] = None,
+        key: str = "112358/13/21",
+    ):
         self.items = Source(items, stats)
         self.key = key
         if metadata:
@@ -77,6 +83,11 @@ class Source:
     ):
         self.items = items
         if stats:
+            # add `_type` to not care about it in tests
+            if stats.get("counts"):
+                stats["counts"]["_type"] = 1
+            else:
+                stats["counts"] = {"_type": 1}
             self._stats = stats
         else:
             if self.items:
@@ -194,8 +205,11 @@ def get_collection_items(mocker):
 
 
 def create_result(
-    rule_name, messages, stats=None, err_items_count=None, items_count=None
-):
+    rule_name: str,
+    messages: Dict[Level, List[Message]],
+    stats: Optional[List[Stat]] = None,
+    items_count: Optional[int] = None,
+) -> Result:
     result = Result(rule_name)
     for level, messages in messages.items():
         for message in messages:
@@ -203,8 +217,6 @@ def create_result(
 
     if stats:
         result.stats = stats
-    if err_items_count:
-        result.err_items_count = err_items_count
     if items_count:
         result.items_count = items_count
     return result

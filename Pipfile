@@ -9,7 +9,7 @@ scrapinghub = {extras = ["msgpack"],version = "*"}
 plotly = "*"
 genson = "*"
 boto3 = "*"
-jsonschema = ">=3.0.0"
+jsonschema = "*"
 fastjsonschema = "*"
 perfect-jsonschema = "*"
 colorama = "*"

@@ -7,7 +7,6 @@ from colorama import Fore, Style
 from IPython.display import display_markdown
 import numpy as np
 import pandas as pd
-import plotly.io as pio
 
 display_markdown = partial(display_markdown, raw=True)
 
@@ -66,7 +65,7 @@ class Report:
                 )
                 self.write_rule_details(result, short, keys_limit)
             for f in result.figures:
-                pio.show(f)
+                f.show()
             display_markdown("<br>")
 
     @classmethod
@@ -82,11 +81,12 @@ class Report:
 
     @classmethod
     def write_detailed_errors(cls, errors: Dict, short: bool, keys_limit: int) -> None:
+        error_messages = sorted(errors.items(), key=lambda i: len(i[1]), reverse=True)
+
         if short:
             keys_limit = 5
-            error_messages = list(errors.items())[:5]
-        else:
-            error_messages = list(errors.items())
+            error_messages = error_messages[:5]
+
         for attribute, keys in error_messages:
             if isinstance(keys, list):
                 keys = pd.Series(keys)

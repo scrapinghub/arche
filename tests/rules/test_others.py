@@ -103,22 +103,15 @@ dirty_inputs = [
             ]
         },
         2,
-        2,
     ),
-    ([{"id": "0"}], {}, 1, 0),
+    ([{"id": "0"}], {}, 1),
 ]
 
 
 @pytest.mark.parametrize(
-    "raw_items, expected_messages, expected_items_count, expected_err_items_count",
-    dirty_inputs,
+    "raw_items, expected_messages, expected_items_count", dirty_inputs
 )
-def test_garbage_symbols(
-    raw_items, expected_messages, expected_items_count, expected_err_items_count
-):
+def test_garbage_symbols(raw_items, expected_messages, expected_items_count):
     assert garbage_symbols(pd.DataFrame(raw_items)) == create_result(
-        "Garbage Symbols",
-        expected_messages,
-        items_count=expected_items_count,
-        err_items_count=expected_err_items_count,
+        "Garbage Symbols", expected_messages, items_count=expected_items_count
     )

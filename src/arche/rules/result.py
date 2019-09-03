@@ -1,12 +1,15 @@
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Dict, List, Optional, Union
+import itertools
+import math
+from typing import Dict, List, Optional, Set, Union
 
 import IPython
 import numpy as np
 import pandas as pd
-import plotly.graph_objs as go
+import plotly.graph_objects as go
 import plotly.io as pio
+from plotly.subplots import make_subplots
 
 Stat = Union[pd.Series, pd.DataFrame]
 COLORS = pio.templates["seaborn"]["layout"]["colorway"]
@@ -21,6 +24,7 @@ class Level(Enum):
 class Outcome(Enum):
     SKIPPED = 0
     PASSED = 1
+    FAILED = 2
 
 
 @dataclass
@@ -30,11 +34,20 @@ class Message:
         summary: a concise outcome
         detailed: detailed message
         errors: error messages grouped by attributes
+        _err_keys: keys of items with error
     """
 
     summary: str
     detailed: Optional[str] = None
-    errors: Optional[dict] = None
+    errors: Optional[Dict[str, Set]] = None
+    _err_keys: Optional[Set[Union[str, int]]] = field(default_factory=set)
+
+    @property
+    def err_keys(self):
+        if not self._err_keys and self.errors:
+            self._err_keys = set(itertools.chain.from_iterable(self.errors.values()))
+
+        return self._err_keys
 
 
 @dataclass
@@ -43,8 +56,9 @@ class Result:
     Args:
         name: a rule name
         messages: messages separated by severity
-        _stats: pandas data to plot
+        stats: pandas data to plot
         items_count: the count of verified items
+        err_keys: keys of all error items
         err_items_count: the number of error items
         _figures: a list of graphs created from stats
     """
@@ -53,7 +67,8 @@ class Result:
     messages: Dict[Level, List[Message]] = field(default_factory=dict)
     _stats: Optional[List[Stat]] = field(default_factory=list)
     items_count: Optional[int] = 0
-    err_items_count: Optional[int] = 0
+    _err_keys: Set[Union[str, int]] = field(default_factory=set)
+    _err_items_count: Optional[int] = 0
     _figures: Optional[List[go.FigureWidget]] = field(default_factory=list)
 
     def __eq__(self, other):
@@ -99,6 +114,20 @@ class Result:
     @stats.setter
     def stats(self, value):
         self._stats = value
+
+    @property
+    def err_keys(self):
+        if not self._err_keys:
+            err_messages = self.messages.get(Level.ERROR)
+            if err_messages:
+                self._err_keys = set(
+                    itertools.chain.from_iterable([m.err_keys for m in err_messages])
+                )
+        return self._err_keys
+
+    @property
+    def err_items_count(self):
+        return len(self.err_keys)
 
     @property
     def figures(self):
@@ -163,7 +192,7 @@ class Result:
         Report.write_summary(self)
         Report.write_rule_details(self, short=short, keys_limit=keys_limit)
         for f in self.figures:
-            pio.show(f)
+            f.show()
 
     @staticmethod
     def create_figures(stats: List[Stat], name: str) -> List[go.FigureWidget]:
@@ -172,6 +201,8 @@ class Result:
             layout = Result.get_layout("Category fields", len(stats))
             layout.barmode = "stack"
             return [go.FigureWidget(data, layout)]
+        if name == "Anomalies":
+            return [Result.build_box_subplots(stats[0])]
         figures = []
         for stat in stats:
             y = stat.index.values.astype(str)
@@ -183,7 +214,7 @@ class Result:
                         y=y,
                         orientation="h",
                         opacity=0.7,
-                        marker=dict(color=colors),
+                        marker_color=colors,
                     )
                 ]
             else:
@@ -211,7 +242,7 @@ class Result:
     def build_stack_bar_data(values_counts: List[pd.Series]) -> List[go.Bar]:
         """Create data for plotly stack bar chart with consistent colors between
         bars. Each bar values have indexes unique to the bar, without any correlation
-        to other obars.
+        to other bars.
 
         Args:
             values_counts: an array of value_counts series
@@ -261,3 +292,39 @@ class Result:
                 )
             )
         return annotations
+
+    @staticmethod
+    def build_box_subplots(stat: pd.DataFrame) -> go.Figure:
+        """Create a figure with box subplots showing fields coverages for jobs.
+
+        Args:
+            stat: a dataframe with field coverages
+
+        Returns:
+            A figure with box subplots
+        """
+        stat = stat.drop(columns=["std", "mean", "target deviation"])
+        traces = [
+            go.Box(
+                y=row[1],
+                name=row[0],
+                boxpoints="all",
+                jitter=0.3,
+                boxmean="sd",
+                hoverinfo="y",
+            )
+            for row in stat.iterrows()
+        ]
+        cols = 4
+        rows = math.ceil(len(stat) / cols)
+        fig = make_subplots(rows=rows, cols=cols)
+        x = 0
+        for i, j in itertools.product(range(1, rows + 1), range(1, cols + 1)):
+            if x == len(traces):
+                break
+            fig.append_trace(traces[x], i, j)
+            x += 1
+
+        fig.update_layout(height=rows * 300 + 200, width=cols * 300, showlegend=False)
+        fig.update_yaxes(tickformat=".4p")
+        return fig
