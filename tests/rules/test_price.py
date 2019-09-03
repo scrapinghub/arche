@@ -20,19 +20,20 @@ was_now_inputs = [
             Level.ERROR: [
                 (
                     "22.22% (2) of items with original_price < sale_price",
-                    "Past price is less than current for 2 items:\n[0, 8]",
+                    None,
+                    {"Past price is less than current for 2 items": [0, 8]},
                 )
             ],
             Level.WARNING: [
                 (
                     "11.11% (1) of items with original_price = sale_price",
-                    "Prices equal for 1 items:\n[1]",
+                    None,
+                    {"Prices equal for 1 items": [1]},
                 )
             ],
         },
-        3,
     ),
-    ({}, {"product_price_field": ["name"]}, {Level.INFO: [(Outcome.SKIPPED,)]}, 0),
+    ({}, {"product_price_field": ["name"]}, {Level.INFO: [(Outcome.SKIPPED,)]}),
     (
         {
             "original_price": [10, 15, 40, None, 30, None, "60", "56.6", "30.2"],
@@ -43,24 +44,16 @@ was_now_inputs = [
             "product_price_was_field": ["original_price"],
         },
         {},
-        0,
     ),
 ]
 
 
-@pytest.mark.parametrize(
-    "data, tagged_fields, expected_messages, expected_err_items_count", was_now_inputs
-)
-def test_compare_was_now(
-    data, tagged_fields, expected_messages, expected_err_items_count
-):
+@pytest.mark.parametrize("data, tagged_fields, expected_messages", was_now_inputs)
+def test_compare_was_now(data, tagged_fields, expected_messages):
     df = pd.DataFrame(data)
     result = p.compare_was_now(df, tagged_fields)
     assert result == create_result(
-        "Compare Price Was And Now",
-        expected_messages,
-        err_items_count=expected_err_items_count,
-        items_count=len(df),
+        "Compare Price Was And Now", expected_messages, items_count=len(df)
     )
 
 
