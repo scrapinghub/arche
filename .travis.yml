@@ -13,7 +13,7 @@ install:
   - pip install tox-travis pip -U --no-cache-dir
 script:
   - tox
-  - HOME=$HOME SH_APIKEY=$SH_APIKEY tox -e docs
+  - tox -e docs
 after_success:
   - tox -e codecov
 deploy:
