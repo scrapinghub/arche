@@ -225,7 +225,6 @@ class Arche:
     @lru_cache(maxsize=32)
     def compare_metadata(self, source_job, target_job):
         self.save_result(metadata_rules.compare_spider_names(source_job, target_job))
-        self.save_result(metadata_rules.check_errors(source_job, target_job))
         self.save_result(
             metadata_rules.compare_number_of_scraped_items(source_job, target_job)
         )
