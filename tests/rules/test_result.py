@@ -91,7 +91,7 @@ def test_tensors_not_equal(source, target):
         (
             {Level.INFO: [("summary", "very detailed message")]},
             [pd.Series([1, 2], name="Fields coverage")],
-            ["rule name here:", "\tsummary", "very detailed message"],
+            ["#### rule name here:", "summary", "very detailed message"],
         ),
         (
             {Level.INFO: [("summary",)]},
@@ -100,7 +100,7 @@ def test_tensors_not_equal(source, target):
                     {"s": [0.25]}, index=["us"], name="Coverage for boolean fields"
                 )
             ],
-            ["rule name here:", "\tsummary"],
+            ["#### rule name here:", "summary"],
         ),
     ],
 )

@@ -23,7 +23,7 @@ class Report:
 
     @staticmethod
     def write_rule_name(rule_name: str) -> None:
-        display_markdown(f"{rule_name}:")
+        display_markdown(f"#### {rule_name}:")
 
     @classmethod
     def write(cls, text: str) -> None:
@@ -47,7 +47,7 @@ class Report:
     def write_rule_outcome(cls, outcome: str, level: Level = Level.INFO) -> None:
         if isinstance(outcome, Outcome):
             outcome = outcome.name
-        msg = f"\t{outcome}"
+        msg = outcome
         if level == Level.ERROR:
             cls.write_color_text(msg)
         elif level == Level.WARNING:
