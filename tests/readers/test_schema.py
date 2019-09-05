@@ -1,6 +1,6 @@
 from collections import defaultdict
 
-from arche.readers.schema import Schema, set_auth
+from arche.readers.schema import Schema
 from jsonschema.exceptions import SchemaError
 import pytest
 
@@ -114,26 +114,6 @@ def test_schema_repr():
         " 'definitions': {'float': {'pattern': '^-?[0-9]+\\\\.[0-9]{2}$'}},\n"
         " 'properties': {'name': {}}}"
     )
-
-
-def test_set_auth_skipped(mocker):
-    mocked_install = mocker.patch(
-        "arche.readers.schema.urllib.request.install_opener", autospec=True
-    )
-    set_auth()
-    mocked_install.assert_not_called()
-
-
-def test_set_auth(mocker):
-    mocked_install = mocker.patch(
-        "arche.readers.schema.urllib.request.install_opener", autospec=True
-    )
-    mocker.patch.dict(
-        "arche.readers.schema.os.environ",
-        {"BITBUCKET_USER": "user", "BITBUCKET_PASSWORD": "pass"},
-    )
-    set_auth()
-    mocked_install.assert_called_once()
 
 
 def test_schema(get_schema):

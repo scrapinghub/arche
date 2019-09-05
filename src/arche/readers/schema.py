@@ -1,10 +1,8 @@
 from collections import defaultdict
 from enum import Enum
 import json
-import os
 import pprint
 from typing import Dict, List, Union
-import urllib.request
 
 from arche.tools import s3
 import perfect_jsonschema
@@ -15,19 +13,6 @@ SchemaObject = Dict[str, Union[str, bool, int, float, None, List]]
 RawSchema = Dict[str, SchemaObject]
 SchemaSource = Union[str, RawSchema]
 TaggedFields = Dict[str, List[str]]
-
-
-def set_auth() -> None:
-    if "BITBUCKET_USER" in os.environ and "BITBUCKET_PASSWORD" in os.environ:
-        auth_handler = urllib.request.HTTPBasicAuthHandler()
-        auth_handler.add_password(
-            realm="Bitbucket.org HTTP",
-            uri="https://bitbucket.org",
-            user=os.getenv("BITBUCKET_USER"),
-            passwd=os.getenv("BITBUCKET_PASSWORD"),
-        )
-        opener = urllib.request.build_opener(auth_handler)
-        urllib.request.install_opener(opener)
 
 
 class Tag(Enum):
@@ -117,6 +102,3 @@ class Schema:
     @staticmethod
     def from_url(path: str) -> RawSchema:
         return json.loads(s3.get_contents(path))
-
-
-set_auth()
