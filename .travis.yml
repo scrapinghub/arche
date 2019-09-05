@@ -1,19 +1,21 @@
-sudo: false
 language: python
 git:
   depth: false
   quiet: true
 dist: xenial
+addons:
+  apt:
+    packages:
+      - pandoc
 python:
   - "3.7"
 install:
   - pip install tox-travis pip -U --no-cache-dir
 script:
   - tox
-after_success:
-  - tox -e pep8
-  - tox -e codecov
   - tox -e docs
+after_success:
+  - tox -e codecov
 deploy:
   provider: pypi
   on:
