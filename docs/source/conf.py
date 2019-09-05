@@ -79,3 +79,11 @@ exclude_patterns = ["_build", "**.ipynb_checkpoints"]
 # a list of builtin themes.
 #
 html_theme = "alabaster"
+html_theme_options = {
+    "fixed_sidebar": True,
+    "page_width": 1920 // 3,
+    "github_user": "scrapinghub",
+    "github_repo": "arche",
+    "codecov_button": True,
+    "travis_button": True,
+}
