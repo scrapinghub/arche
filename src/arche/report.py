@@ -23,14 +23,14 @@ class Report:
 
     @staticmethod
     def write_rule_name(rule_name: str) -> None:
-        display_markdown(f"#### {rule_name}:")
+        display_markdown(f"<h4>{rule_name}</h4>")
 
     @classmethod
     def write(cls, text: str) -> None:
         display_markdown(text)
 
     def write_summaries(self) -> None:
-        display_markdown(f"# Executed {len(self.results)} rules")
+        display_markdown(f"<h2>Executed {len(self.results)} rules</h2>")
         for result in self.results.values():
             self.write_summary(result)
 
@@ -58,7 +58,7 @@ class Report:
             cls.write(msg)
 
     def write_details(self, short: bool = False, keys_limit: int = 10) -> None:
-        display_markdown("# Details")
+        display_markdown("<h2>Details</h2>")
         for result in self.results.values():
             if result.detailed_messages_count:
                 display_markdown(
@@ -66,7 +66,7 @@ class Report:
                 )
                 self.write_rule_details(result, short, keys_limit)
                 display_markdown("<br>")
-        display_markdown("# Plots")
+        display_markdown("<h2>Plots</h2>")
         for result in self.results.values():
             for f in result.figures:
                 f.show()
@@ -97,9 +97,7 @@ class Report:
                 keys = pd.Series(list(keys))
 
             sample = Report.sample_keys(keys, keys_limit)
-            display_markdown(
-                f"{len(keys)} items affected - {attribute}: {sample}", raw=True
-            )
+            display_markdown(f"{len(keys)} items affected - {attribute}: {sample}")
 
     @staticmethod
     def sample_keys(keys: pd.Series, limit: int) -> str:

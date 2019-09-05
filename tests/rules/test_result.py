@@ -91,7 +91,7 @@ def test_tensors_not_equal(source, target):
         (
             {Level.INFO: [("summary", "very detailed message")]},
             [pd.Series([1, 2], name="Fields coverage")],
-            ["#### rule name here:", "summary", "very detailed message"],
+            ["<h4>test show</h4>", "summary", "very detailed message"],
         ),
         (
             {Level.INFO: [("summary",)]},
@@ -100,14 +100,14 @@ def test_tensors_not_equal(source, target):
                     {"s": [0.25]}, index=["us"], name="Coverage for boolean fields"
                 )
             ],
-            ["#### rule name here:", "summary"],
+            ["<h4>test show</h4>", "summary"],
         ),
     ],
 )
 def test_show(mocker, capsys, message, stats, outputs):
     mock_pio_show = mocker.patch("plotly.io.show", autospec=True)
     mocked_md = mocker.patch("arche.report.display_markdown", autospec=True)
-    res = create_result("rule name here", message, stats=stats)
+    res = create_result("test show", message, stats=stats)
     res.show()
     mock_pio_show.assert_called_once_with(res.figures[0])
     mocked_md.assert_has_calls(mocker.call(o) for o in outputs)

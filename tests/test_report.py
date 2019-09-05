@@ -21,19 +21,19 @@ import pytest
                 ),
             ],
             [
-                "# Details",
+                "<h2>Details</h2>",
                 "rule name here (1 message(s)):",
                 "very detailed message",
                 "<br>",
                 "other result there (1 message(s)):",
                 "other detailed message",
                 "<br>",
-                "# Plots",
+                "<h2>Plots</h2>",
             ],
         ),
         (
             [("everything is fine", {Level.INFO: [("summary",)]})],
-            ["# Details", "# Plots"],
+            ["<h2>Details</h2>", "<h2>Plots</h2>"],
         ),
     ],
 )
@@ -126,8 +126,7 @@ def test_write_detailed_errors(mocker, errors, short, keys_limit, expected_messa
     mocker.patch("pandas.Series.sample", return_value=pd.Series("5"), autospec=True)
     md_mock = mocker.patch("arche.report.display_markdown", autospec=True)
     Report.write_detailed_errors(errors, short, keys_limit)
-    calls = [mocker.call(m, raw=True) for m in expected_messages]
-    md_mock.assert_has_calls(calls)
+    md_mock.assert_has_calls(mocker.call(m) for m in expected_messages)
 
 
 @pytest.mark.parametrize(
