@@ -21,14 +21,14 @@ was_now_inputs = [
                 (
                     "22.22% (2) of items with original_price < sale_price",
                     None,
-                    {"Past price is less than current for 2 items": [0, 8]},
+                    {"Past price is less than current for 2 items": {0, 8}},
                 )
             ],
             Level.WARNING: [
                 (
                     "11.11% (1) of items with original_price = sale_price",
                     None,
-                    {"Prices equal for 1 items": [1]},
+                    {"Prices equal for 1 items": {1}},
                 )
             ],
         },
@@ -124,3 +124,42 @@ def test_compare_names_for_same_urls(
         pd.DataFrame(source_data), pd.DataFrame(target_data), tagged_fields
     )
     assert result == create_result("Compare Names Per Url", expected_messages)
+
+
+@pytest.mark.parametrize(
+    "source_data, target_data, tagged_fields, expected_messages",
+    [
+        (
+            {"name": ["Coffee", "Tea", "Juice"], "price": [3.0, 5.0, 2.0]},
+            {"name": ["Coffee", "Tea", "Wine"], "price": [4.0, 4.8, 20.0]},
+            {"name_field": ["name"], "product_price_field": ["price"]},
+            {
+                Level.INFO: [
+                    (
+                        "1 names missing from the tested job",
+                        None,
+                        {"Missing Wine": {2}},
+                    ),
+                    ("1 new names in the tested job",),
+                    ("2 same names in both jobs",),
+                ],
+                Level.ERROR: [
+                    (
+                        "2 checked, 1 errors",
+                        (
+                            "different price for Coffee\nsource price is 3.0 for 0\n"
+                            "target price is 4.0 for 0"
+                        ),
+                    )
+                ],
+            },
+        )
+    ],
+)
+def test_compare_prices_for_same_names(
+    source_data, target_data, tagged_fields, expected_messages
+):
+    result = p.compare_prices_for_same_names(
+        pd.DataFrame(source_data), pd.DataFrame(target_data), tagged_fields
+    )
+    assert result == create_result("Compare Prices For Same Names", expected_messages)

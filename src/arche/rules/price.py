@@ -35,7 +35,7 @@ def compare_was_now(df: pd.DataFrame, tagged_fields: TaggedFields):
         result.add_error(
             f"{price_less_percent} ({len(df_prices_less)}) of "
             f"items with {price_was_field} < {price_field}",
-            errors={error: list(df_prices_less.index)},
+            errors={error: set(df_prices_less.index)},
         )
 
     df_prices_equals = pd.DataFrame(
@@ -52,7 +52,7 @@ def compare_was_now(df: pd.DataFrame, tagged_fields: TaggedFields):
             ),
             errors=(
                 {
-                    f"Prices equal for {len(df_prices_equals)} items": list(
+                    f"Prices equal for {len(df_prices_equals)} items": set(
                         df_prices_equals.index
                     )
                 }
@@ -60,7 +60,6 @@ def compare_was_now(df: pd.DataFrame, tagged_fields: TaggedFields):
         )
 
     result.items_count = len(df.index)
-
     return result
 
 
@@ -98,7 +97,7 @@ def compare_prices_for_same_urls(
 
     errors = {}
     for url, group in missing_urls.groupby(missing_urls):
-        errors[f"Missing {url}"] = pd.Series(group.index)
+        errors[f"Missing {url}"] = set(group.index)
 
     if not missing_urls.empty:
         result.add_info(
@@ -207,12 +206,6 @@ def compare_prices_for_same_names(
         return result
 
     name_field = name_field[0]
-
-    product_url_field = tagged_fields.get("product_url_field")
-    if not product_url_field:
-        result.add_info("product_url_field tag is not set")
-    else:
-        product_url_field = product_url_field[0]
     source_df = source_df[source_df[name_field].notnull()]
     target_df = target_df[target_df[name_field].notnull()]
 
@@ -228,13 +221,13 @@ def compare_prices_for_same_names(
 
     errors = {}
     for name, group in missing_names.groupby(missing_names):
-        errors[f"Missing {name}"] = pd.Series(group.index)
+        errors[f"Missing {name}"] = set(group.index)
 
-    if missing_names:
+    if not missing_names.empty:
         result.add_info(
             f"{len(missing_names)} names missing from the tested job", errors=errors
         )
-    if new_names:
+    if not new_names.empty:
         result.add_info(f"{len(new_names)} new names in the tested job")
     result.add_info(f"{len(same_names)} same names in both jobs")
 
