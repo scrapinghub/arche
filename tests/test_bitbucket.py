@@ -37,7 +37,7 @@ urls = [
     ],
 )
 def test_convert_to_api_url(url, expected):
-    api_url = bitbucket.convert_to_api_url(url, bitbucket.NETLOC)
+    api_url = bitbucket.convert_to_api_url(url, bitbucket.NETLOC, bitbucket.API_NETLOC)
     assert api_url == expected
 
 
