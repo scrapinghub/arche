@@ -159,11 +159,7 @@ class Result:
 
     @property
     def detailed_messages_count(self):
-        return (
-            self.get_errors_count()
-            or self.get_detailed_messages_count()
-            or len(self.stats)
-        )
+        return self.get_errors_count() or self.get_detailed_messages_count()
 
     def get_errors_count(self):
         return sum(

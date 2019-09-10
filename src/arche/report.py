@@ -3,7 +3,6 @@ from typing import Dict
 
 from arche import SH_URL
 from arche.rules.result import Level, Outcome, Result
-from colorama import Fore, Style
 from IPython.display import display_markdown
 import numpy as np
 import pandas as pd
@@ -19,18 +18,19 @@ class Report:
         self.results[result.name] = result
 
     @staticmethod
-    def write_color_text(text: str, color: Fore = Fore.RED) -> None:
-        print(color + text + Style.RESET_ALL)
+    def write_color_text(text: str, color: str = "#8A0808") -> None:
+        display_markdown(f"<font style='color:{color};'>{text}</font>")
 
     @staticmethod
     def write_rule_name(rule_name: str) -> None:
-        display_markdown(f"{rule_name}:")
+        display_markdown(f"<h4>{rule_name}</h4>")
 
     @classmethod
     def write(cls, text: str) -> None:
-        print(text)
+        display_markdown(text)
 
     def write_summaries(self) -> None:
+        display_markdown(f"<h2>Executed {len(self.results)} rules</h2>")
         for result in self.results.values():
             self.write_summary(result)
 
@@ -47,26 +47,29 @@ class Report:
     def write_rule_outcome(cls, outcome: str, level: Level = Level.INFO) -> None:
         if isinstance(outcome, Outcome):
             outcome = outcome.name
-        msg = f"\t{outcome}"
+        msg = outcome
         if level == Level.ERROR:
             cls.write_color_text(msg)
         elif level == Level.WARNING:
-            cls.write_color_text(msg, color=Fore.YELLOW)
+            cls.write_color_text(msg, color="#CCCC00")
         elif outcome == Outcome.PASSED.name:
-            cls.write_color_text(msg, color=Fore.GREEN)
+            cls.write_color_text(msg, color="#0B6121")
         else:
             cls.write(msg)
 
     def write_details(self, short: bool = False, keys_limit: int = 10) -> None:
+        display_markdown("<h2>Details</h2>")
         for result in self.results.values():
             if result.detailed_messages_count:
                 display_markdown(
                     f"{result.name} ({result.detailed_messages_count} message(s)):"
                 )
                 self.write_rule_details(result, short, keys_limit)
+                display_markdown("<br>")
+        display_markdown("<h2>Plots</h2>")
+        for result in self.results.values():
             for f in result.figures:
                 f.show()
-            display_markdown("<br>")
 
     @classmethod
     def write_rule_details(
@@ -76,7 +79,7 @@ class Report:
             for rule_msg in rule_msgs:
                 if rule_msg.errors:
                     cls.write_detailed_errors(rule_msg.errors, short, keys_limit)
-                elif rule_msg.detailed:
+                if rule_msg.detailed:
                     cls.write(rule_msg.detailed)
 
     @classmethod
@@ -94,9 +97,7 @@ class Report:
                 keys = pd.Series(list(keys))
 
             sample = Report.sample_keys(keys, keys_limit)
-            display_markdown(
-                f"{len(keys)} items affected - {attribute}: {sample}", raw=True
-            )
+            display_markdown(f"{len(keys)} items affected - {attribute}: {sample}")
 
     @staticmethod
     def sample_keys(keys: pd.Series, limit: int) -> str:
