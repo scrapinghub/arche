@@ -257,7 +257,7 @@ def test_validate_with_json_schema_fails(mocker, get_job_items, get_schema):
     assert len(a.report.results) == 1
     assert a.report.results.get("JSON Schema Validation") == res
     mocked_md.assert_any_call(
-        f"1 items affected - 'price' is a required property: [1]({url})", raw=True
+        f"1 items affected - 'price' is a required property: [1]({url})"
     )
 
 

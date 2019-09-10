@@ -8,6 +8,8 @@
 # -- Project information -----------------------------------------------------
 
 from datetime import datetime
+from recommonmark.parser import CommonMarkParser
+import sphinx_bootstrap_theme
 
 project = "Arche"
 copyright = f"2018-{datetime.now().year}, Arche developers"
@@ -49,8 +51,6 @@ def setup(app):
     )
 
 
-from recommonmark.parser import CommonMarkParser
-
 source_parsers = {".md": CommonMarkParser}
 
 # The suffix(es) of source filenames.
@@ -77,5 +77,7 @@ exclude_patterns = ["_build", "**.ipynb_checkpoints"]
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-#
-html_theme = "alabaster"
+
+html_theme = "bootstrap"
+html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
+html_theme_options = {"bootswatch_theme": "sandstone"}

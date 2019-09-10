@@ -12,7 +12,6 @@ boto3 = "*"
 jsonschema = "*"
 fastjsonschema = "*"
 perfect-jsonschema = "*"
-colorama = "*"
 tqdm = "*"
 ipywidgets = "*"
 

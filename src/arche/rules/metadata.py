@@ -1,12 +1,10 @@
-from typing import Optional
-
 from arche import SH_URL
 from arche.rules.result import Result
 from arche.tools import api, helpers
 from scrapinghub.client.jobs import Job
 
 
-def check_errors(source_job: Job, target_job: Optional[Job] = None) -> Result:
+def check_errors(source_job: Job) -> Result:
     source_errs = api.get_errors_count(source_job)
     result = Result("Job Errors")
     if not source_errs:
@@ -16,11 +14,6 @@ def check_errors(source_job: Job, target_job: Optional[Job] = None) -> Result:
     result.add_error(
         f"{source_errs} error(s) - {errors_url.format(SH_URL, source_job.key)}"
     )
-    if target_job:
-        target_errs = api.get_errors_count(target_job)
-        result.add_error(
-            f"{target_errs} error(s) - {errors_url.format(SH_URL, target_job.key)}"
-        )
     return result
 
 
