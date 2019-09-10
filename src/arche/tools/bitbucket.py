@@ -14,21 +14,16 @@ USER = os.getenv("BITBUCKET_USER")
 PASS = os.getenv("BITBUCKET_PASSWORD")
 
 
-def prepare_request(url):
+def prepare_request(url: str):
     if not USER or not PASS:
-        msg = "Credentials not found"
-        logger.error(
-            f"{msg}."
-            "\nMake it sure to set both `BITBUCKET_USER` and `BITBUCKET_PASSWORD` "
-            "environment variables."
-        )
-        raise RuntimeError(msg)
+        msg = "Credentials not found: `BITBUCKET_USER` or `BITBUCKET_PASSWORD` not set."
+        raise ValueError(msg)
 
     api_url = convert_to_api_url(url, NETLOC, API_NETLOC)
     return urllib.request.Request(api_url, headers=get_auth_header(USER, PASS))
 
 
-def convert_to_api_url(url, netloc, api_netloc):
+def convert_to_api_url(url: str, netloc: str, api_netloc: str):
     """Support both regular and raw URLs"""
     user, repo, path = re.search(
         f"https://{netloc}/(.*?)/(.*?)/(?:raw|src)/(.*)", url
@@ -36,6 +31,6 @@ def convert_to_api_url(url, netloc, api_netloc):
     return f"https://{api_netloc}/2.0/repositories/{user}/{repo}/src/{path}"
 
 
-def get_auth_header(username, password):
+def get_auth_header(username: str, password: str):
     base64string = base64.b64encode(f"{username}:{password}".encode())
     return {"Authorization": f"Basic {base64string.decode()}"}

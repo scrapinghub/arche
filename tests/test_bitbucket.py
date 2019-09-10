@@ -18,21 +18,21 @@ urls = [
 
 
 @pytest.mark.parametrize(
-    "url,expected",
+    ["url", "expected"],
     [
         (
             "https://bitbucket.org/scrapinghub/customer/src/master/customer/schemas/"
-            + "ecommerce.json",
+            "ecommerce.json",
             "https://api.bitbucket.org/2.0/repositories/scrapinghub/customer/src/"
-            + "master/customer/schemas/ecommerce.json",
+            "master/customer/schemas/ecommerce.json",
         ),
         (
             "https://bitbucket.org/scrapinghub/customer/raw/"
-            + "9c4b0bf46f2012ab38bc066e1ebe774d72856013/customer/schemas/"
-            + "ecommerce.json",
+            "9c4b0bf46f2012ab38bc066e1ebe774d72856013/customer/schemas/"
+            "ecommerce.json",
             "https://api.bitbucket.org/2.0/repositories/scrapinghub/customer/src/"
-            + "9c4b0bf46f2012ab38bc066e1ebe774d72856013/customer/schemas/"
-            + "ecommerce.json",
+            "9c4b0bf46f2012ab38bc066e1ebe774d72856013/customer/schemas/"
+            "ecommerce.json",
         ),
     ],
 )
@@ -68,5 +68,5 @@ def test_prepare_request():
 def test_prepare_request_raises_an_error_when_no_credentials_found():
     bitbucket.USER = bitbucket.PASS = None
 
-    with pytest.raises(RuntimeError):
+    with pytest.raises(ValueError):
         bitbucket.prepare_request("foo")
