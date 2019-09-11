@@ -1,3 +1,4 @@
+import arche.tools.bitbucket as bitbucket
 import arche.tools.s3 as s3
 import pytest
 
@@ -8,6 +9,23 @@ def test_get_contents(mocker):
         "arche.tools.s3.get_contents_from_bucket", return_value=contents, autospec=True
     )
     assert s3.get_contents("s3://bucket/file") == contents
+
+
+@pytest.mark.parametrize(
+    "path",
+    [
+        "https://bitbucket.org/user/repo/src/branch/file",
+        "https://bitbucket.org/user/repo/src/branch/dir1/file.ext",
+    ],
+)
+def test_get_contents_from_bitbucket(mocker, path):
+    mocked_urlopen = mocker.patch(
+        "arche.tools.s3.urllib.request.urlopen", autospec=True
+    )
+    bitbucket.USER = "X"
+    bitbucket.PASS = "Y"
+    s3.get_contents(path)
+    mocked_urlopen.assert_called_once()
 
 
 def test_get_contents_fails_on_bad_file(mocker):
