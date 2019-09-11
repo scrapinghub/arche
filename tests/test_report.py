@@ -21,15 +21,19 @@ import pytest
                 ),
             ],
             [
+                "<h2>Details</h2>",
                 "rule name here (1 message(s)):",
+                "very detailed message",
                 "<br>",
                 "other result there (1 message(s)):",
+                "other detailed message",
                 "<br>",
+                "<h2>Plots</h2>",
             ],
         ),
         (
             [("everything is fine", {Level.INFO: [("summary",)]})],
-            ["everything is fine (1 message(s)):"],
+            ["<h2>Details</h2>", "<h2>Plots</h2>"],
         ),
     ],
 )
@@ -49,18 +53,18 @@ def test_write_details(mocker, get_df, capsys, messages, expected_details):
 
 @pytest.mark.parametrize(
     "message, expected_details",
-    [
-        (
-            {Level.INFO: [("summary", "very detailed message")]},
-            "very detailed message\n",
-        ),
-        ({Level.INFO: [("summary",)]}, ""),
-    ],
+    [({Level.INFO: [("summary", "very detailed message")]}, "very detailed message")],
 )
 def test_write_rule_details(capsys, message, expected_details):
     outcome = create_result("rule name here", message)
     Report.write_rule_details(outcome)
-    assert capsys.readouterr().out == expected_details
+    assert capsys.readouterr().out == f"{{'text/markdown': '{expected_details}'}}\n"
+
+
+def test_write_none_rule_details(capsys):
+    outcome = create_result("rule name here", {Level.INFO: [("summary",)]})
+    Report.write_rule_details(outcome)
+    assert not capsys.readouterr().out
 
 
 @pytest.mark.parametrize(
@@ -122,8 +126,7 @@ def test_write_detailed_errors(mocker, errors, short, keys_limit, expected_messa
     mocker.patch("pandas.Series.sample", return_value=pd.Series("5"), autospec=True)
     md_mock = mocker.patch("arche.report.display_markdown", autospec=True)
     Report.write_detailed_errors(errors, short, keys_limit)
-    calls = [mocker.call(m, raw=True) for m in expected_messages]
-    md_mock.assert_has_calls(calls)
+    md_mock.assert_has_calls(mocker.call(m) for m in expected_messages)
 
 
 @pytest.mark.parametrize(
