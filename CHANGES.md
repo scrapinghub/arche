@@ -13,6 +13,7 @@ Note that the top-most release is changes in the unreleased master branch on Git
 ## [0.3.7dev] (Work In Progress)
 ### Added
 - **Anomalies** to see significant deviations in fields coverage across multiple jobs, #138
+- Support to **Bitbucket API**, in order to access files from private repositories, #71
 
 
 ## [0.3.6] (2019-07-12)
@@ -64,7 +65,7 @@ Note that the top-most release is changes in the unreleased master branch on Git
 - Passed rules marked with green PASSED.
 ### Fixed
 - Online documentation now renders graphs https://arche.readthedocs.io/en/latest/, #41
-- Error colours are back in `report_all()`. 
+- Error colours are back in `report_all()`.
 ### Removed
 - Deprecated `Arche.basic_json_schema()`, use `basic_json_schema()`
 - Removed Quickstart.md as redundant - documentation lives in notebooks
