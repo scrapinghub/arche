@@ -2,10 +2,8 @@ import base64
 import logging
 import os
 import re
+from typing import Dict
 import urllib
-
-
-logger = logging.getLogger("arche")
 
 
 NETLOC = os.getenv("BITBUCKET_NETLOC") or "bitbucket.org"
@@ -34,6 +32,6 @@ def convert_to_api_url(url: str, netloc: str, api_netloc: str) -> str:
     return f"https://{api_netloc}/2.0/repositories/{user}/{repo}/src/{path}"
 
 
-def get_auth_header(username: str, password: str) -> dict:
+def get_auth_header(username: str, password: str) -> Dict[str, str]:
     base64string = base64.b64encode(f"{username}:{password}".encode())
     return {"Authorization": f"Basic {base64string.decode()}"}
