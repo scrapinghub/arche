@@ -14,7 +14,7 @@ USER = os.getenv("BITBUCKET_USER")
 PASS = os.getenv("BITBUCKET_PASSWORD")
 
 
-def prepare_request(url: str):
+def prepare_request(url: str) -> urllib.request.Request:
     if not USER or not PASS:
         msg = "Credentials not found: `BITBUCKET_USER` or `BITBUCKET_PASSWORD` not set."
         raise ValueError(msg)
@@ -23,14 +23,17 @@ def prepare_request(url: str):
     return urllib.request.Request(api_url, headers=get_auth_header(USER, PASS))
 
 
-def convert_to_api_url(url: str, netloc: str, api_netloc: str):
+def convert_to_api_url(url: str, netloc: str, api_netloc: str) -> str:
     """Support both regular and raw URLs"""
-    user, repo, path = re.search(
-        f"https://{netloc}/(.*?)/(.*?)/(?:raw|src)/(.*)", url
-    ).groups()
+    try:
+        user, repo, path = re.search(
+            f"https://{netloc}/(.*?)/(.*?)/(?:raw|src)/(.*)", url
+        ).groups()
+    except AttributeError:
+        raise ValueError("Not a valid bitbucket URL: {url}")
     return f"https://{api_netloc}/2.0/repositories/{user}/{repo}/src/{path}"
 
 
-def get_auth_header(username: str, password: str):
+def get_auth_header(username: str, password: str) -> dict:
     base64string = base64.b64encode(f"{username}:{password}".encode())
     return {"Authorization": f"Basic {base64string.decode()}"}

@@ -42,6 +42,20 @@ def test_convert_to_api_url(url, expected):
 
 
 @pytest.mark.parametrize(
+    "url",
+    [
+        "https://bitbucket.org/ecommerce.json",
+        "https://bitbucket.org/user/ecommerce.json",
+        "https://bitbucket.org/user/repo/ecommerce.json",
+        "https://bitbucket.org/user/repo/foobar/ecommerce.json",
+    ],
+)
+def test_convert_to_api_url_using_an_invalid_url(url):
+    with pytest.raises(ValueError):
+        bitbucket.convert_to_api_url(url, bitbucket.NETLOC, bitbucket.API_NETLOC)
+
+
+@pytest.mark.parametrize(
     "credentials,expected",
     [(("foo", "bar"), "Zm9vOmJhcg=="), (("alice", "secret"), "YWxpY2U6c2VjcmV0")],
 )
