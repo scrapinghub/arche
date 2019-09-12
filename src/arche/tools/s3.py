@@ -3,6 +3,7 @@ import io
 from urllib.parse import quote, urlparse
 import urllib.request
 
+from arche.tools import bitbucket
 import boto3
 
 
@@ -57,6 +58,11 @@ def get_contents(url: str) -> str:
     if o.scheme == "s3":
         return get_contents_from_bucket(netloc, relative_path)
     if o.scheme == "https":
-        with urllib.request.urlopen(url) as f:
+        if o.netloc == bitbucket.NETLOC:
+            request = bitbucket.prepare_request(url)
+        else:
+            request = urllib.request.Request(url)
+
+        with urllib.request.urlopen(request) as f:
             return f.read().decode("utf-8")
     raise ValueError(f"'{o.scheme}://' scheme is not allowed")
