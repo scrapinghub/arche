@@ -41,6 +41,7 @@ matplotlib = "*"
 pyarrow = "*"
 cufflinks = "*"
 tables = "*"
+nb-black = "*"
 
 [requires]
 python_version = "3.7"
