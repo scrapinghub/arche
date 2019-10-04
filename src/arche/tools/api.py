@@ -145,7 +145,7 @@ def get_items_with_pool(
     """
     active_connections_limit = 10
     processes_count: int = int(
-        min(max(helpers.cpus_count(), workers), active_connections_limit) or 0
+        min(max(helpers.cpus_count() or 0, workers), active_connections_limit)
     )
     batch_size = math.ceil(count / processes_count)
 
