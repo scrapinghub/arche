@@ -144,7 +144,10 @@ def get_items_with_pool(
         A numpy array of items
     """
     active_connections_limit = 10
-    processes_count = min(max(helpers.cpus_count(), workers), active_connections_limit)
+    processes_count: int = min(
+        max(helpers.cpus_count() or 0, workers), active_connections_limit
+    )
+
     batch_size = math.ceil(count / processes_count)
 
     start_idxs = range(start_index, start_index + count, batch_size)

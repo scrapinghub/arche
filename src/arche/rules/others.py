@@ -1,5 +1,6 @@
 import codecs
 import re
+from typing import Set
 
 from arche.rules.result import Outcome, Result
 import numpy as np
@@ -90,7 +91,7 @@ def garbage_symbols(df: pd.DataFrame) -> Result:
     )
 
     errors = {}
-    row_keys = set()
+    row_keys: Set = set()
     rule_result = Result("Garbage Symbols", items_count=len(df))
 
     for column in tqdm_notebook(

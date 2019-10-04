@@ -40,7 +40,7 @@ class Message:
     summary: str
     detailed: Optional[str] = None
     errors: Optional[Dict[str, Set]] = None
-    _err_keys: Optional[Set[Union[str, int]]] = field(default_factory=set)
+    _err_keys: Set[Union[str, int]] = field(default_factory=set)
 
     @property
     def err_keys(self):
@@ -246,7 +246,7 @@ class Result:
         Returns:
             A list of Bar objects.
         """
-        data = []
+        data: List[go.Bar] = []
         for vc in values_counts:
             data = data + [
                 go.Bar(

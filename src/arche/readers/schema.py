@@ -2,7 +2,7 @@ from collections import defaultdict
 from enum import Enum
 import json
 import pprint
-from typing import Dict, List, Union
+from typing import Dict, List, Union, Any, Set, DefaultDict
 
 from arche.tools import s3
 import perfect_jsonschema
@@ -41,25 +41,28 @@ class Schema:
         return pprint.pformat(self.raw)
 
     def get_enums(self) -> List[str]:
-        enums = []
+        enums: List[str] = []
         for k, v in self.raw["properties"].items():
-            if "enum" in v.keys():
+            if isinstance(v, Dict) and "enum" in v.keys():
                 enums.append(k)
         return enums
 
     @staticmethod
     def get_tags(schema: RawSchema) -> TaggedFields:
-        tagged_fields = defaultdict(list)
+        tagged_fields: DefaultDict[str, List[str]] = defaultdict(list)
         for key, value in schema["properties"].items():
-            property_tags = value.get("tag", [])
-            if property_tags:
-                tagged_fields = Schema.get_field_tags(property_tags, key, tagged_fields)
-        return tagged_fields
+            if isinstance(value, Dict):
+                property_tags = value.get("tag")
+                if property_tags:
+                    tagged_fields = Schema.get_field_tags(
+                        property_tags, key, tagged_fields
+                    )
+        return dict(tagged_fields)
 
     @classmethod
     def get_field_tags(
-        cls, tags: List[str], field: str, tagged_fields: defaultdict
-    ) -> TaggedFields:
+        cls, tags: Set[Any], field: str, tagged_fields: DefaultDict
+    ) -> DefaultDict[str, List[str]]:
         tags = cls.parse_tag(tags)
         if not tags:
             raise ValueError(

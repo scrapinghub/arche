@@ -1,11 +1,11 @@
 from io import StringIO
 import json
-from typing import Optional
+from typing import Optional, List
 
 
 from arche.figures import tables
 from arche.quality_estimation_algorithm import generate_quality_estimation
-from arche.readers.items import CloudItems
+from arche.readers.items import JobItems
 from arche.readers.schema import Schema
 from arche.report import Report
 import arche.rules.coverage as coverage_rules
@@ -23,7 +23,7 @@ import plotly.io as pio
 class DataQualityReport:
     def __init__(
         self,
-        items: CloudItems,
+        items: JobItems,
         schema: Schema,
         report: Report,
         bucket: Optional[str] = None,
@@ -36,7 +36,7 @@ class DataQualityReport:
         """
         self.schema = schema
         self.report = report
-        self.figures = []
+        self.figures: List = []
         self.appendix = self.create_appendix(self.schema.raw)
         self.create_figures(items)
         self.plot_to_notebook()
@@ -48,7 +48,7 @@ class DataQualityReport:
                 bucket=bucket,
             )
 
-    def create_figures(self, items: CloudItems):
+    def create_figures(self, items: JobItems):
         name_url_dups = self.report.results.get(
             "Duplicates By **name_field, product_url_field** Tags",
             duplicate_rules.find_by_name_url(items.df, self.schema.tags),

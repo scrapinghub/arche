@@ -7,14 +7,6 @@ import pytest
 
 
 @pytest.mark.parametrize(
-    "name, expected_name", [("price", "price"), ("name_0", "name")]
-)
-def test_origin_column_name(get_cloud_items, name, expected_name):
-    items = Items.from_df(pd.DataFrame(get_cloud_items))
-    assert items.origin_column_name(name) == expected_name
-
-
-@pytest.mark.parametrize(
     "df, expected_raw, expected_df",
     [
         (pd.DataFrame({"0": [0]}), [{"0": 0}], pd.DataFrame({"0": [0]})),
