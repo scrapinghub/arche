@@ -2,7 +2,7 @@ from collections import defaultdict
 from enum import Enum
 import json
 import pprint
-from typing import Dict, List, Union, cast, Any, ItemsView, Set, DefaultDict
+from typing import Dict, List, Union, Any, Set, DefaultDict
 
 from arche.tools import s3
 import perfect_jsonschema
@@ -41,14 +41,9 @@ class Schema:
         return pprint.pformat(self.raw)
 
     def get_enums(self) -> List[str]:
-        enums = []
-        # self.raw["properties"].items() has type:
-        # ItemsView[str, Union[str, bool, int, float, None, list[Any]]]
-        properties = cast(
-            ItemsView[str, Dict[str, Any]], self.raw["properties"].items()
-        )
-        for k, v in properties:
-            if "enum" in v.keys():
+        enums: List[str] = []
+        for k, v in self.raw["properties"].items():
+            if isinstance(v, Dict) and "enum" in v.keys():
                 enums.append(k)
         return enums
 
