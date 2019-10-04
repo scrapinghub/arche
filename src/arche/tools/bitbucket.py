@@ -2,7 +2,7 @@ import base64
 import os
 import re
 from typing import Dict
-import urllib
+from urllib.request import Request
 
 
 NETLOC = os.getenv("BITBUCKET_NETLOC") or "bitbucket.org"
@@ -11,13 +11,13 @@ USER = os.getenv("BITBUCKET_USER")
 PASS = os.getenv("BITBUCKET_PASSWORD")
 
 
-def prepare_request(url: str) -> urllib.request.Request:
+def prepare_request(url: str) -> Request:
     if not USER or not PASS:
         msg = "Credentials not found: `BITBUCKET_USER` or `BITBUCKET_PASSWORD` not set."
         raise ValueError(msg)
 
     api_url = convert_to_api_url(url, NETLOC, API_NETLOC)
-    return urllib.request.Request(api_url, headers=get_auth_header(USER, PASS))
+    return Request(api_url, headers=get_auth_header(USER, PASS))
 
 
 def convert_to_api_url(url: str, netloc: str, api_netloc: str) -> str:
