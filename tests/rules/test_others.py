@@ -2,7 +2,7 @@ from functools import partial
 
 from arche.rules.others import compare_boolean_fields, garbage_symbols
 from arche.rules.result import Level, Outcome
-from conftest import create_named_df, create_result
+from conftest import *
 import pandas as pd
 import pytest
 
@@ -64,8 +64,8 @@ def test_compare_boolean_fields(
     source_df = pd.DataFrame(source_data)
     target_df = pd.DataFrame(target_data)
     rule_result = compare_boolean_fields(source_df, target_df)
-    assert rule_result == create_result(
-        "Boolean Fields", expected_messages, expected_stats
+    assert_results_equal(
+        rule_result, create_result("Boolean Fields", expected_messages, expected_stats)
     )
 
 
@@ -112,6 +112,9 @@ dirty_inputs = [
     "raw_items, expected_messages, expected_items_count", dirty_inputs
 )
 def test_garbage_symbols(raw_items, expected_messages, expected_items_count):
-    assert garbage_symbols(pd.DataFrame(raw_items)) == create_result(
-        "Garbage Symbols", expected_messages, items_count=expected_items_count
+    assert_results_equal(
+        garbage_symbols(pd.DataFrame(raw_items)),
+        create_result(
+            "Garbage Symbols", expected_messages, items_count=expected_items_count
+        ),
     )

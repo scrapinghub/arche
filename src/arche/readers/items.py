@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 from scrapinghub import ScrapinghubClient
 from scrapinghub.client.jobs import Job
-from tqdm import tqdm_notebook
+from tqdm.notebook import tqdm
 
 RawItems = Iterable[Dict[str, Any]]
 
@@ -33,7 +33,7 @@ class Items:
         """Cast columns with repeating values to `category` type to save memory"""
         if len(df) < 100:
             return
-        for c in tqdm_notebook(df.columns, desc="Categorizing"):
+        for c in tqdm(df.columns, desc="Categorizing"):
             try:
                 if df[c].nunique(dropna=False) <= 10:
                     df[c] = df[c].astype("category")

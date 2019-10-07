@@ -2,7 +2,7 @@ from typing import Dict
 
 import arche.rules.coverage as cov
 from arche.rules.result import Level, Outcome
-from conftest import create_result, create_named_df, Job
+from conftest import *
 import pandas as pd
 import pytest
 
@@ -36,8 +36,10 @@ import pytest
     ],
 )
 def test_check_fields_coverage(df, expected_messages, expected_stats):
-    result = cov.check_fields_coverage(df)
-    assert result == create_result("Fields Coverage", expected_messages, expected_stats)
+    assert_results_equal(
+        cov.check_fields_coverage(df),
+        create_result("Fields Coverage", expected_messages, expected_stats),
+    )
 
 
 @pytest.mark.parametrize(
@@ -114,11 +116,11 @@ def test_check_fields_coverage(df, expected_messages, expected_stats):
     ],
 )
 def test_get_difference(source_stats, target_stats, expected_messages, expected_stats):
-    result = cov.get_difference(
-        Job(stats=source_stats, key="s"), Job(stats=target_stats, key="t")
-    )
-    assert result == create_result(
-        "Coverage Difference", expected_messages, stats=expected_stats
+    assert_results_equal(
+        cov.get_difference(
+            Job(stats=source_stats, key="s"), Job(stats=target_stats, key="t")
+        ),
+        create_result("Coverage Difference", expected_messages, stats=expected_stats),
     )
 
 
@@ -133,7 +135,7 @@ def test_compare_scraped_fields(source_cols, target_cols, expected_messages):
     result = cov.compare_scraped_fields(
         pd.DataFrame([], columns=source_cols), pd.DataFrame([], columns=target_cols)
     )
-    assert result == create_result("Scraped Fields", expected_messages)
+    assert_results_equal(result, create_result("Scraped Fields", expected_messages))
 
 
 @pytest.mark.parametrize(
@@ -191,5 +193,7 @@ def test_anomalies(
         for key, counts, input_values in jobs_stats
     ]
     mocker.patch("arche.rules.coverage.api.get_jobs", return_value=jobs)
-    result = cov.anomalies(jobs_stats[-1][0], [key for key, *_ in jobs_stats[:-1]])
-    assert result == create_result("Anomalies", expected_messages, stats=stats)
+    assert_results_equal(
+        cov.anomalies(jobs_stats[-1][0], [key for key, *_ in jobs_stats[:-1]]),
+        create_result("Anomalies", expected_messages, stats=stats),
+    )

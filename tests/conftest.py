@@ -1,6 +1,6 @@
 from copy import deepcopy
-from itertools import zip_longest
-from typing import Dict, List, Optional, Tuple
+from functools import partial
+from typing import Any, Dict, List, Optional, Tuple
 
 from arche.readers.items import CollectionItems, JobItems
 from arche.rules.result import Level, Result, Stat
@@ -209,6 +209,7 @@ def create_result(
     messages: Dict[Level, List[Tuple]],
     stats: Optional[List[Stat]] = None,
     items_count: Optional[int] = None,
+    more_stats: Optional[Dict[str, Any]] = None,
 ) -> Result:
     result = Result(rule_name)
     for level, messages_list in messages.items():
@@ -217,30 +218,50 @@ def create_result(
 
     if stats:
         result.stats = stats
+    if more_stats:
+        result.more_stats = more_stats
     if items_count:
         result.items_count = items_count
     return result
 
 
-def pytest_assertrepr_compare(op, left, right):
-    if isinstance(left, Result) and isinstance(right, Result) and op == "==":
-        assert_msgs = ["Results are equal"]
-        for (left_n, left_v), (_, right_v) in zip_longest(
-            left.__dict__.items(), right.__dict__.items()
-        ):
-            if left_n == "_stats":
-                for left_stat, right_stat in zip_longest(left_v, right_v):
-                    try:
-                        if isinstance(left_stat, pd.DataFrame):
-                            pd.testing.assert_frame_equal(left_stat, right_stat)
-                        else:
-                            pd.testing.assert_series_equal(left_stat, right_stat)
-                    except AssertionError as e:
-                        assert_msgs.extend([f"{left_stat}", "!=", f"{right_stat}"])
-                        assert_msgs.extend(str(e).split("\n"))
-            elif left_v != right_v:
-                assert_msgs.extend([f"{left_v}", "!=", f"{right_v}"])
-        return assert_msgs
+def assert_results_equal(left: Result, right: Result, **kwargs):
+    attrs = [
+        "name",
+        "messages",
+        "items_count",
+        "_err_items_count",
+        "_err_keys",
+        "_figures",
+    ]
+    for attr in attrs:
+        assert getattr(left, attr) == getattr(right, attr)
+    assert len(left.stats) == len(right.stats)
+
+    def assert_dicts_equal(left: Dict, right: Dict):
+        assert left.keys() == right.keys()
+        assert len(left.items()) == len(right.items())
+        for left_v, right_v in zip(left.values(), right.values()):
+            if isinstance(left_v, dict):
+                assert_dicts_equal(left_v, right_v)
+            elif isinstance(left_v, (pd.Series, pd.DataFrame)):
+                assert_tensors_equal(left_v, right_v, **kwargs)
+            else:
+                assert left_v == right_v
+
+    for left_t, right_t in zip(left._stats, right._stats):
+        assert_tensors_equal(left_t, right_t)
+
+    assert_dicts_equal(left.more_stats, right.more_stats)
+
+
+def assert_tensors_equal(left: Stat, right: Stat, **kwargs):
+    if isinstance(left, pd.DataFrame):
+        assert_f = partial(pd.testing.assert_frame_equal, **kwargs)
+    elif isinstance(left, pd.Series):
+        assert_f = partial(pd.testing.assert_series_equal, **kwargs)
+
+    assert_f(left, right)
 
 
 def create_named_df(data: Dict, index: List[str], name: str) -> pd.DataFrame:

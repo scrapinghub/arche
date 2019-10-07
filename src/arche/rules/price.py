@@ -67,14 +67,13 @@ def compare_was_now(df: pd.DataFrame, tagged_fields: TaggedFields):
 
 def compare_prices_for_same_urls(
     source_df: pd.DataFrame, target_df: pd.DataFrame, tagged_fields: TaggedFields
-):
+) -> Result:
     """For each pair of items that have the same `product_url_field` tagged field,
     compare `product_price_field` field
 
     Returns:
-        A result containing pairs of items with same `product_url_field`
-        from `source_df` and `target_df` which `product_price_field` differ,
-        missing and new `product_url_field` tagged fields.
+        A result containing pairs of items from `source_df` and `target_df`
+        which `product_price_field` differ.
     """
     result = Result("Compare Prices For Same Urls")
     url_field_list: Optional[List[str]] = tagged_fields.get("product_url_field")
@@ -90,31 +89,12 @@ def compare_prices_for_same_urls(
     same_urls = source_df[(source_df[url_field].isin(target_df[url_field].values))][
         url_field
     ]
-    new_urls = source_df[~(source_df[url_field].isin(target_df[url_field].values))][
-        url_field
-    ]
-    missing_urls = target_df[(~target_df[url_field].isin(source_df[url_field].values))][
-        url_field
-    ]
 
-    errors = {}
-    for url, group in missing_urls.groupby(missing_urls):
-        errors[f"Missing {url}"] = set(group.index)
-
-    if not missing_urls.empty:
-        result.add_info(
-            f"{len(missing_urls)} urls missing from the tested job", errors=errors
-        )
-    if not new_urls.empty:
-        result.add_info(f"{len(new_urls)} new urls in the tested job")
-    result.add_info(f"{len(same_urls)} same urls in both jobs")
-
-    diff_prices_count = 0
-    price_field_tag = tagged_fields.get("product_price_field")
-    if not price_field_tag:
+    price_fields = tagged_fields.get("product_price_field")
+    if not price_fields:
         result.add_info("product_price_field tag is not set")
     else:
-        price_field = price_field_tag[0]
+        price_field = price_fields[0]
         detailed_messages = []
         for url in same_urls:
             if url.strip() != "nan":
@@ -130,7 +110,6 @@ def compare_prices_for_same_urls(
                     and is_number(target_price)
                     and ratio_diff(source_price, target_price) > 0.1
                 ):
-                    diff_prices_count += 1
                     source_key = source_df[source_df[url_field] == url].index[0]
                     target_key = target_df[target_df[url_field] == url].index[0]
                     msg = (
@@ -139,7 +118,7 @@ def compare_prices_for_same_urls(
                     )
                     detailed_messages.append(msg)
 
-        res = f"{len(same_urls)} checked, {diff_prices_count} errors"
+        res = f"{len(same_urls)} checked, {len(detailed_messages)} errors"
         if detailed_messages:
             result.add_error(res, detailed="\n".join(detailed_messages))
         else:
@@ -214,33 +193,12 @@ def compare_prices_for_same_names(
     same_names = source_df[(source_df[name_field].isin(target_df[name_field].values))][
         name_field
     ]
-    new_names = source_df[~(source_df[name_field].isin(target_df[name_field].values))][
-        name_field
-    ]
-    missing_names = target_df[
-        ~(target_df[name_field].isin(source_df[name_field].values))
-    ][name_field]
 
-    errors = {}
-    for name, group in missing_names.groupby(missing_names):
-        errors[f"Missing {name}"] = set(group.index)
-
-    if not missing_names.empty:
-        result.add_info(
-            f"{len(missing_names)} names missing from the tested job", errors=errors
-        )
-    if not new_names.empty:
-        result.add_info(f"{len(new_names)} new names in the tested job")
-    result.add_info(f"{len(same_names)} same names in both jobs")
-
-    price_tag = "product_price_field"
-    price_field_tag = tagged_fields.get(price_tag)
-    if not price_field_tag:
+    price_fields = tagged_fields.get("product_price_field")
+    if not price_fields:
         result.add_info("product_price_field tag is not set")
         return result
-
-    price_field = price_field_tag[0]
-    count = 0
+    price_field = price_fields[0]
 
     detailed_messages = []
     for name in same_names:
@@ -249,7 +207,6 @@ def compare_prices_for_same_names(
             target_price = target_df[target_df[name_field] == name][price_field].iloc[0]
             if is_number(source_price) and is_number(target_price):
                 if ratio_diff(source_price, target_price) > 0.1:
-                    count += 1
                     source_key = source_df[source_df[name_field] == name].index[0]
                     target_key = target_df[target_df[name_field] == name].index[0]
                     msg = (
@@ -258,7 +215,7 @@ def compare_prices_for_same_names(
                     )
                     detailed_messages.append(msg)
 
-    result_msg = f"{len(same_names)} checked, {count} errors"
+    result_msg = f"{len(same_names)} checked, {len(detailed_messages)} errors"
     if detailed_messages:
         result.add_error(result_msg, detailed="\n".join(detailed_messages))
     else:

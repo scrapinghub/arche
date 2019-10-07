@@ -65,35 +65,12 @@ class Result:
 
     name: str
     messages: Dict[Level, List[Message]] = field(default_factory=dict)
-    _stats: Optional[List[Stat]] = field(default_factory=list)
-    items_count: Optional[int] = 0
+    _stats: List[Stat] = field(default_factory=list)
+    more_stats: Dict[str, Dict] = field(default_factory=dict)
+    items_count: int = 0
     _err_keys: Set[Union[str, int]] = field(default_factory=set)
-    _err_items_count: Optional[int] = 0
-    _figures: Optional[List[go.FigureWidget]] = field(default_factory=list)
-
-    def __eq__(self, other):
-        for left, right in zip(self.stats, other.stats):
-            if not self.tensors_equal(left, right):
-                return False
-
-        return (
-            self.name == other.name
-            and self.messages == other.messages
-            and self.items_count == other.items_count
-            and self.err_items_count == other.err_items_count
-            and len(self.stats) == len(other.stats)
-        )
-
-    @staticmethod
-    def tensors_equal(left: Stat, right: Stat):
-        try:
-            if isinstance(left, pd.DataFrame):
-                pd.testing.assert_frame_equal(left, right)
-            else:
-                pd.testing.assert_series_equal(left, right)
-            return True
-        except AssertionError:
-            return False
+    _err_items_count: int = 0
+    _figures: List[go.FigureWidget] = field(default_factory=list)
 
     @property
     def info(self):

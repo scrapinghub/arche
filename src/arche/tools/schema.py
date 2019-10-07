@@ -10,7 +10,7 @@ import fastjsonschema
 from genson import SchemaBuilder
 from jsonschema import FormatChecker, validators
 import pandas as pd
-from tqdm import tqdm_notebook
+from tqdm.notebook import tqdm
 
 
 def basic_json_schema(data_source: str, items_numbers: List[int] = None) -> Schema:
@@ -95,9 +95,7 @@ def fast_validate(
     errors: DefaultDict = defaultdict(set)
 
     validate = fastjsonschema.compile(schema)
-    for i, raw_item in enumerate(
-        tqdm_notebook(raw_items, desc="Fast Schema Validation")
-    ):
+    for i, raw_item in enumerate(tqdm(raw_items, desc="Fast Schema Validation")):
         raw_item.pop("_type", None)
         raw_item.pop("_key", None)
         try:
@@ -117,9 +115,7 @@ def full_validate(
 
     validator = validators.validator_for(schema)(schema)
     validator.format_checker = FormatChecker()
-    for i, raw_item in enumerate(
-        tqdm_notebook(raw_items, desc="JSON Schema Validation")
-    ):
+    for i, raw_item in enumerate(tqdm(raw_items, desc="JSON Schema Validation")):
         raw_item.pop("_type", None)
         raw_item.pop("_key", None)
         for e in validator.iter_errors(raw_item):

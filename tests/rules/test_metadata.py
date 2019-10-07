@@ -6,7 +6,7 @@ from arche.rules.metadata import (
     compare_response_ratio,
 )
 from arche.rules.result import Level
-from conftest import create_result, Job
+from conftest import *
 import pytest
 
 
@@ -32,7 +32,9 @@ def test_check_errors(get_job, error_count, expected_messages):
     job.metadata = {"scrapystats": error_count}
     job.key = "112358/13/21"
 
-    assert check_errors(job) == create_result("Job Errors", expected_messages)
+    assert_results_equal(
+        check_errors(job), create_result("Job Errors", expected_messages)
+    )
 
 
 outcome_input = [
@@ -70,8 +72,9 @@ def test_check_outcome(get_job, metadata, expected_messages):
     job = get_job
     job.metadata = metadata
 
-    result = check_outcome(job)
-    assert result == create_result("Job Outcome", expected_messages)
+    assert_results_equal(
+        check_outcome(job), create_result("Job Outcome", expected_messages)
+    )
 
 
 time_inputs = [
@@ -124,8 +127,10 @@ def test_compare_finish_time(
     source_job.metadata = source_metadata
     target_job.metadata = target_metadata
 
-    result = compare_finish_time(source_job, target_job)
-    assert result == create_result("Finish Time", expected_messages)
+    assert_results_equal(
+        compare_finish_time(source_job, target_job),
+        create_result("Finish Time", expected_messages),
+    )
 
 
 compare_response_ratio_inputs = [
@@ -163,7 +168,7 @@ def test_compare_response_ratio(
     source_job = Job(stats=source_stats, metadata=source_metadata)
     target_job = Job(stats=target_stats, metadata=target_metadata)
 
-    result = compare_response_ratio(source_job, target_job)
-    assert result == create_result(
-        "Compare Responses Per Item Ratio", expected_messages
+    assert_results_equal(
+        compare_response_ratio(source_job, target_job),
+        create_result("Compare Responses Per Item Ratio", expected_messages),
     )

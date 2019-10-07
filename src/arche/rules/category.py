@@ -2,7 +2,7 @@ from typing import List
 
 from arche.rules.result import Outcome, Result
 import pandas as pd
-from tqdm import tqdm_notebook
+from tqdm.notebook import tqdm
 
 
 def get_difference(
@@ -97,7 +97,7 @@ def get_categories(df: pd.DataFrame, max_uniques: int = 10) -> Result:
     columns = find_likely_cats(df, max_uniques)
     result.stats = [
         value_counts
-        for value_counts in tqdm_notebook(
+        for value_counts in tqdm(
             map(lambda c: df[c].value_counts(dropna=False), columns),
             desc="Finding categories",
             total=len(columns),

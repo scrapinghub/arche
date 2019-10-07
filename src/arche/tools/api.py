@@ -10,7 +10,7 @@ from dateutil.relativedelta import relativedelta
 import numpy as np
 from scrapinghub import ScrapinghubClient
 from scrapinghub.client.jobs import Job
-from tqdm import tqdm, tqdm_notebook
+from tqdm import tqdm, notebook
 
 
 Filters = List[Tuple[str, str, str]]
@@ -166,7 +166,7 @@ def get_items(
     start_index: int,
     start: Optional[str],
     filters: Optional[Filters] = None,
-    p_bar: Union[tqdm, tqdm_notebook] = tqdm_notebook,
+    p_bar: Union[tqdm, notebook.tqdm] = notebook.tqdm,
     desc: Optional[str] = None,
 ) -> np.ndarray:
     source = get_source(key)
