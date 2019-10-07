@@ -1,6 +1,6 @@
 import arche.rules.duplicates as duplicates
 from arche.rules.result import Level, Outcome
-from conftest import create_result
+from conftest import *
 import numpy as np
 import pandas as pd
 import pytest
@@ -45,8 +45,11 @@ unique_inputs = [
 @pytest.mark.parametrize("data, tagged_fields, expected_messages", unique_inputs)
 def test_find_by_unique(data, tagged_fields, expected_messages):
     df = pd.DataFrame(data)
-    assert duplicates.find_by_unique(df, tagged_fields) == create_result(
-        "Duplicates By **unique** Tag", expected_messages, items_count=len(df)
+    assert_results_equal(
+        duplicates.find_by_unique(df, tagged_fields),
+        create_result(
+            "Duplicates By **unique** Tag", expected_messages, items_count=len(df)
+        ),
     )
 
 
@@ -80,8 +83,9 @@ def test_find_by_unique(data, tagged_fields, expected_messages):
 )
 def test_find_by(data, columns, expected_messages):
     df = pd.DataFrame(data)
-    assert duplicates.find_by(df, columns) == create_result(
-        "Duplicates", expected_messages, items_count=len(df)
+    assert_results_equal(
+        duplicates.find_by(df, columns),
+        create_result("Duplicates", expected_messages, items_count=len(df)),
     )
 
 
@@ -111,9 +115,11 @@ def test_find_by(data, columns, expected_messages):
 )
 def test_find_by_name_url(data, tagged_fields, expected_messages):
     df = pd.DataFrame(data)
-    result = duplicates.find_by_name_url(df, tagged_fields)
-    assert result == create_result(
-        "Duplicates By **name_field, product_url_field** Tags",
-        expected_messages,
-        items_count=len(df),
+    assert_results_equal(
+        duplicates.find_by_name_url(df, tagged_fields),
+        create_result(
+            "Duplicates By **name_field, product_url_field** Tags",
+            expected_messages,
+            items_count=len(df),
+        ),
     )

@@ -35,6 +35,7 @@ recommonmark = "*"
 sphinxcontrib-golangdomain = {git = "https://bitbucket.org/ymotongpoo/sphinxcontrib-golangdomain"}
 sphinx-autoapi = {git = "https://github.com/rtfd/sphinx-autoapi"}
 nbsphinx = "*"
+sphinx_bootstrap_theme = "*"
 memory-profiler = "*"
 jupyter-console = "*"
 matplotlib = "*"

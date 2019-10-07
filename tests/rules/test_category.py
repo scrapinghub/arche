@@ -1,6 +1,6 @@
 import arche.rules.category as c
 from arche.rules.result import Level
-from conftest import create_result, create_named_df
+from conftest import *
 import numpy as np
 import pandas as pd
 import pytest
@@ -21,8 +21,11 @@ import pytest
     ],
 )
 def test_get_coverage_per_category(data, cat_names, expected_messages, expected_stats):
-    assert c.get_coverage_per_category(pd.DataFrame(data), cat_names) == create_result(
-        "Coverage For Scraped Categories", expected_messages, expected_stats
+    assert_results_equal(
+        c.get_coverage_per_category(pd.DataFrame(data), cat_names),
+        create_result(
+            "Coverage For Scraped Categories", expected_messages, expected_stats
+        ),
     )
 
 
@@ -81,10 +84,11 @@ def test_get_coverage_per_category(data, cat_names, expected_messages, expected_
     ],
 )
 def test_get_difference(source, target, categories, expected_messages, expected_stats):
-    assert c.get_difference(
-        pd.DataFrame(source), pd.DataFrame(target), categories
-    ) == create_result(
-        "Category Coverage Difference", expected_messages, stats=expected_stats
+    assert_results_equal(
+        c.get_difference(pd.DataFrame(source), pd.DataFrame(target), categories),
+        create_result(
+            "Category Coverage Difference", expected_messages, stats=expected_stats
+        ),
     )
 
 
@@ -96,8 +100,10 @@ def test_get_difference(source, target, categories, expected_messages, expected_
     ],
 )
 def test_get_no_categories(data, expected_message):
-    result = c.get_categories(pd.DataFrame(data))
-    assert result == create_result("Categories", {Level.INFO: [(expected_message,)]})
+    assert_results_equal(
+        c.get_categories(pd.DataFrame(data)),
+        create_result("Categories", {Level.INFO: [(expected_message,)]}),
+    )
 
 
 @pytest.mark.parametrize(
@@ -129,9 +135,11 @@ def test_get_no_categories(data, expected_message):
     ],
 )
 def test_get_categories(data, max_uniques, expected_stats, expected_message):
-    result = c.get_categories(pd.DataFrame(data), max_uniques)
-    assert result == create_result(
-        "Categories", {Level.INFO: [(expected_message,)]}, stats=expected_stats
+    assert_results_equal(
+        c.get_categories(pd.DataFrame(data), max_uniques),
+        create_result(
+            "Categories", {Level.INFO: [(expected_message,)]}, stats=expected_stats
+        ),
     )
 
 

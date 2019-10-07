@@ -1,6 +1,6 @@
 import arche.rules.price as p
 from arche.rules.result import Level, Outcome
-from conftest import create_result
+from conftest import *
 import numpy as np
 import pandas as pd
 import pytest
@@ -51,9 +51,11 @@ was_now_inputs = [
 @pytest.mark.parametrize("data, tagged_fields, expected_messages", was_now_inputs)
 def test_compare_was_now(data, tagged_fields, expected_messages):
     df = pd.DataFrame(data)
-    result = p.compare_was_now(df, tagged_fields)
-    assert result == create_result(
-        "Compare Price Was And Now", expected_messages, items_count=len(df)
+    assert_results_equal(
+        p.compare_was_now(df, tagged_fields),
+        create_result(
+            "Compare Price Was And Now", expected_messages, items_count=len(df)
+        ),
     )
 
 
@@ -63,7 +65,6 @@ compare_prices_inputs = [
         {"price": [1.15, "2.3", 6], "url": ["http://1", "http://2", np.nan]},
         {"product_price_field": ["price"], "product_url_field": ["url"]},
         {
-            Level.INFO: [("2 same urls in both jobs",)],
             Level.ERROR: [
                 (
                     "2 checked, 2 errors",
@@ -74,7 +75,7 @@ compare_prices_inputs = [
                         "target price is 1.15 for 0"
                     ),
                 )
-            ],
+            ]
         },
     )
 ]
@@ -89,7 +90,9 @@ def test_compare_prices_for_same_urls(
     result = p.compare_prices_for_same_urls(
         pd.DataFrame(source_data), pd.DataFrame(target_data), tagged_fields
     )
-    assert result == create_result("Compare Prices For Same Urls", expected_messages)
+    assert_results_equal(
+        result, create_result("Compare Prices For Same Urls", expected_messages)
+    )
 
 
 compare_names_inputs = [
@@ -123,7 +126,9 @@ def test_compare_names_for_same_urls(
     result = p.compare_names_for_same_urls(
         pd.DataFrame(source_data), pd.DataFrame(target_data), tagged_fields
     )
-    assert result == create_result("Compare Names Per Url", expected_messages)
+    assert_results_equal(
+        result, create_result("Compare Names Per Url", expected_messages)
+    )
 
 
 @pytest.mark.parametrize(
@@ -134,15 +139,6 @@ def test_compare_names_for_same_urls(
             {"name": ["Coffee", "Tea", "Wine"], "price": [4.0, 4.8, 20.0]},
             {"name_field": ["name"], "product_price_field": ["price"]},
             {
-                Level.INFO: [
-                    (
-                        "1 names missing from the tested job",
-                        None,
-                        {"Missing Wine": {2}},
-                    ),
-                    ("1 new names in the tested job",),
-                    ("2 same names in both jobs",),
-                ],
                 Level.ERROR: [
                     (
                         "2 checked, 1 errors",
@@ -151,7 +147,7 @@ def test_compare_names_for_same_urls(
                             "target price is 4.0 for 0"
                         ),
                     )
-                ],
+                ]
             },
         )
     ],
@@ -162,4 +158,6 @@ def test_compare_prices_for_same_names(
     result = p.compare_prices_for_same_names(
         pd.DataFrame(source_data), pd.DataFrame(target_data), tagged_fields
     )
-    assert result == create_result("Compare Prices For Same Names", expected_messages)
+    assert_results_equal(
+        result, create_result("Compare Prices For Same Names", expected_messages)
+    )

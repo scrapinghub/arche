@@ -58,34 +58,6 @@ def test_result_err_keys(messages, true_err_keys):
 
 
 @pytest.mark.parametrize(
-    "source, target",
-    [
-        (
-            pd.Series([0, 1], index=["f", "l"], name="n"),
-            pd.Series([0, 1], index=["f", "l"], name="n"),
-        ),
-        (pd.DataFrame([0, 1]), pd.DataFrame([0, 1])),
-    ],
-)
-def test_tensors_equal(source, target):
-    assert Result.tensors_equal(source, target)
-
-
-@pytest.mark.parametrize(
-    "source, target",
-    [
-        (
-            pd.Series([0, 1], index=["f", "l"], name="s"),
-            pd.Series([0, 1], index=["f", "l"], name="n"),
-        ),
-        (pd.DataFrame([0, 1]), pd.DataFrame([0, 1], index=["m", "s"])),
-    ],
-)
-def test_tensors_not_equal(source, target):
-    assert not Result.tensors_equal(source, target)
-
-
-@pytest.mark.parametrize(
     "message, stats, outputs",
     [
         (
@@ -111,59 +83,3 @@ def test_show(mocker, capsys, message, stats, outputs):
     res.show()
     mock_pio_show.assert_called_once_with(res.figures[0])
     mocked_md.assert_has_calls(mocker.call(o) for o in outputs)
-
-
-@pytest.mark.parametrize(
-    "left_params, right_params",
-    [
-        (
-            (
-                "s",
-                {Level.INFO: ["sum", "det", {"err1": [0, 1]}]},
-                [pd.Series([0], name="s"), pd.DataFrame({"s": [0]})],
-                2,
-                ["err1"],
-                1,
-            ),
-            (
-                "s",
-                {Level.INFO: ["sum", "det", {"err1": [0, 1]}]},
-                [pd.Series([0], name="s"), pd.DataFrame({"s": [0]})],
-                2,
-                ["err1"],
-                1,
-            ),
-        ),
-        (("s",), ("s",)),
-    ],
-)
-def test_result_equal(left_params, right_params):
-    assert Result(*left_params) == Result(*right_params)
-
-
-@pytest.mark.parametrize(
-    "left_params, right_params",
-    [
-        (
-            (
-                "s",
-                {Level.INFO: ["sum", "det", {"err1": [0, 1]}]},
-                [pd.Series([0], name="A name"), pd.DataFrame([0])],
-                2,
-                ["err1"],
-                1,
-            ),
-            (
-                "s",
-                {Level.INFO: ["sum", "det", {"err1": [0, 1]}]},
-                [pd.Series([0], name="A series name"), pd.DataFrame([0])],
-                2,
-                ["err1"],
-                1,
-            ),
-        ),
-        (("s",), ("t",)),
-    ],
-)
-def test_result_not_equal(left_params, right_params):
-    assert Result(*left_params) != Result(*right_params)

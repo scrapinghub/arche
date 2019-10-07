@@ -7,6 +7,7 @@ from arche.readers.items import Items, CollectionItems, JobItems, RawItems
 from arche.readers.schema import Schema, SchemaSource
 from arche.report import Report
 import arche.rules.category as category_rules
+import arche.rules.compare as compare
 import arche.rules.coverage as coverage_rules
 import arche.rules.duplicates as duplicate_rules
 import arche.rules.json_schema as schema_rules
@@ -256,3 +257,11 @@ class Arche:
             price_rules.compare_prices_for_same_names,
         ]:
             self.save_result(r(source_items.df, target_items.df, tagged_fields))
+        self.save_result(
+            compare.tagged_fields(
+                source_items.df,
+                target_items.df,
+                tagged_fields,
+                ["product_url_field", "name_field"],
+            )
+        )

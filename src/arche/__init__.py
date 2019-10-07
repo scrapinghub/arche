@@ -1,4 +1,5 @@
 import logging
+from typing import *  # noqa
 
 __version__ = "0.3.6"
 SH_URL = "https://app.scrapinghub.com/p"  # noqa
