@@ -1,3 +1,5 @@
+from typing import Optional, List
+
 from arche.readers.schema import TaggedFields
 from arche.rules.result import Result, Outcome
 from arche.tools.helpers import is_number, ratio_diff
@@ -74,12 +76,12 @@ def compare_prices_for_same_urls(
         which `product_price_field` differ.
     """
     result = Result("Compare Prices For Same Urls")
-    url_field = tagged_fields.get("product_url_field")
-    if not url_field:
+    url_field_list: Optional[List[str]] = tagged_fields.get("product_url_field")
+    if not url_field_list:
         result.add_info(Outcome.SKIPPED)
         return result
 
-    url_field = url_field[0]
+    url_field = url_field_list[0]
 
     source_df = source_df.dropna(subset=[url_field])
     target_df = target_df.dropna(subset=[url_field])
@@ -88,11 +90,11 @@ def compare_prices_for_same_urls(
         url_field
     ]
 
-    price_field = tagged_fields.get("product_price_field")
-    if not price_field:
+    price_fields = tagged_fields.get("product_price_field")
+    if not price_fields:
         result.add_info("product_price_field tag is not set")
     else:
-        price_field = price_field[0]
+        price_field = price_fields[0]
         detailed_messages = []
         for url in same_urls:
             if url.strip() != "nan":
@@ -132,14 +134,14 @@ def compare_names_for_same_urls(
     compare `name_field` field"""
 
     result = Result("Compare Names Per Url")
-    url_field = tagged_fields.get("product_url_field")
-    name_field = tagged_fields.get("name_field")
-    if not url_field or not name_field:
+    url_field_list: Optional[List[str]] = tagged_fields.get("product_url_field")
+    name_field_list: Optional[List[str]] = tagged_fields.get("name_field")
+    if not url_field_list or not name_field_list:
         result.add_info(Outcome.SKIPPED)
         return result
 
-    name_field = name_field[0]
-    url_field = url_field[0]
+    name_field: str = name_field_list[0]
+    url_field: str = url_field_list[0]
     diff_names_count = 0
 
     same_urls = source_df[(source_df[url_field].isin(target_df[url_field].values))][
@@ -179,12 +181,12 @@ def compare_prices_for_same_names(
     source_df: pd.DataFrame, target_df: pd.DataFrame, tagged_fields: TaggedFields
 ):
     result = Result("Compare Prices For Same Names")
-    name_field = tagged_fields.get("name_field")
-    if not name_field:
+    name_field_tag = tagged_fields.get("name_field")
+    if not name_field_tag:
         result.add_info(Outcome.SKIPPED)
         return result
 
-    name_field = name_field[0]
+    name_field = name_field_tag[0]
     source_df = source_df[source_df[name_field].notnull()]
     target_df = target_df[target_df[name_field].notnull()]
 
@@ -192,11 +194,11 @@ def compare_prices_for_same_names(
         name_field
     ]
 
-    price_field = tagged_fields.get("product_price_field")
-    if not price_field:
+    price_fields = tagged_fields.get("product_price_field")
+    if not price_fields:
         result.add_info("product_price_field tag is not set")
         return result
-    price_field = price_field[0]
+    price_field = price_fields[0]
 
     detailed_messages = []
     for name in same_names:

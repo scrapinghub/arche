@@ -1,3 +1,5 @@
+from typing import Tuple
+
 from arche.readers.schema import TaggedFields
 from arche.rules.result import *
 
@@ -25,7 +27,7 @@ def fields(
 
     def get_difference(
         left: pd.Series, right: pd.Series
-    ) -> (pd.Series, pd.Series, pd.Series):
+    ) -> Tuple[pd.Series, pd.Series, pd.Series]:
         return (
             left[left.isin(right)],
             left[~(left.isin(right))],
@@ -83,10 +85,11 @@ def tagged_fields(
     """Compare fields tagged with `tags` between two dataframes."""
     name = f"{', '.join(tags)} Fields Difference"
     result = Result(name)
-    fields_names = list()
+    fields_names: List[str] = list()
     for tag in tags:
-        if tagged_fields.get(tag):
-            fields_names.extend(tagged_fields.get(tag))
+        tag_fields = tagged_fields.get(tag)
+        if tag_fields:
+            fields_names.extend(tag_fields)
     if not fields_names:
         result.add_info(Outcome.SKIPPED)
         return result

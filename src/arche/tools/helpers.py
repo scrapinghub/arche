@@ -76,7 +76,7 @@ def is_number(s):
     return True
 
 
-def cpus_count() -> int:
+def cpus_count() -> Optional[int]:
     try:
         return len(os.sched_getaffinity(0))
     except AttributeError:
