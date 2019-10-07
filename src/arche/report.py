@@ -1,5 +1,5 @@
 from functools import partial
-from typing import Dict
+from typing import Dict, Union
 
 from arche import SH_URL
 from arche.rules.result import Level, Outcome, Result
@@ -44,7 +44,9 @@ class Report:
                 cls.write_rule_outcome(rule_msg.summary, level)
 
     @classmethod
-    def write_rule_outcome(cls, outcome: str, level: Level = Level.INFO) -> None:
+    def write_rule_outcome(
+        cls, outcome: Union[str, Outcome], level: Level = Level.INFO
+    ) -> None:
         if isinstance(outcome, Outcome):
             outcome = outcome.name
         msg = outcome

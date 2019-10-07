@@ -25,7 +25,7 @@ def validate(
     err_items = len(set(itertools.chain.from_iterable(errors.values())))
     if errors:
         result.add_error(
-            f"{err_items} ({err_items/len(raw_items):.0%}) items have {len(errors)} errors",
+            f"{err_items} ({err_items/len(list(raw_items)):.0%}) items have {len(errors)} errors",  # noqa
             errors=errors,
         )
     return result

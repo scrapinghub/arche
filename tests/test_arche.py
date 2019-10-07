@@ -1,3 +1,5 @@
+from typing import Dict, List
+
 from arche import arche, SH_URL
 from arche.arche import Arche
 from arche.rules.result import Level
@@ -34,7 +36,7 @@ def test_arche_df(get_df):
     pd.testing.assert_frame_equal(a.target_items.df, get_df)
 
 
-schema_dummies = [{"properties": {"name": {}}}, {"properties": {"url": {}}}]
+schema_dummies: List[Dict] = [{"properties": {"name": {}}}, {"properties": {"url": {}}}]
 
 
 def test_schema():

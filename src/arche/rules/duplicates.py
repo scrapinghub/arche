@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Set
 
 from arche.readers.schema import TaggedFields
 from arche.rules.result import Result, Outcome
@@ -18,7 +18,7 @@ def find_by_unique(df: pd.DataFrame, tagged_fields: TaggedFields) -> Result:
         result.add_info(Outcome.SKIPPED)
         return result
 
-    err_keys = set()
+    err_keys: Set = set()
     for field in unique_fields:
         result.items_count = df[field].count()
         duplicates = df[df.duplicated(field, keep=False)][[field]]
