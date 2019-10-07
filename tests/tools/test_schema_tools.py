@@ -15,9 +15,28 @@ schema = {
         }
     },
     "type": "object",
-    "properties": {"url": {"type": "string"}, "id": {"type": "integer"}},
+    "properties": {
+        "url": {"type": "string"},
+        "id": {"type": "integer"},
+        "race": {
+            "type": "object",
+            "properties": {"t": {"type": "string"}},
+            "additionalProperties": False,
+            "required": ["t"],
+        },
+        "a": {
+            "items": {
+                "additionalProperties": False,
+                "properties": {"k": {"type": "string"}},
+                "required": ["k"],
+                "type": "object",
+            },
+            "type": "array",
+            "uniqueItems": True,
+        },
+    },
     "additionalProperties": False,
-    "required": ["id", "url"],
+    "required": ["a", "id", "race", "url"],
 }
 
 
@@ -29,8 +48,18 @@ def test_set_item_no():
 
 
 def test_infer_schema():
-    item1 = {"url": "https://example.com", "id": 0}
-    item2 = {"url": "https://example.com", "id": 1}
+    item1 = {
+        "url": "https://example.com",
+        "id": 0,
+        "race": {"t": "21k"},
+        "a": [{"k": "v"}],
+    }
+    item2 = {
+        "url": "https://example.com",
+        "id": 1,
+        "race": {"t": "10k"},
+        "a": [{"k": "v"}],
+    }
 
     assert schema_tools.infer_schema([item1, item2]) == schema
     assert schema_tools.infer_schema([item2]) == schema

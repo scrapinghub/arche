@@ -1,9 +1,9 @@
 from collections import defaultdict
 import random
-from typing import Any, Deque, Dict, List, Optional, DefaultDict
+from typing import Any, DefaultDict, Deque, Dict, List, Optional
 
 from arche.readers.items import RawItems
-from arche.readers.schema import Schema, RawSchema
+from arche.readers.schema import RawSchema, Schema, SchemaObject
 from arche.schema_definitions import extension
 from arche.tools import api, helpers
 import fastjsonschema
@@ -27,6 +27,7 @@ def basic_json_schema(data_source: str, items_numbers: List[int] = None) -> Sche
 def create_json_schema(
     source_key: str, items_numbers: Optional[List[int]] = None
 ) -> RawSchema:
+    """Create schema based on sampled `source_key` items."""
     if helpers.is_collection_key(source_key):
         store = api.get_collection(source_key)
         items_count = store.count()
@@ -64,18 +65,31 @@ def infer_schema(samples: List[Dict[str, Any]]) -> RawSchema:
         builder.add_object(sample)
     builder.add_schema(extension)
 
-    return builder.to_schema()
+    schema = builder.to_schema()
+    extend_schema(schema)
+    return schema
+
+
+def extend_schema(schema: SchemaObject) -> None:
+    """Update schema with additional keywords inplace."""
+    for k, v in schema.copy().items():
+        if k == "properties":
+            schema.update(additionalProperties=False)
+        if k == "items":
+            schema.update(uniqueItems=True)
+        if isinstance(v, dict):
+            extend_schema(v)
 
 
 def set_item_no(items_count: int) -> List[int]:
     """Generate random numbers within items_count range
 
     Returns:
-        Random 4 numbers if items_count > 4 otherwise items numbers
+        4 random numbers if items_count > 4 otherwise items numbers
     """
     if items_count <= 4:
-        return [i for i in range(items_count)]
-    return random.sample(range(0, items_count), 4)
+        return list(range(items_count))
+    return random.sample(range(items_count), 4)
 
 
 def fast_validate(
@@ -102,7 +116,7 @@ def fast_validate(
             validate(raw_item)
         except fastjsonschema.JsonSchemaException as error:
             errors[str(error)].add(keys[i])
-    return errors
+    return dict(errors)
 
 
 def full_validate(
@@ -123,7 +137,7 @@ def full_validate(
                 e.message, e.path, e.schema_path, e.validator
             )
             errors[error].add(keys[i])
-    return errors
+    return dict(errors)
 
 
 def format_validation_message(

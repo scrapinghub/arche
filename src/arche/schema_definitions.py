@@ -6,6 +6,5 @@ extension = {
                 r"([^<>%\x20\x00-\x1f\x7F]|%[0-9a-fA-F]{2})*$"
             )
         }
-    },
-    "additionalProperties": False,
+    }
 }
