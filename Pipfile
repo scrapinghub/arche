@@ -43,6 +43,10 @@ cufflinks = "*"
 tables = "*"
 nb-black = "*"
 mypy = "*"
+scrapy = "*"
+slugify = "*"
+shub = "*"
+pipenv = "*"
 
 [requires]
 python_version = "3.7"

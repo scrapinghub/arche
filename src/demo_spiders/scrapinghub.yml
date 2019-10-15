@@ -1,0 +1,9 @@
+projects:
+  prod: 400593
+  
+
+requirements:
+  file: Pipfile
+
+stack: scrapy:1.6-py37 
+# image: true

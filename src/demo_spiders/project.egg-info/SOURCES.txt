@@ -1,0 +1,15 @@
+setup.py
+demo_spiders/__init__.py
+demo_spiders/items.py
+demo_spiders/middlewares.py
+demo_spiders/pipelines.py
+demo_spiders/processors.py
+demo_spiders/settings.py
+demo_spiders/spiders/__init__.py
+demo_spiders/spiders/books.py
+demo_spiders/spiders/walmart_com.py
+project.egg-info/PKG-INFO
+project.egg-info/SOURCES.txt
+project.egg-info/dependency_links.txt
+project.egg-info/entry_points.txt
+project.egg-info/top_level.txt
