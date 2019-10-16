@@ -1,5 +1,5 @@
 import arche.rules.duplicates as duplicates
-from arche.rules.result import Level, Outcome
+from arche.rules.result import Level
 from conftest import *
 import numpy as np
 import pandas as pd
@@ -7,7 +7,6 @@ import pytest
 
 
 unique_inputs = [
-    ({}, {}, {Level.INFO: [(Outcome.SKIPPED,)]}),
     (
         {"id": ["0", "0", "1"]},
         {"unique": ["id"]},
@@ -92,7 +91,6 @@ def test_find_by(data, columns, expected_messages):
 @pytest.mark.parametrize(
     "data, tagged_fields, expected_messages",
     [
-        ({}, {}, {Level.INFO: [(Outcome.SKIPPED,)]}),
         (
             {"name": ["bob", "bob", "bob", "bob"], "url": ["u1", "u1", "2", "u1"]},
             {"name_field": ["name"], "product_url_field": ["url"]},

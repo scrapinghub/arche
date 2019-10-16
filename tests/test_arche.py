@@ -2,7 +2,7 @@ from typing import Dict, List
 
 from arche import arche, SH_URL
 from arche.arche import Arche
-from arche.rules.result import Level
+from arche.rules.result import *
 from conftest import create_result, get_report_from_iframe
 import pandas as pd
 import pytest
@@ -247,6 +247,7 @@ def test_validate_with_json_schema_fails(mocker, get_job_items, get_schema):
             ]
         },
     )
+    res.outcome = Outcome.FAILED
     schema = {"type": "object", "required": ["price"], "properties": {"price": {}}}
     a = Arche("source", schema=schema)
     a._source_items = get_job_items

@@ -15,7 +15,7 @@ def find_by_unique(df: pd.DataFrame, tagged_fields: TaggedFields) -> Result:
     result = Result("Duplicates By **unique** Tag")
 
     if not unique_fields:
-        result.add_info(Outcome.SKIPPED)
+        result.outcome = Outcome.SKIPPED
         return result
 
     err_keys: Set = set()
@@ -69,7 +69,7 @@ def find_by_name_url(df: pd.DataFrame, tagged_fields: TaggedFields) -> Result:
     name = "Duplicates By **name_field, product_url_field** Tags"
     result = Result(name)
     if not name_fields or not url_fields:
-        result.add_info(Outcome.SKIPPED)
+        result.outcome = Outcome.SKIPPED
         return result
     name_field = name_fields[0]
     url_field = url_fields[0]

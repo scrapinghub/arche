@@ -45,8 +45,8 @@ def test_report_call(mocker, get_df, capsys, messages, expected_details):
 
     report_html = get_report_from_iframe(mocked_display.mock_calls[0][1][0])
     assert report_html.count("Plotly.newPlot") == 2
-    assert report_html.count("rule name here - SKIPPED") == 2
-    assert report_html.count("other result there - SKIPPED") == 2
+    assert report_html.count("rule name here - INFO") == 2
+    assert report_html.count("other result there - INFO") == 2
 
 
 def test_report_call_arguments(mocker):
