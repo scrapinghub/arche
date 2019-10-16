@@ -106,7 +106,7 @@ class Result:
             elif self.stats:
                 self._outcome = Outcome.INFO
             else:
-                self._outcome = Outcome.SKIPPED
+                self._outcome = Outcome.PASSED
         return self._outcome
 
     @outcome.setter
