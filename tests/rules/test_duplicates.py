@@ -29,7 +29,7 @@ unique_inputs = [
                     "5 duplicate(s) with same id, name",
                     None,
                     {"same '47' `id`, 'Juan' `name`": [1, 2], "same '47' `id`, 'Walt' `name`": [0, 3, 4]},
-                ),                
+                ),
             ]
         },
     ),

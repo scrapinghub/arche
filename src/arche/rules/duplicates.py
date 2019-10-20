@@ -20,7 +20,7 @@ def find_by_unique(df: pd.DataFrame, tagged_fields: TaggedFields) -> Result:
         return result
 
     err_keys: Set = set()
-    result = find_by(df, unique_fields)    
+    result = find_by(df, unique_fields)
     result.name = name
 
     return result
