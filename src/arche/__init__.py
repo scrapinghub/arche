@@ -5,10 +5,13 @@ __version__ = "0.3.6"
 SH_URL = "https://app.scrapinghub.com/p"  # noqa
 
 from arche.arche import Arche
+from arche.tools import dataframe
 from arche.tools.schema import basic_json_schema
 import numpy as np
 import pandas as pd
 import plotly.io as pio
+
+pd.DataFrame._repr_html_ = dataframe._repr_html_
 
 pio.renderers.default = "notebook_connected+jupyterlab"
 
