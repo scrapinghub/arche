@@ -12,27 +12,16 @@ def find_by_unique(df: pd.DataFrame, tagged_fields: TaggedFields) -> Result:
         A result containing field names and keys for non unique items
     """
     unique_fields = tagged_fields.get("unique", [])
-    result = Result("Duplicates By **unique** Tag")
+    name = "Duplicates By **unique** Tag"
+    result = Result(name)
 
     if not unique_fields:
         result.add_info(Outcome.SKIPPED)
         return result
 
     err_keys: Set = set()
-    for field in unique_fields:
-        result.items_count = df[field].count()
-        duplicates = df[df.duplicated(field, keep=False)][[field]]
-        errors = {}
-        for _, d in duplicates.groupby([field]):
-            keys = list(d.index)
-            msg = f"same '{d[field].iloc[0]}' `{field}`"
-            errors[msg] = keys
-            err_keys = err_keys.union(keys)
-        if not duplicates.empty:
-            result.add_error(
-                f"{field} contains {len(duplicates[field].unique())} duplicated value(s)",
-                errors=errors,
-            )
+    result = find_by(df, unique_fields)    
+    result.name = name
 
     return result
 

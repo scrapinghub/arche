@@ -13,7 +13,7 @@ unique_inputs = [
         {"unique": ["id"]},
         {
             Level.ERROR: [
-                ("id contains 1 duplicated value(s)", None, {"same '0' `id`": [0, 1]})
+                ("2 duplicate(s) with same id", None, {"same '0' `id`": [0, 1]})
             ]
         },
     ),
@@ -26,15 +26,10 @@ unique_inputs = [
         {
             Level.ERROR: [
                 (
-                    "id contains 1 duplicated value(s)",
+                    "5 duplicate(s) with same id, name",
                     None,
-                    {"same '47' `id`": [i for i in range(6)]},
-                ),
-                (
-                    "name contains 2 duplicated value(s)",
-                    None,
-                    {"same 'Juan' `name`": [1, 2], "same 'Walt' `name`": [0, 3, 4]},
-                ),
+                    {"same '47' `id`, 'Juan' `name`": [1, 2], "same '47' `id`, 'Walt' `name`": [0, 3, 4]},
+                ),                
             ]
         },
     ),
