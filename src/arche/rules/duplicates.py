@@ -1,4 +1,4 @@
-from typing import List, Set
+from typing import List
 
 from arche.readers.schema import TaggedFields
 from arche.rules.result import Result, Outcome
@@ -19,7 +19,6 @@ def find_by_unique(df: pd.DataFrame, tagged_fields: TaggedFields) -> Result:
         result.add_info(Outcome.SKIPPED)
         return result
 
-    err_keys: Set = set()
     result = find_by(df, unique_fields)
     result.name = name
 
