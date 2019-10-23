@@ -16,6 +16,9 @@ Note that the top-most release is changes in the unreleased master branch on Git
 - Support to **Bitbucket API**, in order to access files from private repositories, #71
 - Extend inferred schema with `additionalProperties: False and uniqueItems: True`, #21
 - **Fields Difference** rule to find the difference between field values of two jobs. Supports normalization, nested fields, full access to the data, #167
+- Added `outcome` property on Result, in order to define a rule outcome based on message levells. #173
+### Changed
+- The reports are now being generated using a jinja2 template. `Arche.report_all()` now display the rules grouping them by their outcome. The plots are now displayed on the "plots" tab. #168
 
 
 ## [0.3.6] (2019-07-12)
