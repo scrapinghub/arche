@@ -25,18 +25,18 @@ class Report:
         self.results[result.name] = result
 
     def __call__(self, rule: Result = None, keys_limit: int = None) -> None:
-        if not rule:
-            template = self.env.get_template("full-report.html")
+        if rule:
+            template = self.env.get_template("single-rule.html")
             resultHTML = template.render(
-                rules=sorted(self.results.values(), key=lambda x: x.outcome.value),
+                rule=rule,
                 pd=pd,
                 linkfy_callbacks=[callbacks.target_blank],
                 keys_limit=keys_limit,
             )
         else:
-            template = self.env.get_template("single-rule.html")
+            template = self.env.get_template("full-report.html")
             resultHTML = template.render(
-                rule=rule,
+                rules=sorted(self.results.values(), key=lambda x: x.outcome.value),
                 pd=pd,
                 linkfy_callbacks=[callbacks.target_blank],
                 keys_limit=keys_limit,
