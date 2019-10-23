@@ -26,6 +26,7 @@ class Outcome(Enum):
     FAILED = 1
     WARNING = 2
     SKIPPED = 3
+    INFO = 4
 
     def __eq__(self, other):
         if isinstance(other, Outcome):
@@ -83,6 +84,7 @@ class Result:
     _err_keys: Set[Union[str, int]] = field(default_factory=set)
     _err_items_count: int = 0
     _figures: List[go.FigureWidget] = field(default_factory=list)
+    _outcome: Optional[Outcome] = None
 
     @property
     def info(self):
@@ -94,13 +96,22 @@ class Result:
 
     @property
     def outcome(self) -> Outcome:
-        if not self.messages:
-            return Outcome.PASSED
-        if Level.ERROR in self.messages.keys():
-            return Outcome.FAILED
-        if Level.WARNING in self.messages.keys():
-            return Outcome.WARNING
-        return Outcome.SKIPPED
+        if not self._outcome:
+            if not self.messages:
+                self._outcome = Outcome.PASSED
+            elif Level.ERROR in self.messages.keys():
+                self._outcome = Outcome.FAILED
+            elif Level.WARNING in self.messages.keys():
+                self._outcome = Outcome.WARNING
+            elif self.stats:
+                self._outcome = Outcome.INFO
+            else:
+                self._outcome = Outcome.PASSED
+        return self._outcome
+
+    @outcome.setter
+    def outcome(self, outcome):
+        self._outcome = outcome
 
     @property
     def errors(self):

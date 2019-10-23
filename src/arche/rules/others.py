@@ -26,7 +26,7 @@ def compare_boolean_fields(
 
     result = Result("Boolean Fields")
     if not fields_to_compare(source_bool, target_bool):
-        result.add_info(Outcome.SKIPPED)
+        result.outcome = Outcome.SKIPPED
         return result
 
     dummy = pd.DataFrame(columns=[True, False])
