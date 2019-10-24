@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from enum import Enum
+from enum import Enum, unique
 import itertools
 import math
 from typing import Dict, List, Optional, Set, Union
@@ -15,12 +15,14 @@ Stat = Union[pd.Series, pd.DataFrame]
 COLORS = pio.templates["seaborn"]["layout"]["colorway"]
 
 
+@unique
 class Level(Enum):
     ERROR = 2
     WARNING = 1
     INFO = 0
 
 
+@unique
 class Outcome(Enum):
     PASSED = 0
     FAILED = 1

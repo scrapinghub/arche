@@ -1,5 +1,5 @@
 from collections import defaultdict
-from enum import Enum
+from enum import Enum, unique
 import json
 import pprint
 from typing import Dict, List, Union, Any, Set, DefaultDict
@@ -15,6 +15,7 @@ SchemaSource = Union[str, RawSchema]
 TaggedFields = Dict[str, List[str]]
 
 
+@unique
 class Tag(Enum):
     unique = (0,)
     category = (1,)
