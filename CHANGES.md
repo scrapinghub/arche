@@ -19,6 +19,7 @@ Note that the top-most release is changes in the unreleased master branch on Git
 - Added `outcome` property on Result, in order to define a rule outcome based on message levells. #173
 ### Changed
 - Reports rendering. Reports are being generated as HTML with a jinja2 template. `Arche.report_all()` displays the rules results grouped by outcome. The plots are displayed on the "plots" tab. #168
+- `report_all()` accepts `uniques` arg to find duplicates among columns/rows, #171
 
 
 ## [0.3.6] (2019-07-12)
