@@ -134,8 +134,7 @@ def test_arche_dataframe(mocker):
         "JSON Schema Validation",
         "Tags",
         "Compare Price Was And Now",
-        "Duplicates By **unique** Tag",
-        "Duplicates By **name_field, product_url_field** Tags",
+        "Duplicates",
         "Coverage For Scraped Categories",
         "Category Coverage Difference",
         "Compare Prices For Same Urls",
@@ -214,7 +213,7 @@ def test_run_all_rules_collection(mocker, get_collection_items):
 
     mocked_check_metadata.assert_not_called()
     mocked_compare_metadata.assert_not_called()
-    mocked_run_general_rules.assert_called_once_with()
+    mocked_run_general_rules.assert_called_once_with(arche)
     mocked_run_comparison_rules.assert_called_once_with()
     mocked_run_schema_rules.assert_called_once_with(arche)
 
