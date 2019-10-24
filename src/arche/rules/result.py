@@ -22,9 +22,22 @@ class Level(Enum):
 
 
 class Outcome(Enum):
-    SKIPPED = 0
-    PASSED = 1
-    FAILED = 2
+    PASSED = 0
+    FAILED = 1
+    WARNING = 2
+    SKIPPED = 3
+    INFO = 4
+
+    def __eq__(self, other):
+        if isinstance(other, Outcome):
+            return self.value == other.value
+        return NotImplemented
+
+    def __ne__(self, other):
+        result = self.__eq__(other)
+        if result is NotImplemented:
+            return result
+        return not result
 
 
 @dataclass
@@ -71,6 +84,7 @@ class Result:
     _err_keys: Set[Union[str, int]] = field(default_factory=set)
     _err_items_count: int = 0
     _figures: List[go.FigureWidget] = field(default_factory=list)
+    _outcome: Optional[Outcome] = None
 
     @property
     def info(self):
@@ -79,6 +93,25 @@ class Result:
     @property
     def warnings(self):
         return self.messages.get(Level.WARNING)
+
+    @property
+    def outcome(self) -> Outcome:
+        if not self._outcome:
+            if not self.messages:
+                self._outcome = Outcome.PASSED
+            elif Level.ERROR in self.messages.keys():
+                self._outcome = Outcome.FAILED
+            elif Level.WARNING in self.messages.keys():
+                self._outcome = Outcome.WARNING
+            elif self.stats:
+                self._outcome = Outcome.INFO
+            else:
+                self._outcome = Outcome.PASSED
+        return self._outcome
+
+    @outcome.setter
+    def outcome(self, outcome):
+        self._outcome = outcome
 
     @property
     def errors(self):
@@ -162,10 +195,7 @@ class Result:
         from arche.report import Report
 
         IPython.display.clear_output()
-        Report.write_summary(self)
-        Report.write_rule_details(self, short=short, keys_limit=keys_limit)
-        for f in self.figures:
-            f.show()
+        Report()(self, keys_limit if short else None)
 
     @staticmethod
     def create_figures(stats: List[Stat], name: str) -> List[go.FigureWidget]:

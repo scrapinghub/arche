@@ -1,5 +1,5 @@
 import arche.rules.price as p
-from arche.rules.result import Level, Outcome
+from arche.rules.result import Level
 from conftest import *
 import numpy as np
 import pandas as pd
@@ -33,7 +33,7 @@ was_now_inputs = [
             ],
         },
     ),
-    ({}, {"product_price_field": ["name"]}, {Level.INFO: [(Outcome.SKIPPED,)]}),
+    ({}, {"product_price_field": ["name"]}, {}),
     (
         {
             "original_price": [10, 15, 40, None, 30, None, "60", "56.6", "30.2"],

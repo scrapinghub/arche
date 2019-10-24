@@ -1,6 +1,6 @@
 from typing import List
 
-from arche.rules.result import Result, Outcome
+from arche.rules.result import Result
 import arche.tools.api as api
 import pandas as pd
 from scrapinghub.client.jobs import Job
@@ -130,9 +130,10 @@ def anomalies(target: str, sample: List[str]) -> Result:
     stats["target deviation"] = stats["target"] - stats["mean"]
     devs = stats[(stats["target deviation"].abs() > 2 * stats["std"])]
     devs.name = "Anomalies"
-    errors = f"{len(devs.index)} field(s) with significant coverage deviation"
     if not devs.empty:
-        result.add_error(Outcome.FAILED, detailed=errors)
+        result.add_error(
+            f"{len(devs.index)} field(s) with significant coverage deviation"
+        )
         result.stats = [devs]
 
     return result
