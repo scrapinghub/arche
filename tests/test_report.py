@@ -1,7 +1,8 @@
+from arche import Arche
 from arche import SH_URL
 from arche.report import Report
 from arche.rules.result import Level
-from conftest import create_result
+from conftest import create_result, get_report_from_iframe
 import pandas as pd
 import pytest
 
@@ -30,103 +31,58 @@ import pytest
                 "<br>",
                 "<h2>Plots</h2>",
             ],
-        ),
-        (
-            [("everything is fine", {Level.INFO: [("summary",)]})],
-            ["<h2>Details</h2>", "<h2>Plots</h2>"],
-        ),
+        )
     ],
 )
-def test_write_details(mocker, get_df, capsys, messages, expected_details):
-    mock_pio_show = mocker.patch("plotly.io.show", autospec=True)
-    md_mock = mocker.patch("arche.report.display_markdown", autospec=True)
+def test_report_call(mocker, get_df, capsys, messages, expected_details):
+    mocked_display = mocker.patch("arche.report.display_html", autospec=True)
 
     r = Report()
     for m in messages:
         result = create_result(*m, stats=[get_df])
         r.save(result)
-    r.write_details()
-    mock_pio_show.assert_called_with(result.figures[0])
-    calls = [mocker.call(e) for e in expected_details]
-    md_mock.assert_has_calls(calls, any_order=True)
+    r()
+
+    report_html = get_report_from_iframe(mocked_display.mock_calls[0][1][0])
+    assert report_html.count("Plotly.newPlot") == 2
+    assert report_html.count("rule name here - INFO") == 2
+    assert report_html.count("other result there - INFO") == 2
 
 
-@pytest.mark.parametrize(
-    "message, expected_details",
-    [({Level.INFO: [("summary", "very detailed message")]}, "very detailed message")],
-)
-def test_write_rule_details(capsys, message, expected_details):
+def test_report_call_arguments(mocker):
+    message = {Level.INFO: [("summary", "very detailed message")]}
+
+    mocked_display = mocker.patch("arche.report.display_html", autospec=True)
     outcome = create_result("rule name here", message)
-    Report.write_rule_details(outcome)
-    assert capsys.readouterr().out == f"{{'text/markdown': '{expected_details}'}}\n"
+
+    Report()(outcome)
+    report_html = get_report_from_iframe(mocked_display.mock_calls[0][1][0])
+    assert report_html.count("very detailed message") == 1
 
 
-def test_write_none_rule_details(capsys):
-    outcome = create_result("rule name here", {Level.INFO: [("summary",)]})
-    Report.write_rule_details(outcome)
-    assert not capsys.readouterr().out
+def test_report_call_with_errors(mocker, get_job_items, get_schema):
+    mocked_display = mocker.patch("arche.report.display_html", autospec=True)
+    url = f"{SH_URL}/112358/13/21/item/1"
+    schema = {"type": "object", "required": ["price"], "properties": {"price": {}}}
+    g = Arche("source", schema=schema)
+    g._source_items = get_job_items
+    g.report_all()
+    report_html = get_report_from_iframe(mocked_display.mock_calls[0][1][0])
+    mocked_display.assert_called_once()
+    assert "JSON Schema Validation - FAILED" in report_html
+    assert report_html.count('href="{}"'.format(url)) == 1
+    assert report_html.count("&#39;price&#39; is a required property") == 1
 
 
-@pytest.mark.parametrize(
-    "errors, short, keys_limit, expected_messages",
-    [
-        (
-            {"something happened": pd.Series(["1", "2"])},
-            False,
-            10,
-            ["2 items affected - something happened: 1, 2"],
-        ),
-        (
-            {"something went bad": [i for i in range(10)]},
-            False,
-            1,
-            ["10 items affected - something went bad: 5"],
-        ),
-        (
-            {
-                "err1": [i for i in range(15)],
-                "err2": [i for i in range(15)],
-                "err3": [i for i in range(15)],
-                "err4": [i for i in range(15)],
-                "err5": [i for i in range(15)],
-                "err6": [i for i in range(15)],
-            },
-            False,
-            1,
-            [f"15 items affected - err{i}: 5" for i in range(1, 7)],
-        ),
-        (
-            {
-                "err1": ["1"],
-                "err2": ["2"],
-                "err3": ["3", "4"],
-                "err4": ["5", "6", "7"],
-                "err5": ["7", "8"],
-            },
-            True,
-            1,
-            [
-                "3 items affected - err4: 5, 6, 7",
-                "2 items affected - err3: 3, 4",
-                "2 items affected - err5: 7, 8",
-                "1 items affected - err1: 1",
-                "1 items affected - err2: 2",
-            ],
-        ),
-        (
-            {"something happened": set(["https://app.scrapinghub.com/p/1/1/1/item/0"])},
-            False,
-            10,
-            [f"1 items affected - something happened: [0]({SH_URL}/1/1/1/item/0)"],
-        ),
-        ({"html '</br>'": [1]}, False, 10, ["1 items affected - html '</br>': 1"]),
-    ],
-)
-def test_write_detailed_errors(mocker, errors, short, keys_limit, expected_messages):
-    mocker.patch("pandas.Series.sample", return_value=pd.Series("5"), autospec=True)
-    md_mock = mocker.patch("arche.report.display_markdown", autospec=True)
-    Report.write_detailed_errors(errors, short, keys_limit)
-    md_mock.assert_has_calls(mocker.call(m) for m in expected_messages)
+def test_report_iframe(mocker, get_job_items, get_schema):
+    mocked_display = mocker.patch("arche.report.display_html", autospec=True)
+    schema = {"type": "object", "required": ["price"], "properties": {"price": {}}}
+    g = Arche("source", schema=schema)
+    g._source_items = get_job_items
+    g.run_all_rules()
+    g.report()
+    mocked_display.assert_called_once()
+    assert "<iframe" in mocked_display.mock_calls[0][1][0]
 
 
 @pytest.mark.parametrize(

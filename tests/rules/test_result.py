@@ -1,5 +1,5 @@
-from arche.rules.result import Level, Message, Result
-from conftest import create_named_df, create_result
+from arche.rules.result import Level, Message, Result, Outcome
+from conftest import create_named_df, create_result, get_report_from_iframe
 import pandas as pd
 import pytest
 
@@ -58,12 +58,11 @@ def test_result_err_keys(messages, true_err_keys):
 
 
 @pytest.mark.parametrize(
-    "message, stats, outputs",
+    "message, stats",
     [
         (
             {Level.INFO: [("summary", "very detailed message")]},
             [pd.Series([1, 2], name="Fields coverage")],
-            ["<h4>test show</h4>", "summary", "very detailed message"],
         ),
         (
             {Level.INFO: [("summary",)]},
@@ -72,14 +71,17 @@ def test_result_err_keys(messages, true_err_keys):
                     {"s": [0.25]}, index=["us"], name="Coverage for boolean fields"
                 )
             ],
-            ["<h4>test show</h4>", "summary"],
         ),
     ],
 )
-def test_show(mocker, capsys, message, stats, outputs):
-    mock_pio_show = mocker.patch("plotly.io.show", autospec=True)
-    mocked_md = mocker.patch("arche.report.display_markdown", autospec=True)
+def test_show(mocker, capsys, message, stats):
+    mocked_display = mocker.patch("arche.report.display_html", autospec=True)
     res = create_result("test show", message, stats=stats)
     res.show()
-    mock_pio_show.assert_called_once_with(res.figures[0])
-    mocked_md.assert_has_calls(mocker.call(o) for o in outputs)
+    report_html = get_report_from_iframe(mocked_display.mock_calls[0][1][0])
+    assert report_html.count("Plotly.newPlot") == 1
+
+
+def test_outcome_equality():
+    assert Outcome.SKIPPED == Outcome.SKIPPED
+    assert Outcome.WARNING != Outcome.PASSED

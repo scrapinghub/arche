@@ -1,6 +1,9 @@
 from copy import deepcopy
 from functools import partial
+import html
+import re
 from typing import Any, Dict, List, Optional, Tuple
+
 
 from arche.readers.items import CollectionItems, JobItems
 from arche.rules.result import Level, Result, Stat
@@ -268,3 +271,9 @@ def create_named_df(data: Dict, index: List[str], name: str) -> pd.DataFrame:
     df = pd.DataFrame(data, index=index)
     df.name = name
     return df
+
+
+def get_report_from_iframe(data):
+    return re.search(
+        'srcdoc="(<html>.*</html>)"', html.unescape(data), re.DOTALL
+    ).groups()[0]

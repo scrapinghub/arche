@@ -1,7 +1,7 @@
 from typing import Dict
 
 import arche.rules.coverage as cov
-from arche.rules.result import Level, Outcome
+from arche.rules.result import Level
 from conftest import *
 import pandas as pd
 import pytest
@@ -149,11 +149,7 @@ def test_compare_scraped_fields(source_cols, target_cols, expected_messages):
                 ("3", {"c1": 97, "c2": 175, "c3": 12, "c4": 150}, 100),
                 ("4", {"c1": 200, "c2": 500, "c3": 8}, 200),
             ],
-            {
-                Level.ERROR: [
-                    (Outcome.FAILED, "3 field(s) with significant coverage deviation")
-                ]
-            },
+            {Level.ERROR: [("3 field(s) with significant coverage deviation",)]},
             [
                 pd.DataFrame(
                     [

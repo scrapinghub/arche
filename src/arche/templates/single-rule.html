@@ -1,0 +1,7 @@
+{% extends "base.html" %} 
+
+{% block report %}
+<div>
+   {{ render_rule(rule, render_figure=True, keys_limit=keys_limit) }}
+</div>
+{% endblock %}

@@ -1,0 +1,204 @@
+<html>
+  <head>
+    <!-- Tabs from https://www.cssscript.com/creating-a-stylish-tabs-control-using-pure-css-css3/ -->
+    <style>
+      summary {
+          background-color: white;
+          cursor: pointer;
+          padding: 18px;
+          width: 100%;
+          border: none;
+          text-align: left;
+          outline: none;
+          font-size: 30px;
+      }
+ 
+      article > details > summary {
+          margin-top: 25px;
+      }
+
+      .SKIPPED {
+          background-color: lightgray;
+          opacity: 0.7;
+      }
+
+      .PASSED {
+          background-color: mediumseagreen;
+          opacity: 0.7;
+      }
+
+      .WARNING {
+          background-color: khaki;
+          opacity: 0.7;
+      }
+
+      .FAILED {
+          background-color: tomato;
+          opacity: 0.7;
+      }
+
+      .message {
+          padding: 18px;
+      }
+
+
+      .tabs {
+          display: flex;
+          height: auto;
+          width: auto;
+          position: relative;
+
+      }
+      
+      .tabs::before,
+      .tabs::after {
+          content: "";
+          display: table;
+      }
+
+      .tabs::after { clear: both; }
+
+      .tab {
+          float: left;
+          height: 100%;
+      }
+
+      .tab-switch { display: none; }
+
+      .tab-label {
+          position: relative;
+          display: block;
+          line-height: 2.75em;
+          height: 3em;
+          padding: 0 1.618em;
+          background: #95A5A6;
+          border-right: 0.125rem solid #99A3A4;
+          color: #fff;
+          cursor: pointer;
+          top: 0;
+          transition: all 0.25s;
+      }
+
+      .tab-label:hover {
+          top: -0.25rem;
+          transition: all 0.25s;
+      }
+
+      .tab-content {
+          background: #fff;
+          height: fit-content;
+          width: 100%;
+          position: absolute;
+          z-index: 1;
+          top: 2.75em;
+          left: 0;
+          transition: all 0.35s;
+          opacity: 0;
+      }
+
+      .tab-switch:checked + .tab-label {
+          background: #fff;
+          color: #2c3e50;
+          border-bottom: 0;
+          border-right: 0.0625rem solid #fff;
+          transition: all 0.35s;
+          z-index: 2;
+          top: -0.0625rem;
+      }
+
+      .tab-switch:checked + .tab-label:hover { top: -0.0625rem; }
+
+      .tab-switch:checked + .tab-label + .tab-content {
+          opacity: 1;
+          transition: all 0.35s;
+          z-index: 3;
+      }
+
+      .report-body {
+	  height: fit-content;
+	   width: "-webkit-fill-available";
+      }
+      
+    </style>
+  </head>
+  <body class="report-body">
+    <!-- Define macros to render the report -->
+    {% macro to_clickable_urls(message) %}
+       {{ message|linkify(callbacks=linkfy_callbacks)|safe }}
+    {% endmacro %}
+
+    {% macro render_stats(rule) %}
+       {% if rule._stats %}
+          {% set stats = pd.DataFrame(rule._stats[0]) %}
+          {{ stats.to_html()|safe }} 
+       {% endif %}
+    {% endmacro %}
+
+    {% macro render_figure(rule) %}
+      {% if rule.figures %}
+      <details open>
+        <summary class="{{rule.outcome.name}}"> {{ rule.name }} - {{ rule.outcome.name }}</summary>
+           {% for figure in rule.figures %}
+              {{ figure.to_html(include_plotlyjs='cdn') | safe }}
+           {% endfor %}
+       </details>
+     {% endif %}
+    {% endmacro %}
+      
+    {% macro render_rule(rule, render_figure=False, keys_limit=None) %}
+      <details open>
+        <summary class="{{rule.outcome.name}}">{{ rule.name }} - {{ rule.outcome.name }}</summary>
+          {% for outcome, messages in rule.messages.items() %}
+             {{ render_messages(outcome, messages, keys_limit) }}
+          {% endfor %}
+	  {% if render_figure %}
+              {% for figure in rule.figures %}
+                 {{ figure.to_html(include_plotlyjs='cdn') | safe }}
+              {% endfor %}
+          {% endif %}
+      </details>
+    {% endmacro %}
+
+    {% macro render_messages(outcome, messages, keys_limit=10) %}
+      {% for message in messages %}
+         <div class="message"> 
+           <p> {{ message.summary|string|linkify(callbacks=linkfy_callbacks)|safe }} </p>
+           {% if message.detailed  %}
+              <p> {{ message.detailed }} </p>
+           {% endif %}
+           {{ render_message_errors(message.errors, keys_limit) }}
+         </div>
+      {% endfor %}
+    {% endmacro %}
+
+    {% macro render_message_errors(errors, keys_limit=None) %}
+       {% if errors %}
+         <ul class="message-errors">
+           {% for error, items in errors.items() %}         
+             <li class="message-error-element">
+               {{error}}
+               {{render_items_urls(items|list)}}
+             </li>
+	    {% if keys_limit is not none and loop.index >= keys_limit %}
+	       {% break %}
+	    {% endif %}
+           {% endfor %}
+         </ul>
+       {% endif %}
+  {% endmacro %}
+
+  {% macro render_items_urls(urls, max_urls=10) %}
+     {% for i in range(0, max_urls) %}
+	{% if urls[i] is string %}
+	   <a href="{{ urls[i] }}" target="_blank"> {{ urls[i].split('/')[-1] }} </a> &nbsp;
+	{% else %}
+	   <a href="{{ urls[i] }}" target="_blank"> {{ urls[i] }} </a> &nbsp;
+	{% endif %}
+     {% endfor %}
+         
+  {% endmacro %}
+   <!-- Renders the page -->
+   {% block report %}
+   {% endblock %}
+  </body>
+</html>

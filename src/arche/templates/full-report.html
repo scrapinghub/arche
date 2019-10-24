@@ -1,0 +1,26 @@
+{% extends "base.html" %} 
+
+{% block report %}
+<div class="tabs">
+  <div class="tab">
+    <input type="radio" name="css-tabs" id="tab-rules" checked class="tab-switch">
+    <label for="tab-rules" class="tab-label">Rules Outcome</label>
+    <div class="tab-content">
+      {% for rule in rules %}
+         {{ render_rule(rule, keys_limit) }}
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="tab">
+    <input type="radio" name="css-tabs" id="tab-plots" class="tab-switch">
+    <label for="tab-plots" class="tab-label">Plots</label>
+    <div class="tab-content">
+      {% for rule in rules %}
+         {{ render_figure(rule) }}
+      {% endfor %}
+    </div>
+  </div>
+</div>
+</div>
+{% endblock %}

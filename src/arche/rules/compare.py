@@ -91,7 +91,7 @@ def tagged_fields(
         if tag_fields:
             fields_names.extend(tag_fields)
     if not fields_names:
-        result.add_info(Outcome.SKIPPED)
+        result.outcome = Outcome.SKIPPED
         return result
     result = fields(source_df, target_df, fields_names)
     result.name = name
