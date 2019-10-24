@@ -2,8 +2,8 @@ from typing import Dict, List
 
 from arche import arche, SH_URL
 from arche.arche import Arche
-from arche.rules.result import Level
-from conftest import create_result
+from arche.rules.result import *
+from conftest import create_result, get_report_from_iframe
 import pandas as pd
 import pytest
 
@@ -124,7 +124,7 @@ def test_arche_dataframe(mocker):
         schema={"properties": {"c": {"type": "integer"}}},
         target=pd.DataFrame({"c": [1, 1]}),
     )
-    mocker.patch("arche.report.Report.write_details", autospec=True)
+    mocker.patch("arche.report.Report", autospec=True)
     a.report_all()
     executed = [
         "Garbage Symbols",
@@ -134,8 +134,7 @@ def test_arche_dataframe(mocker):
         "JSON Schema Validation",
         "Tags",
         "Compare Price Was And Now",
-        "Duplicates By **unique** Tag",
-        "Duplicates By **name_field, product_url_field** Tags",
+        "Duplicates",
         "Coverage For Scraped Categories",
         "Category Coverage Difference",
         "Compare Prices For Same Urls",
@@ -160,10 +159,7 @@ def test_arche_dataframe_data_warning(caplog):
 
 
 def test_report_all(mocker, get_cloud_items):
-    mocked_write_summaries = mocker.patch(
-        "arche.report.Report.write_summaries", autospec=True
-    )
-    mocked_write = mocker.patch("arche.report.Report.write", autospec=True)
+    mocked_call = mocker.patch("arche.report.Report.__call__", autospec=True)
 
     source = pd.DataFrame(get_cloud_items)
     source["b"] = True
@@ -176,9 +172,8 @@ def test_report_all(mocker, get_cloud_items):
         "Boolean Fields",
         "Categories",
     }
-    mocked_write_summaries.assert_called_once_with(a.report)
-    mocked_write.assert_called_once_with("\n" * 2)
     assert executed == a.report.results.keys()
+    mocked_call.assert_called_once_with(a.report, keys_limit=None)
 
 
 def test_run_all_rules_job(mocker, get_cloud_items):
@@ -218,26 +213,26 @@ def test_run_all_rules_collection(mocker, get_collection_items):
 
     mocked_check_metadata.assert_not_called()
     mocked_compare_metadata.assert_not_called()
-    mocked_run_general_rules.assert_called_once_with()
+    mocked_run_general_rules.assert_called_once_with(arche)
     mocked_run_comparison_rules.assert_called_once_with()
     mocked_run_schema_rules.assert_called_once_with(arche)
 
 
 def test_validate_with_json_schema(mocker, get_job_items, get_schema):
     res = create_result("JSON Schema Validation", {})
-    mocked_show = mocker.patch("arche.rules.result.Result.show", autospec=True)
+    mocked_call = mocker.patch("arche.report.Report.__call__", autospec=True)
 
     a = Arche("source", schema=get_schema)
     a._source_items = get_job_items
     a.validate_with_json_schema()
 
-    mocked_show.assert_called_once_with(res)
+    mocked_call.assert_called_once_with(a.report, res)
     assert len(a.report.results) == 1
     assert a.report.results.get("JSON Schema Validation") == res
 
 
 def test_validate_with_json_schema_fails(mocker, get_job_items, get_schema):
-    mocked_md = mocker.patch("arche.report.display_markdown", autospec=True)
+    mocked_display = mocker.patch("arche.report.display_html", autospec=True)
     url = f"{SH_URL}/112358/13/21/item/1"
     res = create_result(
         "JSON Schema Validation",
@@ -251,6 +246,7 @@ def test_validate_with_json_schema_fails(mocker, get_job_items, get_schema):
             ]
         },
     )
+    res.outcome = Outcome.FAILED
     schema = {"type": "object", "required": ["price"], "properties": {"price": {}}}
     a = Arche("source", schema=schema)
     a._source_items = get_job_items
@@ -258,9 +254,8 @@ def test_validate_with_json_schema_fails(mocker, get_job_items, get_schema):
 
     assert len(a.report.results) == 1
     assert a.report.results.get("JSON Schema Validation") == res
-    mocked_md.assert_any_call(
-        f"1 items affected - 'price' is a required property: [1]({url})"
-    )
+    report_html = get_report_from_iframe(mocked_display.mock_calls[0][1][0])
+    assert "JSON Schema Validation - FAILED" in report_html
 
 
 @pytest.mark.parametrize(

@@ -49,14 +49,8 @@ class DataQualityReport:
             )
 
     def create_figures(self, items: JobItems):
-        name_url_dups = self.report.results.get(
-            "Duplicates By **name_field, product_url_field** Tags",
-            duplicate_rules.find_by_name_url(items.df, self.schema.tags),
-        )
-
-        uniques = self.report.results.get(
-            "Duplicates By **unique** Tag",
-            duplicate_rules.find_by_unique(items.df, self.schema.tags),
+        dups = self.report.results.get(
+            "Duplicates", duplicate_rules.find_by_tags(items.df, self.schema.tags)
         )
 
         price_was_now_result = price_rules.compare_was_now(items.df, self.schema.tags)
@@ -80,10 +74,8 @@ class DataQualityReport:
             items.job,
             crawlera_user,
             validation_errors,
-            name_url_dups.err_items_count,
-            name_url_dups.items_count,
-            uniques.err_items_count,
-            uniques.items_count,
+            dups.err_items_count,
+            dups.items_count,
             no_of_price_warns,
             no_of_checked_price_items,
             tested=True,
@@ -97,11 +89,8 @@ class DataQualityReport:
             validation_errors,
             self.schema.tags.get("name_field", ""),
             self.schema.tags.get("product_url_field", ""),
-            name_url_dups.items_count,
-            name_url_dups.err_items_count,
-            self.schema.tags.get("unique", []),
-            uniques.items_count,
-            uniques.err_items_count,
+            dups.err_items_count,
+            dups.items_count,
             self.schema.tags.get("product_price_field", ""),
             self.schema.tags.get("product_price_was_field", ""),
             no_of_checked_price_items,
@@ -158,9 +147,6 @@ class DataQualityReport:
         url_field,
         no_of_checked_duplicated_items,
         no_of_duplicated_items,
-        unique,
-        no_of_checked_skus,
-        no_of_duplicated_skus,
         price_field,
         price_was_field,
         no_of_checked_price_items,
@@ -175,9 +161,6 @@ class DataQualityReport:
             url_field,
             no_of_checked_duplicated_items,
             no_of_duplicated_items,
-            unique,
-            no_of_checked_skus,
-            no_of_duplicated_skus,
             price_field,
             price_was_field,
             no_of_checked_price_items,

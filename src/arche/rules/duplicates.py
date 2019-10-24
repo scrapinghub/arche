@@ -1,78 +1,64 @@
-from typing import List, Set
+from collections import Iterable
+from typing import Any, Generator, List, Union
 
 from arche.readers.schema import TaggedFields
 from arche.rules.result import Result, Outcome
 import pandas as pd
 
 
-def find_by_unique(df: pd.DataFrame, tagged_fields: TaggedFields) -> Result:
-    """Verify if each item field tagged with `unique` is unique.
+def find_by(df: pd.DataFrame, uniques: List[Union[str, List[str]]]) -> Result:
+    """Find equal items rows in `df` by `uniques`. I.e. if two items have the same
+    uniques's element value, they are considered duplicates.
 
-    Returns:
-        A result containing field names and keys for non unique items
-    """
-    unique_fields = tagged_fields.get("unique", [])
-    result = Result("Duplicates By **unique** Tag")
-
-    if not unique_fields:
-        result.add_info(Outcome.SKIPPED)
-        return result
-
-    err_keys: Set = set()
-    for field in unique_fields:
-        result.items_count = df[field].count()
-        duplicates = df[df.duplicated(field, keep=False)][[field]]
-        errors = {}
-        for _, d in duplicates.groupby([field]):
-            keys = list(d.index)
-            msg = f"same '{d[field].iloc[0]}' `{field}`"
-            errors[msg] = keys
-            err_keys = err_keys.union(keys)
-        if not duplicates.empty:
-            result.add_error(
-                f"{field} contains {len(duplicates[field].unique())} duplicated value(s)",
-                errors=errors,
-            )
-
-    return result
-
-
-def find_by(df: pd.DataFrame, columns: List[str]) -> Result:
-    """Compare items rows in `df` by `columns`
+    Args:
+        uniques: list containing columns and list of columns to identify duplicates.
+        List of columns means that all list columns values should be equal.
 
     Returns:
         Any duplicates
     """
-    result = Result(f"Duplicates")
+    result = Result("Duplicates")
     result.items_count = len(df)
-    df = df.dropna(subset=columns, how="all")
-    duplicates = df[df.duplicated(columns, keep=False)][columns]
-    if duplicates.empty:
-        return result
 
-    errors = {}
-    for _, d in duplicates.groupby(columns):
-        msgs = [f"'{d[c].iloc[0]}' `{c}`" for c in columns]
-        errors[f"same {', '.join(msgs)}"] = list(d.index)
+    df = df.dropna(subset=list(set(flatten(uniques))), how="all")
+    for columns in uniques:
+        mask = columns if isinstance(columns, list) else [columns]
+        duplicates = df[df.duplicated(columns, keep=False)][mask]
+        if duplicates.empty:
+            continue
 
-    result.add_error(
-        f"{len(duplicates)} duplicate(s) with same {', '.join(columns)}", errors=errors
-    )
+        errors = {}
+        grouped = duplicates.groupby(columns)
+        for _, d in grouped:
+            msgs = [f"'{d[c].iloc[0]}' `{c}`" for c in mask]
+            errors[f"same {', '.join(msgs)}"] = list(d.index)
+        result.add_error(
+            f"{', '.join(mask)} contains {len(grouped)} duplicated value(s)",
+            errors=errors,
+        )
     return result
 
 
-def find_by_name_url(df: pd.DataFrame, tagged_fields: TaggedFields) -> Result:
-    """Check for items with the same name and url"""
+def find_by_tags(df: pd.DataFrame, tagged_fields: TaggedFields) -> Result:
+    """Check for duplicates based on schema tags. In particular, look for items with
+    the same `name_field` and `product_url_field`, and for uniqueness among `unique` field"""
 
     name_fields = tagged_fields.get("name_field")
     url_fields = tagged_fields.get("product_url_field")
-    name = "Duplicates By **name_field, product_url_field** Tags"
-    result = Result(name)
-    if not name_fields or not url_fields:
+    columns_to_check: List = tagged_fields.get("unique", [])
+    if (not name_fields or not url_fields) and not columns_to_check:
+        result = Result("Duplicates")
         result.add_info(Outcome.SKIPPED)
         return result
-    name_field = name_fields[0]
-    url_field = url_fields[0]
-    result = find_by(df, [name_field, url_field])
-    result.name = name
-    return result
+    if name_fields and url_fields:
+        columns_to_check.extend([[name_fields[0], url_fields[0]]])
+
+    return find_by(df, columns_to_check)
+
+
+def flatten(l: Any) -> Generator[str, None, None]:
+    for el in l:
+        if isinstance(el, Iterable) and not isinstance(el, str):
+            yield from flatten(el)
+        else:
+            yield el

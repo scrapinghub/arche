@@ -16,7 +16,7 @@ def compare_was_now(df: pd.DataFrame, tagged_fields: TaggedFields):
     result = Result("Compare Price Was And Now")
 
     if not price_was_fields or not price_fields:
-        result.add_info(Outcome.SKIPPED)
+        result.outcome = Outcome.SKIPPED
         return result
 
     price_field = price_fields[0]
@@ -78,7 +78,7 @@ def compare_prices_for_same_urls(
     result = Result("Compare Prices For Same Urls")
     url_field_list: Optional[List[str]] = tagged_fields.get("product_url_field")
     if not url_field_list:
-        result.add_info(Outcome.SKIPPED)
+        result.outcome = Outcome.SKIPPED
         return result
 
     url_field = url_field_list[0]
@@ -137,7 +137,7 @@ def compare_names_for_same_urls(
     url_field_list: Optional[List[str]] = tagged_fields.get("product_url_field")
     name_field_list: Optional[List[str]] = tagged_fields.get("name_field")
     if not url_field_list or not name_field_list:
-        result.add_info(Outcome.SKIPPED)
+        result.outcome = Outcome.SKIPPED
         return result
 
     name_field: str = name_field_list[0]
@@ -183,7 +183,7 @@ def compare_prices_for_same_names(
     result = Result("Compare Prices For Same Names")
     name_field_tag = tagged_fields.get("name_field")
     if not name_field_tag:
-        result.add_info(Outcome.SKIPPED)
+        result.outcome = Outcome.SKIPPED
         return result
 
     name_field = name_field_tag[0]

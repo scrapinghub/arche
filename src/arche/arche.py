@@ -1,6 +1,6 @@
 from functools import lru_cache
 import logging
-from typing import Iterable, Optional, Union, cast
+from typing import Iterable, List, Optional, Union, cast
 
 from arche.data_quality_report import DataQualityReport
 from arche.readers.items import Items, CollectionItems, JobItems, RawItems
@@ -124,14 +124,21 @@ class Arche:
     def save_result(self, rule_result):
         self.report.save(rule_result)
 
-    def report_all(self, short: bool = False) -> None:
+    def report_all(
+        self, short: bool = False, uniques: List[Union[str, List[str]]] = None
+    ) -> None:
+        """Report on all included rules.
+
+        Args:
+            uniques: see `arche.rules.duplicates.find_by`
+        """
+        if uniques:
+            self.uniques = uniques
         self.run_all_rules()
         IPython.display.clear_output()
-        self.report.write_summaries()
-        self.report.write("\n" * 2)
-        self.report.write_details(short)
+        self.report(keys_limit=10 if short else None)
 
-    def run_all_rules(self):
+    def run_all_rules(self) -> None:
         if isinstance(self.source_items, JobItems):
             self.check_metadata(self.source_items.job)
             if self.target_items:
@@ -148,7 +155,6 @@ class Arche:
         IPython.display.clear_output()
         DataQualityReport(self.source_items, self.schema, self.report, bucket)
 
-    @lru_cache(maxsize=32)
     def run_general_rules(self):
         self.save_result(garbage_symbols(self.source_items.df))
         df = self.source_items.df
@@ -158,6 +164,10 @@ class Arche:
             )
         )
         self.save_result(category_rules.get_categories(df))
+        if getattr(self, "uniques", None):
+            self.save_result(
+                duplicate_rules.find_by(self.source_items.df, self.uniques)
+            )
 
     def validate_with_json_schema(self) -> None:
         """Run JSON schema check and output results. It will try to find all errors, but
@@ -167,7 +177,7 @@ class Arche:
             self.schema.raw, self.source_items.raw, self.source_items.df.index
         )
         self.save_result(res)
-        res.show()
+        self.report(res)
 
     def glance(self) -> None:
         """Run JSON schema check and output results. In most cases it will return
@@ -210,8 +220,7 @@ class Arche:
 
     def run_customized_rules(self, items, tagged_fields):
         self.save_result(price_rules.compare_was_now(items.df, tagged_fields))
-        self.save_result(duplicate_rules.find_by_unique(items.df, tagged_fields))
-        self.save_result(duplicate_rules.find_by_name_url(items.df, tagged_fields))
+        self.save_result(duplicate_rules.find_by_tags(items.df, tagged_fields))
         self.save_result(
             category_rules.get_coverage_per_category(
                 items.df, tagged_fields.get("category", []) + self.schema.enums

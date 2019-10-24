@@ -7,8 +7,6 @@ def generate_quality_estimation(
     no_of_validation_warnings,
     no_of_duplicated_items,
     checked_dup_items_count,
-    no_of_duplicated_skus,
-    no_of_checked_skus_items,
     no_of_price_warns,
     no_of_checked_price_items,
     tested,
@@ -27,9 +25,6 @@ def generate_quality_estimation(
     duplicated_items_percent = float(
         get_duplicated_items_percent(no_of_duplicated_items, no_of_scraped_items)
     )
-    duplicated_skus_percent = float(
-        get_duplicated_skus_percent(no_of_duplicated_skus, no_of_scraped_items)
-    )
 
     crawlera_incapsula_percent = float(get_crawlera_incapsula_percent(crawlera_user))
 
@@ -45,13 +40,7 @@ def generate_quality_estimation(
     )
     tested_percent = float(get_tested_percent(tested))
 
-    if all(
-        [
-            checked_dup_items_count == 0,
-            no_of_checked_skus_items == 0,
-            no_of_checked_price_items == 0,
-        ]
-    ):
+    if all([checked_dup_items_count == 0, no_of_checked_price_items == 0]):
         quality_estimation = (
             adherence_to_schema_percent * 60 / 100
             + crawlera_incapsula_percent * 8 / 100
@@ -60,7 +49,7 @@ def generate_quality_estimation(
             + response_status_count_percent * 7 / 100
             + tested_percent * 15 / 100
         )
-    elif checked_dup_items_count == 0 and no_of_checked_skus_items == 0:
+    elif checked_dup_items_count == 0:
         quality_estimation = (
             adherence_to_schema_percent * 55 / 100
             + crawlera_incapsula_percent * 8 / 100
@@ -72,15 +61,14 @@ def generate_quality_estimation(
         )
     elif checked_dup_items_count == 0 and no_of_checked_price_items == 0:
         quality_estimation = (
-            adherence_to_schema_percent * 55 / 100
-            + duplicated_skus_percent * 5 / 100
+            adherence_to_schema_percent * 60 / 100
             + crawlera_incapsula_percent * 8 / 100
             + no_of_errors_percent * 5 / 100
             + outcome_percent * 5 / 100
             + response_status_count_percent * 7 / 100
             + tested_percent * 15 / 100
         )
-    elif no_of_checked_skus_items == 0 and no_of_checked_price_items == 0:
+    elif no_of_checked_price_items == 0:
         quality_estimation = (
             adherence_to_schema_percent * 50 / 100
             + duplicated_items_percent * 10 / 100
@@ -92,19 +80,7 @@ def generate_quality_estimation(
         )
     elif checked_dup_items_count == 0:
         quality_estimation = (
-            adherence_to_schema_percent * 50 / 100
-            + duplicated_skus_percent * 5 / 100
-            + crawlera_incapsula_percent * 8 / 100
-            + no_of_errors_percent * 5 / 100
-            + price_was_price_now_comparison_percent * 5 / 100
-            + outcome_percent * 5 / 100
-            + response_status_count_percent * 7 / 100
-            + tested_percent * 15 / 100
-        )
-    elif no_of_checked_skus_items == 0:
-        quality_estimation = (
-            adherence_to_schema_percent * 45 / 100
-            + duplicated_items_percent * 10 / 100
+            adherence_to_schema_percent * 55 / 100
             + crawlera_incapsula_percent * 8 / 100
             + no_of_errors_percent * 5 / 100
             + price_was_price_now_comparison_percent * 5 / 100
@@ -115,8 +91,7 @@ def generate_quality_estimation(
     elif no_of_checked_price_items == 0:
         quality_estimation = (
             adherence_to_schema_percent * 45 / 100
-            + duplicated_items_percent * 10 / 100
-            + duplicated_skus_percent * 5 / 100
+            + duplicated_items_percent * 15 / 100
             + crawlera_incapsula_percent * 8 / 100
             + no_of_errors_percent * 5 / 100
             + outcome_percent * 5 / 100
@@ -126,8 +101,7 @@ def generate_quality_estimation(
     else:
         quality_estimation = (
             adherence_to_schema_percent * 40 / 100
-            + duplicated_items_percent * 10 / 100
-            + duplicated_skus_percent * 5 / 100
+            + duplicated_items_percent * 15 / 100
             + crawlera_incapsula_percent * 8 / 100
             + no_of_errors_percent * 5 / 100
             + price_was_price_now_comparison_percent * 5 / 100

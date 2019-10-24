@@ -130,9 +130,6 @@ def rules_summary_table(
     url_field,
     no_of_checked_duplicated_items,
     no_of_duplicated_items,
-    unique,
-    no_of_checked_skus,
-    no_of_duplicated_skus,
     price_field,
     price_was_field,
     no_of_checked_price_items,
@@ -149,12 +146,6 @@ def rules_summary_table(
         tested_fields_values.append(f"{name_field}, {url_field}")
         test_results_values.append(f"{no_of_duplicated_items} warnings")
         status_values.append(get_rule_status(no_of_duplicated_items))
-
-    if no_of_checked_skus:
-        test_name_values.append("Duplicated Field Values")
-        tested_fields_values.append(unique)
-        test_results_values.append(f"{no_of_duplicated_skus} warnings")
-        status_values.append(get_rule_status(no_of_duplicated_skus))
 
     if no_of_checked_price_items:
         test_name_values.append("Prices comparison")
