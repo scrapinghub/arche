@@ -24,3 +24,11 @@ def test_arche_df_does_not_add_links_if_no_url_found():
     df = pd.DataFrame({"col1": [1, 2], "col2": ["foo", "bar"]})
     html = df._repr_html_()
     assert "<a href=" not in html
+
+
+def test_large_repr(df_with_urls):
+    df_with_urls._info_repr = lambda: True
+    html = df_with_urls._repr_html_()
+
+    assert "<pre>&lt;class 'pandas.core.frame.DataFrame'&gt;\n" in html
+    assert "<a href=" not in html
