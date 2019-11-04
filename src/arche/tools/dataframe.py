@@ -1,8 +1,20 @@
 from io import StringIO
 from typing import Optional
 
-from pandas._config import get_option
+from pandas._config import get_option, config
 from pandas.io.formats import format as fmt
+
+
+pc_render_links_doc = """
+: bool
+    This sets if URLs in DataFrame should be rendered as clickable anchors.
+"""
+
+# Register `render_links` option
+with config.config_prefix("display"):
+    config.register_option(
+        "render_links", True, pc_render_links_doc, validator=config.is_bool
+    )
 
 
 def _repr_html_(self) -> Optional[str]:
@@ -23,6 +35,7 @@ def _repr_html_(self) -> Optional[str]:
         min_rows = get_option("display.min_rows")
         max_cols = get_option("display.max_columns")
         show_dimensions = get_option("display.show_dimensions")
+        render_links = get_option("display.render_links")
 
         formatter = fmt.DataFrameFormatter(
             self,
@@ -44,7 +57,7 @@ def _repr_html_(self) -> Optional[str]:
             show_dimensions=show_dimensions,
             decimal=".",
             table_id=None,
-            render_links=False,
+            render_links=render_links,
         )
         formatter.to_html(notebook=True)
         return formatter.buf.getvalue()
