@@ -12,6 +12,7 @@ import pandas as pd
 import plotly.io as pio
 
 pd.DataFrame._repr_html_ = dataframe._repr_html_
+pd.set_option("display.max_colwidth", -1)
 pd.set_option("display.render_links", True)
 
 pio.renderers.default = "notebook_connected+jupyterlab"
